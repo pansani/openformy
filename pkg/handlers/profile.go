@@ -40,18 +40,10 @@ func (h *Profile) Routes(g *echo.Group) {
 }
 
 func (h *Profile) EditPage(ctx echo.Context) error {
-	usr := ctx.Get(context.AuthenticatedUserKey).(*ent.User)
-
 	return h.Inertia.Render(
 		ctx.Response().Writer,
 		ctx.Request(),
 		"Settings/Profile",
-		inertia.Props{
-			"user": map[string]any{
-				"name":  usr.Name,
-				"email": usr.Email,
-			},
-		},
 	)
 }
 
