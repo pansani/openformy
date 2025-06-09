@@ -3,14 +3,13 @@ package handlers
 import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
-	"github.com/mikestefanello/pagoda/ent"
-	"github.com/mikestefanello/pagoda/pkg/context"
-	"github.com/mikestefanello/pagoda/pkg/form"
-	"github.com/mikestefanello/pagoda/pkg/log"
-	"github.com/mikestefanello/pagoda/pkg/msg"
-	"github.com/mikestefanello/pagoda/pkg/redirect"
-	"github.com/mikestefanello/pagoda/pkg/routenames"
-	"github.com/mikestefanello/pagoda/pkg/services"
+	"github.com/occult/pagode/ent"
+	"github.com/occult/pagode/pkg/context"
+	"github.com/occult/pagode/pkg/form"
+	"github.com/occult/pagode/pkg/log"
+	"github.com/occult/pagode/pkg/msg"
+	"github.com/occult/pagode/pkg/routenames"
+	"github.com/occult/pagode/pkg/services"
 	inertia "github.com/romsar/gonertia/v2"
 )
 
@@ -53,7 +52,7 @@ func (h *Profile) Routes(g *echo.Group) {
 	profile := g.Group("/profile")
 	profile.GET("/info", h.EditPage).Name = routenames.ProfileEdit
 	profile.POST("/update", h.UpdateBasicInfo).Name = routenames.ProfileUpdate
-	profile.DELETE("/delete", h.DeleteAccount).Name = routenames.ProfileDestroy
+	profile.POST("/delete", h.DeleteAccount).Name = routenames.ProfileDestroy
 
 	profile.GET("/appearance", h.AppearancePage).Name = routenames.ProfileAppearance
 	profile.GET("/password", h.PasswordPage).Name = routenames.ProfilePassword
@@ -175,8 +174,11 @@ func (h *Profile) DeleteAccount(ctx echo.Context) error {
 		return fail(err, "unable to delete user account")
 	}
 
+	uri := ctx.Echo().Reverse(routenames.Welcome)
+
 	msg.Success(ctx, "Your account has been deleted.")
-	return redirect.New(ctx).Route(routenames.Home).Go()
+	h.Inertia.Redirect(ctx.Response().Writer, ctx.Request(), uri)
+	return nil
 }
 
 func (h *Profile) AppearancePage(ctx echo.Context) error {
