@@ -205,7 +205,6 @@ func (c *AuthClient) ValidateEmailVerificationToken(token string) (string, error
 
 		return []byte(c.config.App.EncryptionKey), nil
 	})
-
 	if err != nil {
 		return "", err
 	}

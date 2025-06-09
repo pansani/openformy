@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/mikestefanello/pagoda/ent"
 	"github.com/mikestefanello/pagoda/pkg/context"
+	"github.com/mikestefanello/pagoda/pkg/form"
 	"github.com/mikestefanello/pagoda/pkg/log"
 	"github.com/mikestefanello/pagoda/pkg/msg"
 	"github.com/mikestefanello/pagoda/pkg/redirect"
@@ -16,6 +18,24 @@ type Profile struct {
 	orm     *ent.Client
 	Inertia *inertia.Inertia
 	auth    *services.AuthClient
+}
+
+type UpdateBasicInfoForm struct {
+	Name  string `form:"name" validate:"required"`
+	Email string `form:"email" validate:"required,email"`
+	form.Submission
+}
+
+type UpdatePasswordForm struct {
+	CurrentPassword      string `form:"current_password" validate:"required"`
+	Password             string `form:"password" validate:"required,min=8"`
+	PasswordConfirmation string `form:"password_confirmation" validate:"required,eqfield=Password"`
+	form.Submission
+}
+
+type DeleteAccountForm struct {
+	Password string `form:"password" validate:"required"`
+	form.Submission
 }
 
 func init() {
@@ -32,11 +52,12 @@ func (h *Profile) Init(c *services.Container) error {
 func (h *Profile) Routes(g *echo.Group) {
 	profile := g.Group("/profile")
 	profile.GET("/info", h.EditPage).Name = routenames.ProfileEdit
-	profile.PATCH("/update", h.Update).Name = routenames.ProfileUpdate
-	profile.DELETE("/delete", h.Delete).Name = routenames.ProfileDestroy
+	profile.POST("/update", h.UpdateBasicInfo).Name = routenames.ProfileUpdate
+	profile.DELETE("/delete", h.DeleteAccount).Name = routenames.ProfileDestroy
 
 	profile.GET("/appearance", h.AppearancePage).Name = routenames.ProfileAppearance
 	profile.GET("/password", h.PasswordPage).Name = routenames.ProfilePassword
+	profile.POST("/update-password", h.UpdatePassword).Name = routenames.ProfileUpdatePassword
 }
 
 func (h *Profile) EditPage(ctx echo.Context) error {
@@ -47,33 +68,103 @@ func (h *Profile) EditPage(ctx echo.Context) error {
 	)
 }
 
-// TODO: Implement this later
-func (h *Profile) Update(ctx echo.Context) error {
-	// usr := ctx.Get(context.AuthenticatedUserKey).(*ent.User)
-	//
-	// var input forms.ProfileUpdate
-	// if err := form.Submit(ctx, &input); err != nil {
-	// 	switch err.(type) {
-	// 	case validator.ValidationErrors:
-	// 		return h.EditPage(ctx)
-	// 	default:
-	// 		return err
-	// 	}
-	// }
-	//
-	// _, err := usr.Update().
-	// 	SetName(input.Name).
-	// 	SetEmail(strings.ToLower(input.Email)).
-	// 	Save(ctx.Request().Context())
-	// if err != nil {
-	// 	return fail(err, "unable to update user profile")
-	// }
+func (h *Profile) UpdateBasicInfo(ctx echo.Context) error {
+	var input UpdateBasicInfoForm
+
+	usr, ok := ctx.Get(context.AuthenticatedUserKey).(*ent.User)
+	if !ok {
+		msg.Danger(ctx, "You must be logged in.")
+		h.Inertia.Back(ctx.Response().Writer, ctx.Request())
+		return nil
+	}
+
+	err := form.Submit(ctx, &input)
+
+	switch err.(type) {
+	case nil:
+	case validator.ValidationErrors:
+		msg.Warning(ctx, "Please fix the errors in the form and try again.")
+		h.Inertia.Back(ctx.Response().Writer, ctx.Request())
+		return nil
+	default:
+		return err
+	}
+
+	if input.Name == usr.Name && input.Email == usr.Email {
+		msg.Info(ctx, "Nothing to update.")
+		h.Inertia.Back(ctx.Response().Writer, ctx.Request())
+		return nil
+	}
+
+	update := h.orm.User.UpdateOne(usr).
+		SetName(input.Name).
+		SetEmail(input.Email)
+
+	_, err = update.Save(ctx.Request().Context())
+	if err != nil {
+		msg.Danger(ctx, "Failed to update user.")
+		h.Inertia.Back(ctx.Response().Writer, ctx.Request())
+		return nil
+	}
 
 	msg.Success(ctx, "Your profile has been updated.")
-	return redirect.New(ctx).Route(routenames.ProfileEdit).Go()
+	h.Inertia.Back(ctx.Response().Writer, ctx.Request())
+	return nil
 }
 
-func (h *Profile) Delete(ctx echo.Context) error {
+func (h *Profile) UpdatePassword(ctx echo.Context) error {
+	var input UpdatePasswordForm
+
+	usr, ok := ctx.Get(context.AuthenticatedUserKey).(*ent.User)
+	if !ok {
+		msg.Danger(ctx, "You must be logged in.")
+		h.Inertia.Back(ctx.Response().Writer, ctx.Request())
+		return nil
+	}
+
+	err := form.Submit(ctx, &input)
+
+	switch err.(type) {
+	case nil:
+	case validator.ValidationErrors:
+		msg.Warning(ctx, "Please fix the errors in the form and try again.")
+		h.Inertia.Back(ctx.Response().Writer, ctx.Request())
+		return nil
+	default:
+		return err
+	}
+
+	if err := h.auth.CheckPassword(input.CurrentPassword, usr.Password); err != nil {
+		msg.Danger(ctx, "The current password you entered is incorrect.")
+		h.Inertia.Back(ctx.Response().Writer, ctx.Request())
+		return nil
+	}
+
+	_, err = h.orm.User.
+		UpdateOneID(usr.ID).
+		SetPassword(input.Password).
+		Save(ctx.Request().Context())
+	if err != nil {
+		msg.Danger(ctx, "Something went wrong while saving your new password.")
+		h.Inertia.Back(ctx.Response().Writer, ctx.Request())
+		return nil
+	}
+
+	usr, err = h.orm.User.Get(ctx.Request().Context(), usr.ID)
+	if err != nil {
+		msg.Danger(ctx, "Something went wrong while refreshing your session.")
+		h.Inertia.Back(ctx.Response().Writer, ctx.Request())
+		return nil
+	}
+
+	uri := ctx.Echo().Reverse(routenames.ProfileUpdatePassword)
+
+	msg.Success(ctx, "Your password has been updated successfully.")
+	h.Inertia.Redirect(ctx.Response().Writer, ctx.Request(), uri)
+	return nil
+}
+
+func (h *Profile) DeleteAccount(ctx echo.Context) error {
 	usr := ctx.Get(context.AuthenticatedUserKey).(*ent.User)
 
 	if err := h.auth.Logout(ctx); err != nil {
