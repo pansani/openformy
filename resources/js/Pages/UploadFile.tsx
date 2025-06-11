@@ -30,7 +30,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function UploadFile({ files }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { data, setData, post, processing, errors, reset } = useForm<{
+  const { setData, post, processing, errors, reset } = useForm<{
     file: File | null;
   }>({
     file: null,
@@ -82,7 +82,7 @@ export default function UploadFile({ files }: Props) {
           <div>
             <h3 className="text-lg font-semibold mb-2">Uploaded Files</h3>
             {files.length > 0 ? (
-              <div className="border rounded-lg p-4">
+              <div className="border rounded-lg p-4 max-h-[55vh] overflow-y-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b text-left">
