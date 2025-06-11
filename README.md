@@ -138,29 +138,21 @@ Originally, Postgres and Redis were chosen as defaults but since the aim of this
 
 ### Screenshots
 
-#### Inline form validation
+#### Dashboard
 
-<img src="https://raw.githubusercontent.com/mikestefanello/readmeimages/main/pagoda/inline-validation.png" alt="Inline validation"/>
+<img src="https://pagode.nyc3.cdn.digitaloceanspaces.com/readme/dashboard.png" alt="Dashboard"/>
 
-#### Switch layout templates, user registration
+#### Upload Files
 
-<img src="https://raw.githubusercontent.com/mikestefanello/readmeimages/main/pagoda/register.png" alt="Registration"/>
+<img src="https://pagode.nyc3.cdn.digitaloceanspaces.com/readme/upload-files.png" alt="Upload Files"/>
 
-#### Alpine.js modal, HTMX AJAX request
+#### Admin View
 
-<img src="https://raw.githubusercontent.com/mikestefanello/readmeimages/main/pagoda/modal.png" alt="Alpine and HTMX"/>
+<img src="https://pagode.nyc3.cdn.digitaloceanspaces.com/readme/admin-view.png" alt="Admin View"/>
 
-#### User entity list (admin panel)
+#### Settings
 
-<img src="https://raw.githubusercontent.com/mikestefanello/readmeimages/main/pagoda/admin-user_list.png" alt="User entity list"/>
-
-#### User entity edit (admin panel)
-
-<img src="https://raw.githubusercontent.com/mikestefanello/readmeimages/main/pagoda/admin-user_edit.png" alt="User entity edit"/>
-
-#### Monitor task queues (provided by Backlite via the admin panel)
-
-<img src="https://raw.githubusercontent.com/mikestefanello/readmeimages/main/backlite/failed.png" alt="Manage task queues"/>
+<img src="https://pagode.nyc3.cdn.digitaloceanspaces.com/readme/settings.png" alt="Settings"/>
 
 ## Getting started
 
