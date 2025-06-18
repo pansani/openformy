@@ -11,13 +11,13 @@
 
 Pagode is a full-stack web application starter kit with expressive, elegant architecture. We believe development must be an enjoyable and creative experience to be truly fulfilling. Pagode takes the pain out of development by combining the power of Go with modern React, providing:
 
-- [Fast, type-safe backend](https://pagode.dev/docs/backend) with Go and Echo.
-- [Modern React frontend](https://pagode.dev/docs/frontend) with InertiaJS bridge.
-- [Powerful ORM](https://pagode.dev/docs/database) with Ent code generation.
-- [Built-in authentication](https://pagode.dev/docs/auth) and session management.
-- [Background job processing](https://pagode.dev/docs/tasks) with SQLite queues.
-- [Admin panel](https://pagode.dev/docs/admin) auto-generated for all entities.
-- [Hot reload development](https://pagode.dev/docs/development) experience.
+- [Fast, type-safe backend](https://pagode.dev/docs/intro) with Go and Echo.
+- [Modern React frontend](https://pagode.dev/docs/intro) with InertiaJS bridge.
+- [Powerful ORM](https://pagode.dev/docs/database-and-orm) with Ent code generation.
+- [Built-in authentication](https://pagode.dev/docs/authentication) and session management.
+- [Background job processing](https://pagode.dev/docs/tasks-and-queues) with SQLite queues.
+- [Admin panel](https://pagode.dev/docs/admin-panel) auto-generated for all entities.
+- [Hot reload development](https://pagode.dev/docs/intro) experience.
 
 Pagode is accessible, powerful, and provides tools required for large, robust applications.
 
