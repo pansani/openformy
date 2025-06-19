@@ -11,9 +11,11 @@ require (
 	github.com/gorilla/sessions v1.4.0
 	github.com/labstack/echo-contrib v0.17.4
 	github.com/labstack/echo/v4 v4.13.3
+	github.com/lmittmann/tint v1.1.1
 	github.com/mattn/go-sqlite3 v1.14.28
 	github.com/maypok86/otter v1.2.4
 	github.com/mikestefanello/backlite v0.5.0
+	github.com/resend/resend-go/v2 v2.20.0
 	github.com/romsar/gonertia/v2 v2.0.5
 	github.com/spf13/afero v1.14.0
 	github.com/spf13/viper v1.20.1
@@ -44,7 +46,6 @@ require (
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
-	github.com/lmittmann/tint v1.1.1 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect

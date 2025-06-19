@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"fmt"
+	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
@@ -45,6 +47,18 @@ type LoginForm struct {
 	form.Submission
 }
 
+type ForgotPassword struct {
+	Email string `form:"email" validate:"required,email"`
+	form.Submission
+}
+
+type ResetPassword struct {
+	Password        string `form:"password" validate:"required"`
+	ConfirmPassword string `form:"password_confirmation" validate:"required,eqfield=Password"`
+
+	form.Submission
+}
+
 func init() {
 	Register(new(Auth))
 }
@@ -68,6 +82,14 @@ func (h *Auth) Routes(g *echo.Group) {
 	noAuth.GET("/register", h.RegisterPage).Name = routenames.Register
 	noAuth.POST("/register", h.RegisterSubmit).Name = routenames.RegisterSubmit
 	noAuth.GET("/password", h.ForgotPasswordPage).Name = routenames.ForgotPassword
+	noAuth.POST("/password", h.ForgotPasswordSubmit).Name = routenames.ForgotPasswordSubmit
+
+	resetGroup := noAuth.Group("/password/reset",
+		middleware.LoadUser(h.orm),
+		middleware.LoadValidPasswordToken(h.auth),
+	)
+	resetGroup.GET("/token/:user/:password_token/:token", h.ResetPasswordPage).Name = routenames.ResetPassword
+	resetGroup.POST("/token/:user/:password_token/:token", h.ResetPasswordSubmit).Name = routenames.ResetPasswordSubmit
 }
 
 func (h *Auth) LoginPage(ctx echo.Context) error {
@@ -276,7 +298,7 @@ func (h *Auth) sendVerificationEmail(ctx echo.Context, usr *ent.User) error {
 	`, usr.Name, url)
 
 	params := &resend.SendEmailRequest{
-		From:    "noreply@deulance.com.br",
+		From:    h.config.Mail.FromAddress,
 		To:      []string{usr.Email},
 		Subject: subject,
 		Html:    html,
@@ -301,14 +323,16 @@ func (h *Auth) VerifyEmail(ctx echo.Context) error {
 	w := ctx.Response().Writer
 	r := ctx.Request()
 
+	uriWelcome := ctx.Echo().Reverse(routenames.Welcome)
+
+	uriForgotPassword := ctx.Echo().Reverse(routenames.ForgotPassword)
+
 	// Validate the token.
 	token := ctx.Param("token")
 	email, err := h.auth.ValidateEmailVerificationToken(token)
 	if err != nil {
 		msg.Warning(ctx, "The link is either invalid or has expired.")
-		return redirect.New(ctx).
-			Route(routenames.Home).
-			Go()
+		h.Inertia.Redirect(w, r, uriForgotPassword)
 	}
 
 	// Check if it matches the authenticated user.
@@ -342,7 +366,6 @@ func (h *Auth) VerifyEmail(ctx echo.Context) error {
 		}
 	}
 
-	uriWelcome := ctx.Echo().Reverse(routenames.Welcome)
 	msg.Success(ctx, "Your email has been successfully verified.")
 
 	h.Inertia.Redirect(w, r, uriWelcome)
@@ -360,5 +383,175 @@ func (h *Auth) ForgotPasswordPage(ctx echo.Context) error {
 		return err
 	}
 
+	return nil
+}
+
+func (h *Auth) ForgotPasswordSubmit(ctx echo.Context) error {
+	var input ForgotPassword
+
+	w := ctx.Response().Writer
+	r := ctx.Request()
+
+	uriForgotPassword := ctx.Echo().Reverse(routenames.ForgotPassword)
+
+	succeed := func() error {
+		form.Clear(ctx)
+		msg.Success(ctx, "An email containing a link to reset your password will be sent to this address if it exists in our system.")
+		h.Inertia.Redirect(w, r, uriForgotPassword)
+		return nil
+	}
+
+	err := form.Submit(ctx, &input)
+
+	switch err.(type) {
+	case nil:
+	case validator.ValidationErrors:
+		return h.ForgotPasswordPage(ctx)
+	default:
+		return err
+	}
+
+	// Attempt to load the user.
+	u, err := h.orm.User.
+		Query().
+		Where(user.Email(strings.ToLower(input.Email))).
+		Only(ctx.Request().Context())
+
+	switch err.(type) {
+	case *ent.NotFoundError:
+		return succeed()
+	case nil:
+	default:
+		return fail(err, "error querying user during forgot password")
+	}
+
+	client := resend.NewClient(h.config.Mail.ResendApiKey)
+
+	// Generate the token.
+	token, pt, err := h.auth.GeneratePasswordResetToken(ctx, u.ID)
+	if err != nil {
+		return fail(err, "error generating password reset token")
+	}
+
+	log.Ctx(ctx).Info("generated password reset token",
+		"user_id", u.ID,
+	)
+
+	url := ctx.Echo().Reverse(routenames.ResetPassword, u.ID, pt.ID, token)
+
+	log.Default().Info("URL: ", url)
+
+	subject := "Reset your password"
+	html := fmt.Sprintf(`
+		<p>Hello %s,</p>
+		<p>To reset your password go the link below:</p>
+		<p><a href="%s">Reset Password</a></p>
+		<p>If you didn’t request a password update, you can ignore this email.</p>
+	`, u.Name, h.config.App.Host+url)
+
+	params := &resend.SendEmailRequest{
+		From:    h.config.Mail.FromAddress,
+		To:      []string{u.Email},
+		Subject: subject,
+		Html:    html,
+	}
+
+	_, err = client.Emails.Send(params)
+	if err != nil {
+		log.Ctx(ctx).Error("unable to send email verification token",
+			"user_id", u.ID,
+			"error", err,
+		)
+		return err
+	}
+
+	return succeed()
+}
+
+func (h *Auth) ResetPasswordPage(ctx echo.Context) error {
+	userIDStr := ctx.Param("user")
+	passwordTokenID := ctx.Param("password_token")
+	token := ctx.Param("token")
+
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid user ID")
+	}
+
+	u, err := h.orm.User.
+		Query().
+		Where(user.IDEQ(userID)).
+		Only(ctx.Request().Context())
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return echo.NewHTTPError(http.StatusNotFound, "User not found")
+		}
+		return fail(err, "error loading user in ResetPasswordPage")
+	}
+
+	props := map[string]any{
+		"token":           token,
+		"userID":          userIDStr,
+		"passwordTokenID": passwordTokenID,
+		"email":           u.Email,
+	}
+
+	err = h.Inertia.Render(ctx.Response().Writer, ctx.Request(), "Auth/ResetPassword", props)
+	if err != nil {
+		handleServerErr(ctx.Response().Writer, err)
+		return err
+	}
+
+	return nil
+}
+
+func (h *Auth) ResetPasswordSubmit(ctx echo.Context) error {
+	var input ResetPassword
+
+	err := form.Submit(ctx, &input)
+
+	w := ctx.Response().Writer
+	r := ctx.Request()
+
+	uriLogin := ctx.Echo().Reverse(routenames.Login)
+
+	switch err.(type) {
+	case nil:
+	case validator.ValidationErrors:
+		log.Ctx(ctx).Warn("⚠️ Validation failed", "errors", err)
+		msg.Danger(ctx, "Please fill in the fields correctly.")
+		h.Inertia.Redirect(w, r, r.URL.Path)
+		return nil
+	default:
+		msg.Danger(ctx, "There was a problem processing your request.")
+		h.Inertia.Redirect(w, r, r.URL.Path)
+		return nil
+	}
+
+	usr, ok := ctx.Get(context.UserKey).(*ent.User)
+	if !ok || usr == nil {
+		msg.Danger(ctx, "User not found.")
+		h.Inertia.Redirect(w, r, r.URL.Path)
+		return nil
+	}
+
+	_, err = usr.Update().
+		SetPassword(input.Password).
+		Save(ctx.Request().Context())
+	if err != nil {
+		msg.Danger(ctx, "Unable to update your password. Please try again.")
+		h.Inertia.Redirect(w, r, r.URL.Path)
+		return nil
+	}
+
+	err = h.auth.DeletePasswordTokens(ctx, usr.ID)
+	if err != nil {
+		msg.Danger(ctx, "Password updated, but failed to clean up tokens.")
+		h.Inertia.Redirect(w, r, uriLogin)
+		return nil
+	}
+
+	msg.Success(ctx, "Your password has been updated.")
+	h.Inertia.Redirect(w, r, uriLogin)
 	return nil
 }
