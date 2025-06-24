@@ -20,7 +20,6 @@ import (
 	"github.com/occult/pagode/pkg/routenames"
 	"github.com/occult/pagode/pkg/services"
 	"github.com/occult/pagode/pkg/ui"
-	"github.com/resend/resend-go/v2"
 
 	inertia "github.com/romsar/gonertia/v2"
 )
@@ -148,7 +147,7 @@ func (h *Auth) LoginSubmit(ctx echo.Context) error {
 		return authFailed()
 	case nil:
 	default:
-		return fail(err, "error querying user during login")
+		return fail(err, "error querying user during login", h.Inertia, ctx)
 	}
 
 	// Check if the password is correct.
@@ -160,7 +159,7 @@ func (h *Auth) LoginSubmit(ctx echo.Context) error {
 	// Log the user in.
 	err = h.auth.Login(ctx, u.ID)
 	if err != nil {
-		return fail(err, "unable to log in user")
+		return fail(err, "unable to log in user", h.Inertia, ctx)
 	}
 
 	uriDashboard := ctx.Echo().Reverse(routenames.Dashboard)
@@ -245,7 +244,7 @@ func (h *Auth) RegisterSubmit(ctx echo.Context) error {
 		h.Inertia.Redirect(w, r, uriLogin)
 		return nil
 	default:
-		return fail(err, "unable to create user")
+		return fail(err, "unable to create user", h.Inertia, ctx)
 	}
 
 	// Try to log the user in
@@ -274,16 +273,13 @@ func (h *Auth) RegisterSubmit(ctx echo.Context) error {
 }
 
 func (h *Auth) sendVerificationEmail(ctx echo.Context, usr *ent.User) error {
-	client := resend.NewClient(h.config.Mail.ResendApiKey)
-
-	// Generate a token.
 	token, err := h.auth.GenerateEmailVerificationToken(usr.Email)
 	if err != nil {
 		log.Ctx(ctx).Error("unable to generate email verification token",
 			"user_id", usr.ID,
 			"error", err,
 		)
-		return err
+		return fail(err, "failed to generate verification token", h.Inertia, ctx)
 	}
 
 	url := ui.NewRequest(ctx).
@@ -297,20 +293,15 @@ func (h *Auth) sendVerificationEmail(ctx echo.Context, usr *ent.User) error {
 		<p>If you didn’t create an account, you can ignore this email.</p>
 	`, usr.Name, url)
 
-	params := &resend.SendEmailRequest{
-		From:    h.config.Mail.FromAddress,
-		To:      []string{usr.Email},
-		Subject: subject,
-		Html:    html,
-	}
+	if err := h.mail.Compose().
+		To(usr.Email).
+		Subject(subject).
+		Body(html).
+		Send(ctx); err != nil {
 
-	_, err = client.Emails.Send(params)
-	if err != nil {
 		log.Ctx(ctx).Error("unable to send email verification token",
-			"user_id", usr.ID,
-			"error", err,
-		)
-		return err
+			"user_id", usr.ID, "error", err)
+		return fail(err, "failed to send verification email", h.Inertia, ctx)
 	}
 
 	msg.Info(ctx, "An email was sent to you to verify your email address.")
@@ -351,7 +342,7 @@ func (h *Auth) VerifyEmail(ctx echo.Context) error {
 			Where(user.Email(email)).
 			Only(ctx.Request().Context())
 		if err != nil {
-			return fail(err, "query failed loading email verification token user")
+			return fail(err, "query failed loading email verification token user", h.Inertia, ctx)
 		}
 	}
 
@@ -362,7 +353,7 @@ func (h *Auth) VerifyEmail(ctx echo.Context) error {
 			SetVerified(true).
 			Save(ctx.Request().Context())
 		if err != nil {
-			return fail(err, "failed to set user as verified")
+			return fail(err, "failed to set user as verified", h.Inertia, ctx)
 		}
 	}
 
@@ -402,13 +393,12 @@ func (h *Auth) ForgotPasswordSubmit(ctx echo.Context) error {
 	}
 
 	err := form.Submit(ctx, &input)
-
 	switch err.(type) {
 	case nil:
 	case validator.ValidationErrors:
 		return h.ForgotPasswordPage(ctx)
 	default:
-		return err
+		return fail(err, "form submission error on forgot password", h.Inertia, ctx)
 	}
 
 	// Attempt to load the user.
@@ -419,18 +409,17 @@ func (h *Auth) ForgotPasswordSubmit(ctx echo.Context) error {
 
 	switch err.(type) {
 	case *ent.NotFoundError:
+		// We return success without revealing the email does not exist. This prevents user enumeration.
 		return succeed()
 	case nil:
 	default:
-		return fail(err, "error querying user during forgot password")
+		return fail(err, "error querying user during forgot password", h.Inertia, ctx)
 	}
-
-	client := resend.NewClient(h.config.Mail.ResendApiKey)
 
 	// Generate the token.
 	token, pt, err := h.auth.GeneratePasswordResetToken(ctx, u.ID)
 	if err != nil {
-		return fail(err, "error generating password reset token")
+		return fail(err, "error generating password reset token", h.Inertia, ctx)
 	}
 
 	log.Ctx(ctx).Info("generated password reset token",
@@ -439,30 +428,25 @@ func (h *Auth) ForgotPasswordSubmit(ctx echo.Context) error {
 
 	url := ctx.Echo().Reverse(routenames.ResetPassword, u.ID, pt.ID, token)
 
-	log.Default().Info("URL: ", url)
-
 	subject := "Reset your password"
 	html := fmt.Sprintf(`
 		<p>Hello %s,</p>
-		<p>To reset your password go the link below:</p>
+		<p>To reset your password go to the link below:</p>
 		<p><a href="%s">Reset Password</a></p>
 		<p>If you didn’t request a password update, you can ignore this email.</p>
 	`, u.Name, h.config.App.Host+url)
 
-	params := &resend.SendEmailRequest{
-		From:    h.config.Mail.FromAddress,
-		To:      []string{u.Email},
-		Subject: subject,
-		Html:    html,
-	}
+	if err := h.mail.Compose().
+		To(u.Email).
+		Subject(subject).
+		Body(html).
+		Send(ctx); err != nil {
 
-	_, err = client.Emails.Send(params)
-	if err != nil {
-		log.Ctx(ctx).Error("unable to send email verification token",
+		log.Ctx(ctx).Error("unable to send password reset email",
 			"user_id", u.ID,
 			"error", err,
 		)
-		return err
+		return fail(err, "failed to send password reset email", h.Inertia, ctx)
 	}
 
 	return succeed()
@@ -486,7 +470,7 @@ func (h *Auth) ResetPasswordPage(ctx echo.Context) error {
 		if ent.IsNotFound(err) {
 			return echo.NewHTTPError(http.StatusNotFound, "User not found")
 		}
-		return fail(err, "error loading user in ResetPasswordPage")
+		return fail(err, "error loading user in ResetPasswordPage", h.Inertia, ctx)
 	}
 
 	props := map[string]any{
