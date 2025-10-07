@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Save, Eye, HelpCircle } from 'lucide-react';
+import { ArrowLeft, Save, Eye, HelpCircle, Lightbulb } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 import {
   Tooltip,
@@ -9,6 +9,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { ConversationalPreview, TraditionalPreview } from './DisplayModePreview';
 import { Form } from '@/types/form';
 
@@ -106,6 +111,30 @@ export function FormEditorHeader({
               {isPublished ? 'Published' : 'Draft'}
             </Label>
           </div>
+          
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <Lightbulb className="h-4 w-4 mr-2" />
+                Quick Tips
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80" align="end">
+              <div className="space-y-3">
+                <div>
+                  <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                    <Lightbulb className="h-4 w-4 text-yellow-600" />
+                    Quick Tips
+                  </h4>
+                </div>
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <p>• Use clear, descriptive titles that tell respondents what to expect</p>
+                  <p>• Add a description to provide context and increase completion rates</p>
+                  <p>• You can customize your form's design and branding later</p>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
           
           <Link href={`/f/${form.slug}`} target="_blank">
             <Button variant="outline" size="sm">

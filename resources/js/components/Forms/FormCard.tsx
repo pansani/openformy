@@ -1,15 +1,24 @@
-import { Link, router } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Edit, Eye, Copy, Trash2, Calendar, ExternalLink, MoreVertical, Settings, BarChart3 } from 'lucide-react';
-import { useState } from 'react';
+import { Link, router } from "@inertiajs/react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import {
+  Eye,
+  Copy,
+  Trash2,
+  Calendar,
+  ExternalLink,
+  MoreVertical,
+  Settings,
+  BarChart3,
+} from "lucide-react";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 
 interface Form {
   id: number;
@@ -36,7 +45,7 @@ export function FormCard({ form }: FormCardProps) {
   };
 
   const handleDelete = () => {
-    if (confirm('Are you sure you want to delete this form?')) {
+    if (confirm("Are you sure you want to delete this form?")) {
       setIsDeleting(true);
       router.delete(`/forms/${form.id}`, {
         onFinish: () => setIsDeleting(false),
@@ -45,10 +54,10 @@ export function FormCard({ form }: FormCardProps) {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
+    return new Date(dateString).toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
     });
   };
 
@@ -56,14 +65,14 @@ export function FormCard({ form }: FormCardProps) {
     <Card
       className={`group relative overflow-hidden transition-all duration-300 ${
         isHovered
-          ? 'shadow-xl border-primary/40 scale-[1.02]'
-          : 'shadow-md hover:shadow-lg border-border'
-      } ${isDeleting ? 'opacity-50 pointer-events-none' : ''}`}
+          ? "shadow-xl border-primary/40 scale-[1.02]"
+          : "shadow-md hover:shadow-lg border-border"
+      } ${isDeleting ? "opacity-50 pointer-events-none" : ""}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      
+
       <div className="relative p-6">
         <div className="flex justify-between items-start mb-4">
           <div className="flex-1 min-w-0">
@@ -74,11 +83,11 @@ export function FormCard({ form }: FormCardProps) {
               <span
                 className={`flex-shrink-0 text-xs px-2.5 py-1 rounded-full font-medium transition-all duration-200 ${
                   form.published
-                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                    : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                    : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
                 }`}
               >
-                {form.published ? 'Published' : 'Draft'}
+                {form.published ? "Published" : "Draft"}
               </span>
             </div>
             {form.description && (
@@ -127,28 +136,17 @@ export function FormCard({ form }: FormCardProps) {
 
         <div className="grid grid-cols-3 gap-2">
           <Link href={`/forms/${form.id}/edit`}>
-            <Button
-              className="w-full group/btn"
-              size="sm"
-            >
+            <Button className="w-full group/btn" size="sm">
               <Settings className="h-4 w-4 group-hover/btn:rotate-12 transition-transform" />
             </Button>
           </Link>
           <Link href={`/forms/${form.id}/responses`}>
-            <Button
-              variant="outline"
-              className="w-full group/btn"
-              size="sm"
-            >
+            <Button variant="outline" className="w-full group/btn" size="sm">
               <BarChart3 className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
             </Button>
           </Link>
           <a href={`/f/${form.slug}`} target="_blank" rel="noopener noreferrer">
-            <Button
-              variant="outline"
-              className="w-full group/btn"
-              size="sm"
-            >
+            <Button variant="outline" className="w-full group/btn" size="sm">
               <Eye className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
             </Button>
           </a>
@@ -157,7 +155,7 @@ export function FormCard({ form }: FormCardProps) {
 
       <div
         className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-primary/80 to-primary transform origin-left transition-transform duration-300 ${
-          isHovered ? 'scale-x-100' : 'scale-x-0'
+          isHovered ? "scale-x-100" : "scale-x-0"
         }`}
       />
     </Card>

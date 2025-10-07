@@ -84,7 +84,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/" prefetch>
-                <span>Pagode</span>
+                <span>OpenForm</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
