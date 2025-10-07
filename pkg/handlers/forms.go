@@ -14,6 +14,7 @@ import (
 	"github.com/occult/pagode/ent"
 	"github.com/occult/pagode/ent/form"
 	"github.com/occult/pagode/ent/question"
+	"github.com/occult/pagode/ent/response"
 	"github.com/occult/pagode/pkg/context"
 	"github.com/occult/pagode/pkg/middleware"
 	"github.com/occult/pagode/pkg/msg"
@@ -54,6 +55,9 @@ func (h *Forms) Routes(g *echo.Group) {
 	formsGroup.PUT("/:id", h.Update).Name = routenames.FormsUpdate
 	formsGroup.DELETE("/:id", h.Delete).Name = routenames.FormsDelete
 	formsGroup.GET("/:id", h.Show).Name = routenames.FormsShow
+	formsGroup.GET("/:id/responses", h.Responses).Name = routenames.FormsResponses
+	formsGroup.GET("/:id/responses/:responseId", h.ResponseShow).Name = routenames.FormsResponsesShow
+	formsGroup.GET("/:id/responses/export", h.ResponsesExport).Name = routenames.FormsResponsesExport
 }
 
 func (h *Forms) Index(ctx echo.Context) error {
@@ -318,7 +322,7 @@ func (h *Forms) Update(ctx echo.Context) error {
 	}
 
 	msg.Success(ctx, "Form updated successfully!")
-	h.Inertia.Redirect(w, r, fmt.Sprintf("/forms/%d/edit", formID))
+	h.Inertia.Location(w, r, fmt.Sprintf("/forms/%d/edit", formID))
 	return nil
 }
 
@@ -499,4 +503,204 @@ func generateSlug(title string) string {
 
 func parseID(id string) (int, error) {
 	return strconv.Atoi(id)
+}
+
+func (h *Forms) Responses(ctx echo.Context) error {
+	user := ctx.Get(context.AuthenticatedUserKey).(*ent.User)
+	id := ctx.Param("id")
+
+	formID, err := parseID(id)
+	if err != nil {
+		return fail(err, "invalid form ID", h.Inertia, ctx)
+	}
+
+	formData, err := h.orm.Form.Query().
+		Where(form.ID(formID)).
+		WithOwner().
+		Only(ctx.Request().Context())
+
+	if err != nil {
+		return fail(err, "failed to fetch form", h.Inertia, ctx)
+	}
+
+	if formData.Edges.Owner.ID != user.ID {
+		msg.Danger(ctx, "Unauthorized access")
+		h.Inertia.Redirect(ctx.Response().Writer, ctx.Request(), ctx.Echo().Reverse(routenames.Forms))
+		return nil
+	}
+
+	responses, err := h.orm.Response.Query().
+		Where(response.HasFormWith(form.ID(formID))).
+		WithAnswers(func(q *ent.AnswerQuery) {
+			q.WithQuestion()
+		}).
+		Order(ent.Desc("submitted_at")).
+		All(ctx.Request().Context())
+
+	if err != nil {
+		return fail(err, "failed to fetch responses", h.Inertia, ctx)
+	}
+
+	totalResponses := len(responses)
+	completedResponses := 0
+	for _, r := range responses {
+		if r.Completed {
+			completedResponses++
+		}
+	}
+
+	completionRate := 0.0
+	if totalResponses > 0 {
+		completionRate = float64(completedResponses) / float64(totalResponses) * 100
+	}
+
+	err = h.Inertia.Render(
+		ctx.Response().Writer,
+		ctx.Request(),
+		"Forms/Responses/Index",
+		inertia.Props{
+			"form":            formData,
+			"responses":       responses,
+			"totalResponses":  totalResponses,
+			"completionRate":  completionRate,
+		},
+	)
+	if err != nil {
+		handleServerErr(ctx.Response().Writer, err)
+		return err
+	}
+
+	return nil
+}
+
+func (h *Forms) ResponseShow(ctx echo.Context) error {
+	user := ctx.Get(context.AuthenticatedUserKey).(*ent.User)
+	id := ctx.Param("id")
+	responseID := ctx.Param("responseId")
+
+	formID, err := parseID(id)
+	if err != nil {
+		return fail(err, "invalid form ID", h.Inertia, ctx)
+	}
+
+	respID, err := parseID(responseID)
+	if err != nil {
+		return fail(err, "invalid response ID", h.Inertia, ctx)
+	}
+
+	formData, err := h.orm.Form.Query().
+		Where(form.ID(formID)).
+		WithOwner().
+		WithQuestions().
+		Only(ctx.Request().Context())
+
+	if err != nil {
+		return fail(err, "failed to fetch form", h.Inertia, ctx)
+	}
+
+	if formData.Edges.Owner.ID != user.ID {
+		msg.Danger(ctx, "Unauthorized access")
+		h.Inertia.Redirect(ctx.Response().Writer, ctx.Request(), ctx.Echo().Reverse(routenames.Forms))
+		return nil
+	}
+
+	responseData, err := h.orm.Response.Query().
+		Where(response.ID(respID), response.HasFormWith(form.ID(formID))).
+		WithAnswers(func(q *ent.AnswerQuery) {
+			q.WithQuestion()
+		}).
+		Only(ctx.Request().Context())
+
+	if err != nil {
+		return fail(err, "failed to fetch response", h.Inertia, ctx)
+	}
+
+	err = h.Inertia.Render(
+		ctx.Response().Writer,
+		ctx.Request(),
+		"Forms/Responses/Show",
+		inertia.Props{
+			"form":     formData,
+			"response": responseData,
+		},
+	)
+	if err != nil {
+		handleServerErr(ctx.Response().Writer, err)
+		return err
+	}
+
+	return nil
+}
+
+func (h *Forms) ResponsesExport(ctx echo.Context) error {
+	user := ctx.Get(context.AuthenticatedUserKey).(*ent.User)
+	id := ctx.Param("id")
+
+	formID, err := parseID(id)
+	if err != nil {
+		return fail(err, "invalid form ID", h.Inertia, ctx)
+	}
+
+	formData, err := h.orm.Form.Query().
+		Where(form.ID(formID)).
+		WithOwner().
+		WithQuestions().
+		Only(ctx.Request().Context())
+
+	if err != nil {
+		return fail(err, "failed to fetch form", h.Inertia, ctx)
+	}
+
+	if formData.Edges.Owner.ID != user.ID {
+		msg.Danger(ctx, "Unauthorized access")
+		h.Inertia.Redirect(ctx.Response().Writer, ctx.Request(), ctx.Echo().Reverse(routenames.Forms))
+		return nil
+	}
+
+	responses, err := h.orm.Response.Query().
+		Where(response.HasFormWith(form.ID(formID))).
+		WithAnswers(func(q *ent.AnswerQuery) {
+			q.WithQuestion()
+		}).
+		Order(ent.Desc("submitted_at")).
+		All(ctx.Request().Context())
+
+	if err != nil {
+		return fail(err, "failed to fetch responses", h.Inertia, ctx)
+	}
+
+	csv := "Submitted At,IP Address,User Agent,Completed"
+	for _, q := range formData.Edges.Questions {
+		csv += fmt.Sprintf(",\"%s\"", strings.ReplaceAll(q.Title, "\"", "\"\""))
+	}
+	csv += "\n"
+
+	for _, resp := range responses {
+		row := fmt.Sprintf("%s,\"%s\",\"%s\",%t",
+			resp.SubmittedAt.Format("2006-01-02 15:04:05"),
+			resp.IPAddress,
+			resp.UserAgent,
+			resp.Completed,
+		)
+
+		answerMap := make(map[int]string)
+		for _, answer := range resp.Edges.Answers {
+			answerMap[answer.Edges.Question.ID] = answer.Value
+		}
+
+		for _, q := range formData.Edges.Questions {
+			value := answerMap[q.ID]
+			value = strings.ReplaceAll(value, "\"", "\"\"")
+			row += fmt.Sprintf(",\"%s\"", value)
+		}
+
+		csv += row + "\n"
+	}
+
+	ctx.Response().Header().Set("Content-Type", "text/csv")
+	ctx.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s-responses.csv\"", formData.Slug))
+	ctx.Response().WriteHeader(http.StatusOK)
+	ctx.Response().Write([]byte(csv))
+
+	return nil
 }

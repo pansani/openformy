@@ -55,6 +55,9 @@ const (
 	FormsShow             = "forms.show"
 	FormsView             = "forms.view"
 	FormsSubmit           = "forms.submit"
+	FormsResponses        = "forms.responses"
+	FormsResponsesShow    = "forms.responses.show"
+	FormsResponsesExport  = "forms.responses.export"
 )
 
 func AdminEntityList(entityTypeName string) string {

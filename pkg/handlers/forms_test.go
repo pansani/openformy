@@ -374,3 +374,240 @@ func TestForms__Submit_RequiredFieldValidation(t *testing.T) {
 
 	assert.False(t, response.Completed)
 }
+
+func TestForms__Responses_ListResponses(t *testing.T) {
+	user := createTestUser(t)
+	formData := createTestForm(t, user, "Survey Form", "Test survey")
+
+	_, err := c.ORM.Form.UpdateOne(formData).
+		SetPublished(true).
+		Save(context.Background())
+	require.NoError(t, err)
+
+	question1, err := c.ORM.Question.Create().
+		SetType("text").
+		SetTitle("Name").
+		SetRequired(true).
+		SetOrder(0).
+		SetFormID(formData.ID).
+		Save(context.Background())
+	require.NoError(t, err)
+
+	response1, err := c.ORM.Response.Create().
+		SetFormID(formData.ID).
+		SetIPAddress("192.168.1.1").
+		SetUserAgent("Browser 1").
+		SetCompleted(true).
+		SetSubmittedAt(time.Now().Add(-1 * time.Hour)).
+		Save(context.Background())
+	require.NoError(t, err)
+
+	_, err = c.ORM.Answer.Create().
+		SetResponseID(response1.ID).
+		SetQuestionID(question1.ID).
+		SetValue("Alice").
+		Save(context.Background())
+	require.NoError(t, err)
+
+	response2, err := c.ORM.Response.Create().
+		SetFormID(formData.ID).
+		SetIPAddress("192.168.1.2").
+		SetUserAgent("Browser 2").
+		SetCompleted(true).
+		Save(context.Background())
+	require.NoError(t, err)
+
+	_, err = c.ORM.Answer.Create().
+		SetResponseID(response2.ID).
+		SetQuestionID(question1.ID).
+		SetValue("Bob").
+		Save(context.Background())
+	require.NoError(t, err)
+
+	responses, err := c.ORM.Response.Query().
+		Where(entResponse.HasFormWith(entForm.IDEQ(formData.ID))).
+		WithAnswers(func(q *ent.AnswerQuery) {
+			q.WithQuestion()
+		}).
+		Order(ent.Desc("submitted_at")).
+		All(context.Background())
+	require.NoError(t, err)
+	require.Len(t, responses, 2)
+
+	assert.Equal(t, "192.168.1.2", responses[0].IPAddress)
+	assert.Equal(t, "Browser 2", responses[0].UserAgent)
+	assert.True(t, responses[0].Completed)
+}
+
+func TestForms__Responses_CompletionRate(t *testing.T) {
+	user := createTestUser(t)
+	formData := createTestForm(t, user, "Completion Test", "Test completion rate")
+
+	_, err := c.ORM.Response.Create().
+		SetFormID(formData.ID).
+		SetCompleted(true).
+		Save(context.Background())
+	require.NoError(t, err)
+
+	_, err = c.ORM.Response.Create().
+		SetFormID(formData.ID).
+		SetCompleted(true).
+		Save(context.Background())
+	require.NoError(t, err)
+
+	_, err = c.ORM.Response.Create().
+		SetFormID(formData.ID).
+		SetCompleted(false).
+		Save(context.Background())
+	require.NoError(t, err)
+
+	responses, err := c.ORM.Response.Query().
+		Where(entResponse.HasFormWith(entForm.IDEQ(formData.ID))).
+		All(context.Background())
+	require.NoError(t, err)
+
+	totalResponses := len(responses)
+	completedResponses := 0
+	for _, r := range responses {
+		if r.Completed {
+			completedResponses++
+		}
+	}
+
+	completionRate := float64(completedResponses) / float64(totalResponses) * 100
+
+	assert.Equal(t, 3, totalResponses)
+	assert.Equal(t, 2, completedResponses)
+	assert.InDelta(t, 66.67, completionRate, 0.01)
+}
+
+func TestForms__ResponseShow_SingleResponse(t *testing.T) {
+	user := createTestUser(t)
+	formData := createTestForm(t, user, "Detail Test", "Test response detail")
+
+	question1, err := c.ORM.Question.Create().
+		SetType("text").
+		SetTitle("Question 1").
+		SetRequired(true).
+		SetOrder(0).
+		SetFormID(formData.ID).
+		Save(context.Background())
+	require.NoError(t, err)
+
+	question2, err := c.ORM.Question.Create().
+		SetType("email").
+		SetTitle("Question 2").
+		SetRequired(false).
+		SetOrder(1).
+		SetFormID(formData.ID).
+		Save(context.Background())
+	require.NoError(t, err)
+
+	response, err := c.ORM.Response.Create().
+		SetFormID(formData.ID).
+		SetIPAddress("10.0.0.1").
+		SetUserAgent("Test Browser").
+		SetCompleted(true).
+		Save(context.Background())
+	require.NoError(t, err)
+
+	_, err = c.ORM.Answer.Create().
+		SetResponseID(response.ID).
+		SetQuestionID(question1.ID).
+		SetValue("Answer 1").
+		Save(context.Background())
+	require.NoError(t, err)
+
+	_, err = c.ORM.Answer.Create().
+		SetResponseID(response.ID).
+		SetQuestionID(question2.ID).
+		SetValue("test@example.com").
+		Save(context.Background())
+	require.NoError(t, err)
+
+	savedResponse, err := c.ORM.Response.Query().
+		Where(entResponse.IDEQ(response.ID)).
+		WithAnswers(func(q *ent.AnswerQuery) {
+			q.WithQuestion()
+		}).
+		Only(context.Background())
+	require.NoError(t, err)
+
+	assert.Equal(t, "10.0.0.1", savedResponse.IPAddress)
+	assert.Equal(t, "Test Browser", savedResponse.UserAgent)
+	assert.True(t, savedResponse.Completed)
+	assert.Len(t, savedResponse.Edges.Answers, 2)
+
+	answerMap := make(map[int]string)
+	for _, answer := range savedResponse.Edges.Answers {
+		answerMap[answer.Edges.Question.ID] = answer.Value
+	}
+
+	assert.Equal(t, "Answer 1", answerMap[question1.ID])
+	assert.Equal(t, "test@example.com", answerMap[question2.ID])
+}
+
+func TestForms__ResponsesExport_CSVFormat(t *testing.T) {
+	user := createTestUser(t)
+	formData := createTestForm(t, user, "Export Test", "Test CSV export")
+
+	question1, err := c.ORM.Question.Create().
+		SetType("text").
+		SetTitle("Name").
+		SetRequired(true).
+		SetOrder(0).
+		SetFormID(formData.ID).
+		Save(context.Background())
+	require.NoError(t, err)
+
+	question2, err := c.ORM.Question.Create().
+		SetType("email").
+		SetTitle("Email").
+		SetRequired(true).
+		SetOrder(1).
+		SetFormID(formData.ID).
+		Save(context.Background())
+	require.NoError(t, err)
+
+	response, err := c.ORM.Response.Create().
+		SetFormID(formData.ID).
+		SetIPAddress("127.0.0.1").
+		SetUserAgent("Test Agent").
+		SetCompleted(true).
+		Save(context.Background())
+	require.NoError(t, err)
+
+	_, err = c.ORM.Answer.Create().
+		SetResponseID(response.ID).
+		SetQuestionID(question1.ID).
+		SetValue("John Doe").
+		Save(context.Background())
+	require.NoError(t, err)
+
+	_, err = c.ORM.Answer.Create().
+		SetResponseID(response.ID).
+		SetQuestionID(question2.ID).
+		SetValue("john@example.com").
+		Save(context.Background())
+	require.NoError(t, err)
+
+	formWithQuestions, err := c.ORM.Form.Query().
+		Where(entForm.IDEQ(formData.ID)).
+		WithQuestions().
+		Only(context.Background())
+	require.NoError(t, err)
+
+	responses, err := c.ORM.Response.Query().
+		Where(entResponse.HasFormWith(entForm.IDEQ(formData.ID))).
+		WithAnswers(func(q *ent.AnswerQuery) {
+			q.WithQuestion()
+		}).
+		Order(ent.Desc("submitted_at")).
+		All(context.Background())
+	require.NoError(t, err)
+
+	assert.NotNil(t, formWithQuestions.Edges.Questions)
+	assert.Len(t, formWithQuestions.Edges.Questions, 2)
+	assert.Len(t, responses, 1)
+	assert.Len(t, responses[0].Edges.Answers, 2)
+}

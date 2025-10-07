@@ -1,7 +1,7 @@
 import { Link, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Edit, Eye, Copy, Trash2, Calendar, ExternalLink, MoreVertical, Settings } from 'lucide-react';
+import { Edit, Eye, Copy, Trash2, Calendar, ExternalLink, MoreVertical, Settings, BarChart3 } from 'lucide-react';
 import { useState } from 'react';
 import {
   DropdownMenu,
@@ -125,24 +125,31 @@ export function FormCard({ form }: FormCardProps) {
 
         <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent mb-4" />
 
-        <div className="flex gap-2">
-          <Link href={`/forms/${form.id}/edit`} className="flex-1">
+        <div className="grid grid-cols-3 gap-2">
+          <Link href={`/forms/${form.id}/edit`}>
             <Button
               className="w-full group/btn"
               size="sm"
             >
-              <Settings className="h-4 w-4 mr-2 group-hover/btn:rotate-12 transition-transform" />
-              Configure
+              <Settings className="h-4 w-4 group-hover/btn:rotate-12 transition-transform" />
             </Button>
           </Link>
-          <a href={`/f/${form.slug}`} target="_blank" rel="noopener noreferrer" className="flex-1">
+          <Link href={`/forms/${form.id}/responses`}>
             <Button
               variant="outline"
               className="w-full group/btn"
               size="sm"
             >
-              <Eye className="h-4 w-4 mr-2 group-hover/btn:scale-110 transition-transform" />
-              View
+              <BarChart3 className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
+            </Button>
+          </Link>
+          <a href={`/f/${form.slug}`} target="_blank" rel="noopener noreferrer">
+            <Button
+              variant="outline"
+              className="w-full group/btn"
+              size="sm"
+            >
+              <Eye className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
             </Button>
           </a>
         </div>

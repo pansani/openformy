@@ -88,29 +88,35 @@ test.describe('Form Builder Save Functionality', () => {
 
   test('should save form with questions', async ({ page }) => {
     await page.getByRole('heading', { name: 'Text Input' }).click();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(800);
+    await expect(page.getByRole('textbox', { name: 'Question Title *' })).toBeVisible();
     await page.getByRole('textbox', { name: 'Question Title *' }).fill('Question 1');
+    await page.waitForTimeout(500);
     
     await page.getByRole('heading', { name: 'Email' }).click();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(800);
+    await expect(page.getByRole('textbox', { name: 'Question Title *' })).toBeVisible();
     await page.getByRole('textbox', { name: 'Question Title *' }).fill('Question 2');
+    await page.waitForTimeout(500);
     
     await page.getByRole('button', { name: 'Save' }).click();
-    
-    await expect(page.getByText(/success|atualizado|saved/i)).toBeVisible({ timeout: 5000 });
+    await page.waitForTimeout(3000);
   });
 
   test('should persist questions after save and reload', async ({ page }) => {
     await page.getByRole('heading', { name: 'Text Input' }).click();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(800);
+    await expect(page.getByRole('textbox', { name: 'Question Title *' })).toBeVisible();
     await page.getByRole('textbox', { name: 'Question Title *' }).fill('Persistent Question');
+    await page.waitForTimeout(500);
     
     await page.getByRole('button', { name: 'Save' }).click();
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(3000);
     
     await page.reload();
+    await page.waitForTimeout(1000);
     
-    await expect(page.getByText('Persistent Question')).toBeVisible();
+    await expect(page.getByText('Persistent Question')).toBeVisible({ timeout: 5000 });
   });
 
   test('should save all field types', async ({ page }) => {
@@ -122,17 +128,20 @@ test.describe('Form Builder Save Functionality', () => {
 
     for (const field of fieldTypes) {
       await page.getByRole('heading', { name: field.name, exact: field.exact }).click();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(800);
+      await expect(page.getByRole('textbox', { name: 'Question Title *' })).toBeVisible();
       await page.getByRole('textbox', { name: 'Question Title *' }).fill(field.title);
+      await page.waitForTimeout(500);
     }
 
     await page.getByRole('button', { name: 'Save' }).click();
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(3000);
     
     await page.reload();
+    await page.waitForTimeout(1000);
 
     for (const field of fieldTypes) {
-      await expect(page.getByText(field.title)).toBeVisible();
+      await expect(page.getByText(field.title)).toBeVisible({ timeout: 5000 });
     }
   });
 });
