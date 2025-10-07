@@ -63,6 +63,20 @@ func (fc *FormCreate) SetSlug(s string) *FormCreate {
 	return fc
 }
 
+// SetDisplayMode sets the "display_mode" field.
+func (fc *FormCreate) SetDisplayMode(fm form.DisplayMode) *FormCreate {
+	fc.mutation.SetDisplayMode(fm)
+	return fc
+}
+
+// SetNillableDisplayMode sets the "display_mode" field if the given value is not nil.
+func (fc *FormCreate) SetNillableDisplayMode(fm *form.DisplayMode) *FormCreate {
+	if fm != nil {
+		fc.SetDisplayMode(*fm)
+	}
+	return fc
+}
+
 // SetUserID sets the "user_id" field.
 func (fc *FormCreate) SetUserID(i int) *FormCreate {
 	fc.mutation.SetUserID(i)
@@ -177,6 +191,10 @@ func (fc *FormCreate) defaults() {
 		v := form.DefaultPublished
 		fc.mutation.SetPublished(v)
 	}
+	if _, ok := fc.mutation.DisplayMode(); !ok {
+		v := form.DefaultDisplayMode
+		fc.mutation.SetDisplayMode(v)
+	}
 	if _, ok := fc.mutation.CreatedAt(); !ok {
 		v := form.DefaultCreatedAt()
 		fc.mutation.SetCreatedAt(v)
@@ -206,6 +224,14 @@ func (fc *FormCreate) check() error {
 	if v, ok := fc.mutation.Slug(); ok {
 		if err := form.SlugValidator(v); err != nil {
 			return &ValidationError{Name: "slug", err: fmt.Errorf(`ent: validator failed for field "Form.slug": %w`, err)}
+		}
+	}
+	if _, ok := fc.mutation.DisplayMode(); !ok {
+		return &ValidationError{Name: "display_mode", err: errors.New(`ent: missing required field "Form.display_mode"`)}
+	}
+	if v, ok := fc.mutation.DisplayMode(); ok {
+		if err := form.DisplayModeValidator(v); err != nil {
+			return &ValidationError{Name: "display_mode", err: fmt.Errorf(`ent: validator failed for field "Form.display_mode": %w`, err)}
 		}
 	}
 	if _, ok := fc.mutation.UserID(); !ok {
@@ -261,6 +287,10 @@ func (fc *FormCreate) createSpec() (*Form, *sqlgraph.CreateSpec) {
 	if value, ok := fc.mutation.Slug(); ok {
 		_spec.SetField(form.FieldSlug, field.TypeString, value)
 		_node.Slug = value
+	}
+	if value, ok := fc.mutation.DisplayMode(); ok {
+		_spec.SetField(form.FieldDisplayMode, field.TypeEnum, value)
+		_node.DisplayMode = value
 	}
 	if value, ok := fc.mutation.CreatedAt(); ok {
 		_spec.SetField(form.FieldCreatedAt, field.TypeTime, value)

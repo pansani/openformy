@@ -4,6 +4,7 @@ import { router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Send } from 'lucide-react';
 import { FormQuestion } from '@/components/Forms/FormQuestion';
+import { ConversationalForm } from '@/components/Forms/ConversationalForm';
 
 interface Question {
   id: number;
@@ -23,6 +24,7 @@ interface Form {
   title: string;
   description?: string;
   slug: string;
+  display_mode?: string;
   edges: {
     questions?: Question[];
   };
@@ -79,8 +81,10 @@ export default function View({ form }: Props) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
     
     if (!validateForm()) {
       return;
@@ -96,39 +100,52 @@ export default function View({ form }: Props) {
     );
   };
 
+  const isConversational = form.display_mode === 'conversational';
+
   return (
     <>
       <Head title={form.title} />
       
-      <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background py-12 px-4">
-        <div className="max-w-3xl mx-auto">
-          <div className="mb-8 text-center">
-            <h1 className="text-4xl font-bold mb-3">{form.title}</h1>
-            {form.description && (
-              <p className="text-lg text-muted-foreground">{form.description}</p>
-            )}
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {questions.map((question) => (
-              <FormQuestion
-                key={question.id}
-                question={question}
-                value={answers[question.id] || ''}
-                error={errors[question.id]}
-                onChange={(value) => handleAnswerChange(question.id, value)}
-              />
-            ))}
-
-            <div className="flex justify-center pt-4">
-              <Button type="submit" size="lg" disabled={isSubmitting}>
-                <Send className="h-4 w-4 mr-2" />
-                {isSubmitting ? 'Submitting...' : 'Submit'}
-              </Button>
+      {isConversational ? (
+        <ConversationalForm
+          questions={questions}
+          answers={answers}
+          errors={errors}
+          onAnswerChange={handleAnswerChange}
+          onSubmit={() => handleSubmit()}
+          isSubmitting={isSubmitting}
+        />
+      ) : (
+        <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background py-12 px-4">
+          <div className="max-w-3xl mx-auto">
+            <div className="mb-8 text-center">
+              <h1 className="text-4xl font-bold mb-3">{form.title}</h1>
+              {form.description && (
+                <p className="text-lg text-muted-foreground">{form.description}</p>
+              )}
             </div>
-          </form>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {questions.map((question) => (
+                <FormQuestion
+                  key={question.id}
+                  question={question}
+                  value={answers[question.id] || ''}
+                  error={errors[question.id]}
+                  onChange={(value) => handleAnswerChange(question.id, value)}
+                />
+              ))}
+
+              <div className="flex justify-center pt-4">
+                <Button type="submit" size="lg" disabled={isSubmitting}>
+                  <Send className="h-4 w-4 mr-2" />
+                  {isSubmitting ? 'Submitting...' : 'Submit'}
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }

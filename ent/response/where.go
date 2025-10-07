@@ -65,12 +65,12 @@ func Completed(v bool) predicate.Response {
 	return predicate.Response(sql.FieldEQ(FieldCompleted, v))
 }
 
-// IPAddress applies equality check predicate on the "ip_address" field. It's identical to IPAddressEQ.
+// IPAddress applies equality check predicate on the "IPAddress" field. It's identical to IPAddressEQ.
 func IPAddress(v string) predicate.Response {
 	return predicate.Response(sql.FieldEQ(FieldIPAddress, v))
 }
 
-// UserAgent applies equality check predicate on the "user_agent" field. It's identical to UserAgentEQ.
+// UserAgent applies equality check predicate on the "UserAgent" field. It's identical to UserAgentEQ.
 func UserAgent(v string) predicate.Response {
 	return predicate.Response(sql.FieldEQ(FieldUserAgent, v))
 }
@@ -125,152 +125,152 @@ func CompletedNEQ(v bool) predicate.Response {
 	return predicate.Response(sql.FieldNEQ(FieldCompleted, v))
 }
 
-// IPAddressEQ applies the EQ predicate on the "ip_address" field.
+// IPAddressEQ applies the EQ predicate on the "IPAddress" field.
 func IPAddressEQ(v string) predicate.Response {
 	return predicate.Response(sql.FieldEQ(FieldIPAddress, v))
 }
 
-// IPAddressNEQ applies the NEQ predicate on the "ip_address" field.
+// IPAddressNEQ applies the NEQ predicate on the "IPAddress" field.
 func IPAddressNEQ(v string) predicate.Response {
 	return predicate.Response(sql.FieldNEQ(FieldIPAddress, v))
 }
 
-// IPAddressIn applies the In predicate on the "ip_address" field.
+// IPAddressIn applies the In predicate on the "IPAddress" field.
 func IPAddressIn(vs ...string) predicate.Response {
 	return predicate.Response(sql.FieldIn(FieldIPAddress, vs...))
 }
 
-// IPAddressNotIn applies the NotIn predicate on the "ip_address" field.
+// IPAddressNotIn applies the NotIn predicate on the "IPAddress" field.
 func IPAddressNotIn(vs ...string) predicate.Response {
 	return predicate.Response(sql.FieldNotIn(FieldIPAddress, vs...))
 }
 
-// IPAddressGT applies the GT predicate on the "ip_address" field.
+// IPAddressGT applies the GT predicate on the "IPAddress" field.
 func IPAddressGT(v string) predicate.Response {
 	return predicate.Response(sql.FieldGT(FieldIPAddress, v))
 }
 
-// IPAddressGTE applies the GTE predicate on the "ip_address" field.
+// IPAddressGTE applies the GTE predicate on the "IPAddress" field.
 func IPAddressGTE(v string) predicate.Response {
 	return predicate.Response(sql.FieldGTE(FieldIPAddress, v))
 }
 
-// IPAddressLT applies the LT predicate on the "ip_address" field.
+// IPAddressLT applies the LT predicate on the "IPAddress" field.
 func IPAddressLT(v string) predicate.Response {
 	return predicate.Response(sql.FieldLT(FieldIPAddress, v))
 }
 
-// IPAddressLTE applies the LTE predicate on the "ip_address" field.
+// IPAddressLTE applies the LTE predicate on the "IPAddress" field.
 func IPAddressLTE(v string) predicate.Response {
 	return predicate.Response(sql.FieldLTE(FieldIPAddress, v))
 }
 
-// IPAddressContains applies the Contains predicate on the "ip_address" field.
+// IPAddressContains applies the Contains predicate on the "IPAddress" field.
 func IPAddressContains(v string) predicate.Response {
 	return predicate.Response(sql.FieldContains(FieldIPAddress, v))
 }
 
-// IPAddressHasPrefix applies the HasPrefix predicate on the "ip_address" field.
+// IPAddressHasPrefix applies the HasPrefix predicate on the "IPAddress" field.
 func IPAddressHasPrefix(v string) predicate.Response {
 	return predicate.Response(sql.FieldHasPrefix(FieldIPAddress, v))
 }
 
-// IPAddressHasSuffix applies the HasSuffix predicate on the "ip_address" field.
+// IPAddressHasSuffix applies the HasSuffix predicate on the "IPAddress" field.
 func IPAddressHasSuffix(v string) predicate.Response {
 	return predicate.Response(sql.FieldHasSuffix(FieldIPAddress, v))
 }
 
-// IPAddressIsNil applies the IsNil predicate on the "ip_address" field.
+// IPAddressIsNil applies the IsNil predicate on the "IPAddress" field.
 func IPAddressIsNil() predicate.Response {
 	return predicate.Response(sql.FieldIsNull(FieldIPAddress))
 }
 
-// IPAddressNotNil applies the NotNil predicate on the "ip_address" field.
+// IPAddressNotNil applies the NotNil predicate on the "IPAddress" field.
 func IPAddressNotNil() predicate.Response {
 	return predicate.Response(sql.FieldNotNull(FieldIPAddress))
 }
 
-// IPAddressEqualFold applies the EqualFold predicate on the "ip_address" field.
+// IPAddressEqualFold applies the EqualFold predicate on the "IPAddress" field.
 func IPAddressEqualFold(v string) predicate.Response {
 	return predicate.Response(sql.FieldEqualFold(FieldIPAddress, v))
 }
 
-// IPAddressContainsFold applies the ContainsFold predicate on the "ip_address" field.
+// IPAddressContainsFold applies the ContainsFold predicate on the "IPAddress" field.
 func IPAddressContainsFold(v string) predicate.Response {
 	return predicate.Response(sql.FieldContainsFold(FieldIPAddress, v))
 }
 
-// UserAgentEQ applies the EQ predicate on the "user_agent" field.
+// UserAgentEQ applies the EQ predicate on the "UserAgent" field.
 func UserAgentEQ(v string) predicate.Response {
 	return predicate.Response(sql.FieldEQ(FieldUserAgent, v))
 }
 
-// UserAgentNEQ applies the NEQ predicate on the "user_agent" field.
+// UserAgentNEQ applies the NEQ predicate on the "UserAgent" field.
 func UserAgentNEQ(v string) predicate.Response {
 	return predicate.Response(sql.FieldNEQ(FieldUserAgent, v))
 }
 
-// UserAgentIn applies the In predicate on the "user_agent" field.
+// UserAgentIn applies the In predicate on the "UserAgent" field.
 func UserAgentIn(vs ...string) predicate.Response {
 	return predicate.Response(sql.FieldIn(FieldUserAgent, vs...))
 }
 
-// UserAgentNotIn applies the NotIn predicate on the "user_agent" field.
+// UserAgentNotIn applies the NotIn predicate on the "UserAgent" field.
 func UserAgentNotIn(vs ...string) predicate.Response {
 	return predicate.Response(sql.FieldNotIn(FieldUserAgent, vs...))
 }
 
-// UserAgentGT applies the GT predicate on the "user_agent" field.
+// UserAgentGT applies the GT predicate on the "UserAgent" field.
 func UserAgentGT(v string) predicate.Response {
 	return predicate.Response(sql.FieldGT(FieldUserAgent, v))
 }
 
-// UserAgentGTE applies the GTE predicate on the "user_agent" field.
+// UserAgentGTE applies the GTE predicate on the "UserAgent" field.
 func UserAgentGTE(v string) predicate.Response {
 	return predicate.Response(sql.FieldGTE(FieldUserAgent, v))
 }
 
-// UserAgentLT applies the LT predicate on the "user_agent" field.
+// UserAgentLT applies the LT predicate on the "UserAgent" field.
 func UserAgentLT(v string) predicate.Response {
 	return predicate.Response(sql.FieldLT(FieldUserAgent, v))
 }
 
-// UserAgentLTE applies the LTE predicate on the "user_agent" field.
+// UserAgentLTE applies the LTE predicate on the "UserAgent" field.
 func UserAgentLTE(v string) predicate.Response {
 	return predicate.Response(sql.FieldLTE(FieldUserAgent, v))
 }
 
-// UserAgentContains applies the Contains predicate on the "user_agent" field.
+// UserAgentContains applies the Contains predicate on the "UserAgent" field.
 func UserAgentContains(v string) predicate.Response {
 	return predicate.Response(sql.FieldContains(FieldUserAgent, v))
 }
 
-// UserAgentHasPrefix applies the HasPrefix predicate on the "user_agent" field.
+// UserAgentHasPrefix applies the HasPrefix predicate on the "UserAgent" field.
 func UserAgentHasPrefix(v string) predicate.Response {
 	return predicate.Response(sql.FieldHasPrefix(FieldUserAgent, v))
 }
 
-// UserAgentHasSuffix applies the HasSuffix predicate on the "user_agent" field.
+// UserAgentHasSuffix applies the HasSuffix predicate on the "UserAgent" field.
 func UserAgentHasSuffix(v string) predicate.Response {
 	return predicate.Response(sql.FieldHasSuffix(FieldUserAgent, v))
 }
 
-// UserAgentIsNil applies the IsNil predicate on the "user_agent" field.
+// UserAgentIsNil applies the IsNil predicate on the "UserAgent" field.
 func UserAgentIsNil() predicate.Response {
 	return predicate.Response(sql.FieldIsNull(FieldUserAgent))
 }
 
-// UserAgentNotNil applies the NotNil predicate on the "user_agent" field.
+// UserAgentNotNil applies the NotNil predicate on the "UserAgent" field.
 func UserAgentNotNil() predicate.Response {
 	return predicate.Response(sql.FieldNotNull(FieldUserAgent))
 }
 
-// UserAgentEqualFold applies the EqualFold predicate on the "user_agent" field.
+// UserAgentEqualFold applies the EqualFold predicate on the "UserAgent" field.
 func UserAgentEqualFold(v string) predicate.Response {
 	return predicate.Response(sql.FieldEqualFold(FieldUserAgent, v))
 }
 
-// UserAgentContainsFold applies the ContainsFold predicate on the "user_agent" field.
+// UserAgentContainsFold applies the ContainsFold predicate on the "UserAgent" field.
 func UserAgentContainsFold(v string) predicate.Response {
 	return predicate.Response(sql.FieldContainsFold(FieldUserAgent, v))
 }

@@ -23,9 +23,9 @@ type Response struct {
 	SubmittedAt time.Time `json:"submitted_at,omitempty"`
 	// Completed holds the value of the "completed" field.
 	Completed bool `json:"completed,omitempty"`
-	// IPAddress holds the value of the "ip_address" field.
+	// IPAddress holds the value of the "IPAddress" field.
 	IPAddress string `json:"ip_address"`
-	// UserAgent holds the value of the "user_agent" field.
+	// UserAgent holds the value of the "UserAgent" field.
 	UserAgent string `json:"user_agent"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ResponseQuery when eager-loading is set.
@@ -131,13 +131,13 @@ func (r *Response) assignValues(columns []string, values []any) error {
 			}
 		case response.FieldIPAddress:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field ip_address", values[i])
+				return fmt.Errorf("unexpected type %T for field IPAddress", values[i])
 			} else if value.Valid {
 				r.IPAddress = value.String
 			}
 		case response.FieldUserAgent:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field user_agent", values[i])
+				return fmt.Errorf("unexpected type %T for field UserAgent", values[i])
 			} else if value.Valid {
 				r.UserAgent = value.String
 			}
@@ -212,10 +212,10 @@ func (r *Response) String() string {
 	builder.WriteString("completed=")
 	builder.WriteString(fmt.Sprintf("%v", r.Completed))
 	builder.WriteString(", ")
-	builder.WriteString("ip_address=")
+	builder.WriteString("IPAddress=")
 	builder.WriteString(r.IPAddress)
 	builder.WriteString(", ")
-	builder.WriteString("user_agent=")
+	builder.WriteString("UserAgent=")
 	builder.WriteString(r.UserAgent)
 	builder.WriteByte(')')
 	return builder.String()

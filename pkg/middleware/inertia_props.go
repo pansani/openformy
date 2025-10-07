@@ -33,6 +33,7 @@ func InertiaProps() echo.MiddlewareFunc {
 				"auth": map[string]any{
 					"user": user,
 				},
+				"sidebarOpen": false,
 			})
 
 			// Replace request context

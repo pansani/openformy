@@ -270,6 +270,9 @@ func (h *Handler) FormCreate(ctx echo.Context) error {
 	}
 	op.SetPublished(payload.Published)
 	op.SetSlug(payload.Slug)
+	if payload.DisplayMode != nil {
+		op.SetDisplayMode(*payload.DisplayMode)
+	}
 	op.SetUserID(payload.UserID)
 	if payload.CreatedAt != nil {
 		op.SetCreatedAt(*payload.CreatedAt)
@@ -301,6 +304,12 @@ func (h *Handler) FormUpdate(ctx echo.Context, id int) error {
 	}
 	op.SetPublished(payload.Published)
 	op.SetSlug(payload.Slug)
+	if payload.DisplayMode == nil {
+		var empty form.DisplayMode
+		op.SetDisplayMode(empty)
+	} else {
+		op.SetDisplayMode(*payload.DisplayMode)
+	}
 	op.SetUserID(payload.UserID)
 	if payload.UpdatedAt == nil {
 		var empty time.Time
@@ -336,6 +345,7 @@ func (h *Handler) FormList(ctx echo.Context) (*EntityList, error) {
 			"Description",
 			"Published",
 			"Slug",
+			"Display mode",
 			"User ID",
 			"Created at",
 			"Updated at",
@@ -353,6 +363,7 @@ func (h *Handler) FormList(ctx echo.Context) (*EntityList, error) {
 				res[i].Description,
 				fmt.Sprint(res[i].Published),
 				res[i].Slug,
+				fmt.Sprint(res[i].DisplayMode),
 				fmt.Sprint(res[i].UserID),
 				res[i].CreatedAt.Format(h.Config.TimeFormat),
 				res[i].UpdatedAt.Format(h.Config.TimeFormat),
@@ -374,6 +385,7 @@ func (h *Handler) FormGet(ctx echo.Context, id int) (url.Values, error) {
 	v.Set("description", entity.Description)
 	v.Set("published", fmt.Sprint(entity.Published))
 	v.Set("slug", entity.Slug)
+	v.Set("display_mode", fmt.Sprint(entity.DisplayMode))
 	v.Set("user_id", fmt.Sprint(entity.UserID))
 	v.Set("updated_at", entity.UpdatedAt.Format(dateTimeFormat))
 	return v, err
@@ -1195,8 +1207,8 @@ func (h *Handler) ResponseList(ctx echo.Context) (*EntityList, error) {
 		Columns: []string{
 			"Submitted at",
 			"Completed",
-			"Ip address",
-			"User agent",
+			"IPAddress",
+			"UserAgent",
 		},
 		Entities:    make([]EntityValues, 0, len(res)),
 		Page:        page,
@@ -1226,8 +1238,8 @@ func (h *Handler) ResponseGet(ctx echo.Context, id int) (url.Values, error) {
 
 	v := url.Values{}
 	v.Set("completed", fmt.Sprint(entity.Completed))
-	v.Set("ip_address", entity.IPAddress)
-	v.Set("user_agent", entity.UserAgent)
+	v.Set("IPAddress", entity.IPAddress)
+	v.Set("UserAgent", entity.UserAgent)
 	return v, err
 }
 

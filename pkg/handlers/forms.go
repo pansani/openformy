@@ -45,6 +45,7 @@ func (h *Forms) Routes(g *echo.Group) {
 	// Public routes (no auth required)
 	g.GET("/f/:slug", h.View).Name = routenames.FormsView
 	g.POST("/f/:slug", h.Submit).Name = routenames.FormsSubmit
+	g.GET("/f/:slug/thank-you", h.ThankYou).Name = routenames.FormsThankYou
 	
 	// Authenticated routes
 	formsGroup := g.Group("/forms", middleware.RequireAuthentication)
@@ -246,16 +247,23 @@ func (h *Forms) Update(ctx echo.Context) error {
 		return nil
 	}
 
-	// Update published status
+	// Update form settings
+	update := h.orm.Form.UpdateOne(formData)
+	
 	publishedStr := ctx.FormValue("published")
 	if publishedStr != "" {
 		published := publishedStr == "1" || publishedStr == "true"
-		_, err = h.orm.Form.UpdateOne(formData).
-			SetPublished(published).
-			Save(ctx.Request().Context())
-		if err != nil {
-			return fail(err, "failed to update published status", h.Inertia, ctx)
-		}
+		update.SetPublished(published)
+	}
+	
+	displayMode := ctx.FormValue("display_mode")
+	if displayMode != "" {
+		update.SetDisplayMode(form.DisplayMode(displayMode))
+	}
+	
+	_, err = update.Save(ctx.Request().Context())
+	if err != nil {
+		return fail(err, "failed to update form settings", h.Inertia, ctx)
 	}
 
 	questionsJSON := ctx.FormValue("questions")
@@ -445,8 +453,36 @@ func (h *Forms) Submit(ctx echo.Context) error {
 		return fail(err, "failed to commit transaction", h.Inertia, ctx)
 	}
 
-	msg.Success(ctx, "Thank you! Your response has been submitted successfully.")
-	h.Inertia.Redirect(w, r, fmt.Sprintf("/f/%s", slug))
+	h.Inertia.Location(w, r, fmt.Sprintf("/f/%s/thank-you", slug))
+	return nil
+}
+
+func (h *Forms) ThankYou(ctx echo.Context) error {
+	slug := ctx.Param("slug")
+
+	formData, err := h.orm.Form.Query().
+		Where(form.Slug(slug)).
+		Only(ctx.Request().Context())
+
+	if err != nil {
+		return ctx.JSON(http.StatusNotFound, map[string]string{
+			"error": "Form not found",
+		})
+	}
+
+	err = h.Inertia.Render(
+		ctx.Response().Writer,
+		ctx.Request(),
+		"Forms/ThankYou",
+		inertia.Props{
+			"formTitle": formData.Title,
+		},
+	)
+	if err != nil {
+		handleServerErr(ctx.Response().Writer, err)
+		return err
+	}
+
 	return nil
 }
 

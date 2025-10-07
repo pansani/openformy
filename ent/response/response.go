@@ -18,9 +18,9 @@ const (
 	FieldSubmittedAt = "submitted_at"
 	// FieldCompleted holds the string denoting the completed field in the database.
 	FieldCompleted = "completed"
-	// FieldIPAddress holds the string denoting the ip_address field in the database.
+	// FieldIPAddress holds the string denoting the ipaddress field in the database.
 	FieldIPAddress = "ip_address"
-	// FieldUserAgent holds the string denoting the user_agent field in the database.
+	// FieldUserAgent holds the string denoting the useragent field in the database.
 	FieldUserAgent = "user_agent"
 	// EdgeForm holds the string denoting the form edge name in mutations.
 	EdgeForm = "form"
@@ -109,12 +109,12 @@ func ByCompleted(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCompleted, opts...).ToFunc()
 }
 
-// ByIPAddress orders the results by the ip_address field.
+// ByIPAddress orders the results by the IPAddress field.
 func ByIPAddress(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIPAddress, opts...).ToFunc()
 }
 
-// ByUserAgent orders the results by the user_agent field.
+// ByUserAgent orders the results by the UserAgent field.
 func ByUserAgent(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUserAgent, opts...).ToFunc()
 }

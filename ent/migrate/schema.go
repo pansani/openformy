@@ -43,6 +43,7 @@ var (
 		{Name: "description", Type: field.TypeString, Nullable: true, Size: 2147483647},
 		{Name: "published", Type: field.TypeBool, Default: false},
 		{Name: "slug", Type: field.TypeString, Unique: true},
+		{Name: "display_mode", Type: field.TypeEnum, Enums: []string{"traditional", "conversational"}, Default: "traditional"},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "user_id", Type: field.TypeInt},
@@ -55,7 +56,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "forms_users_forms",
-				Columns:    []*schema.Column{FormsColumns[7]},
+				Columns:    []*schema.Column{FormsColumns[8]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

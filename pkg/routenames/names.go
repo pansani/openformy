@@ -55,6 +55,7 @@ const (
 	FormsShow             = "forms.show"
 	FormsView             = "forms.view"
 	FormsSubmit           = "forms.submit"
+	FormsThankYou         = "forms.thank_you"
 	FormsResponses        = "forms.responses"
 	FormsResponsesShow    = "forms.responses.show"
 	FormsResponsesExport  = "forms.responses.export"

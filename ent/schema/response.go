@@ -21,11 +21,13 @@ func (Response) Fields() []ent.Field {
 			Immutable(),
 		field.Bool("completed").
 			Default(true),
-		field.String("ip_address").
+		field.String("IPAddress").
 			Optional().
+			StorageKey("ip_address").
 			StructTag(`json:"ip_address"`),
-		field.String("user_agent").
+		field.String("UserAgent").
 			Optional().
+			StorageKey("user_agent").
 			StructTag(`json:"user_agent"`),
 	}
 }

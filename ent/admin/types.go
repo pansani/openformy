@@ -4,6 +4,7 @@ package admin
 import (
 	"time"
 
+	"github.com/occult/pagode/ent/form"
 	"github.com/occult/pagode/ent/paymentintent"
 	"github.com/occult/pagode/ent/paymentmethod"
 	"github.com/occult/pagode/ent/question"
@@ -16,13 +17,14 @@ type Answer struct {
 }
 
 type Form struct {
-	Title       string     `form:"title"`
-	Description *string    `form:"description"`
-	Published   bool       `form:"published"`
-	Slug        string     `form:"slug"`
-	UserID      int        `form:"user_id"`
-	CreatedAt   *time.Time `form:"created_at"`
-	UpdatedAt   *time.Time `form:"updated_at"`
+	Title       string            `form:"title"`
+	Description *string           `form:"description"`
+	Published   bool              `form:"published"`
+	Slug        string            `form:"slug"`
+	DisplayMode *form.DisplayMode `form:"display_mode"`
+	UserID      int               `form:"user_id"`
+	CreatedAt   *time.Time        `form:"created_at"`
+	UpdatedAt   *time.Time        `form:"updated_at"`
 }
 
 type PasswordToken struct {
@@ -84,8 +86,8 @@ type Question struct {
 type Response struct {
 	SubmittedAt *time.Time `form:"submitted_at"`
 	Completed   bool       `form:"completed"`
-	IPAddress   *string    `form:"ip_address"`
-	UserAgent   *string    `form:"user_agent"`
+	IPAddress   *string    `form:"IPAddress"`
+	UserAgent   *string    `form:"UserAgent"`
 }
 
 type Subscription struct {

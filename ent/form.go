@@ -26,6 +26,8 @@ type Form struct {
 	Published bool `json:"published,omitempty"`
 	// Slug holds the value of the "slug" field.
 	Slug string `json:"slug,omitempty"`
+	// DisplayMode holds the value of the "display_mode" field.
+	DisplayMode form.DisplayMode `json:"display_mode,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID int `json:"user_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -89,7 +91,7 @@ func (*Form) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case form.FieldID, form.FieldUserID:
 			values[i] = new(sql.NullInt64)
-		case form.FieldTitle, form.FieldDescription, form.FieldSlug:
+		case form.FieldTitle, form.FieldDescription, form.FieldSlug, form.FieldDisplayMode:
 			values[i] = new(sql.NullString)
 		case form.FieldCreatedAt, form.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -137,6 +139,12 @@ func (f *Form) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field slug", values[i])
 			} else if value.Valid {
 				f.Slug = value.String
+			}
+		case form.FieldDisplayMode:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field display_mode", values[i])
+			} else if value.Valid {
+				f.DisplayMode = form.DisplayMode(value.String)
 			}
 		case form.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -218,6 +226,9 @@ func (f *Form) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("slug=")
 	builder.WriteString(f.Slug)
+	builder.WriteString(", ")
+	builder.WriteString("display_mode=")
+	builder.WriteString(fmt.Sprintf("%v", f.DisplayMode))
 	builder.WriteString(", ")
 	builder.WriteString("user_id=")
 	builder.WriteString(fmt.Sprintf("%v", f.UserID))

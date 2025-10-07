@@ -93,6 +93,20 @@ func (fu *FormUpdate) SetNillableSlug(s *string) *FormUpdate {
 	return fu
 }
 
+// SetDisplayMode sets the "display_mode" field.
+func (fu *FormUpdate) SetDisplayMode(fm form.DisplayMode) *FormUpdate {
+	fu.mutation.SetDisplayMode(fm)
+	return fu
+}
+
+// SetNillableDisplayMode sets the "display_mode" field if the given value is not nil.
+func (fu *FormUpdate) SetNillableDisplayMode(fm *form.DisplayMode) *FormUpdate {
+	if fm != nil {
+		fu.SetDisplayMode(*fm)
+	}
+	return fu
+}
+
 // SetUserID sets the "user_id" field.
 func (fu *FormUpdate) SetUserID(i int) *FormUpdate {
 	fu.mutation.SetUserID(i)
@@ -255,6 +269,11 @@ func (fu *FormUpdate) check() error {
 			return &ValidationError{Name: "slug", err: fmt.Errorf(`ent: validator failed for field "Form.slug": %w`, err)}
 		}
 	}
+	if v, ok := fu.mutation.DisplayMode(); ok {
+		if err := form.DisplayModeValidator(v); err != nil {
+			return &ValidationError{Name: "display_mode", err: fmt.Errorf(`ent: validator failed for field "Form.display_mode": %w`, err)}
+		}
+	}
 	if fu.mutation.OwnerCleared() && len(fu.mutation.OwnerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Form.owner"`)
 	}
@@ -287,6 +306,9 @@ func (fu *FormUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := fu.mutation.Slug(); ok {
 		_spec.SetField(form.FieldSlug, field.TypeString, value)
+	}
+	if value, ok := fu.mutation.DisplayMode(); ok {
+		_spec.SetField(form.FieldDisplayMode, field.TypeEnum, value)
 	}
 	if value, ok := fu.mutation.UpdatedAt(); ok {
 		_spec.SetField(form.FieldUpdatedAt, field.TypeTime, value)
@@ -492,6 +514,20 @@ func (fuo *FormUpdateOne) SetNillableSlug(s *string) *FormUpdateOne {
 	return fuo
 }
 
+// SetDisplayMode sets the "display_mode" field.
+func (fuo *FormUpdateOne) SetDisplayMode(fm form.DisplayMode) *FormUpdateOne {
+	fuo.mutation.SetDisplayMode(fm)
+	return fuo
+}
+
+// SetNillableDisplayMode sets the "display_mode" field if the given value is not nil.
+func (fuo *FormUpdateOne) SetNillableDisplayMode(fm *form.DisplayMode) *FormUpdateOne {
+	if fm != nil {
+		fuo.SetDisplayMode(*fm)
+	}
+	return fuo
+}
+
 // SetUserID sets the "user_id" field.
 func (fuo *FormUpdateOne) SetUserID(i int) *FormUpdateOne {
 	fuo.mutation.SetUserID(i)
@@ -667,6 +703,11 @@ func (fuo *FormUpdateOne) check() error {
 			return &ValidationError{Name: "slug", err: fmt.Errorf(`ent: validator failed for field "Form.slug": %w`, err)}
 		}
 	}
+	if v, ok := fuo.mutation.DisplayMode(); ok {
+		if err := form.DisplayModeValidator(v); err != nil {
+			return &ValidationError{Name: "display_mode", err: fmt.Errorf(`ent: validator failed for field "Form.display_mode": %w`, err)}
+		}
+	}
 	if fuo.mutation.OwnerCleared() && len(fuo.mutation.OwnerIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Form.owner"`)
 	}
@@ -716,6 +757,9 @@ func (fuo *FormUpdateOne) sqlSave(ctx context.Context) (_node *Form, err error) 
 	}
 	if value, ok := fuo.mutation.Slug(); ok {
 		_spec.SetField(form.FieldSlug, field.TypeString, value)
+	}
+	if value, ok := fuo.mutation.DisplayMode(); ok {
+		_spec.SetField(form.FieldDisplayMode, field.TypeEnum, value)
 	}
 	if value, ok := fuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(form.FieldUpdatedAt, field.TypeTime, value)

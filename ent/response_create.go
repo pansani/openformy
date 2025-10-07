@@ -51,13 +51,13 @@ func (rc *ResponseCreate) SetNillableCompleted(b *bool) *ResponseCreate {
 	return rc
 }
 
-// SetIPAddress sets the "ip_address" field.
+// SetIPAddress sets the "IPAddress" field.
 func (rc *ResponseCreate) SetIPAddress(s string) *ResponseCreate {
 	rc.mutation.SetIPAddress(s)
 	return rc
 }
 
-// SetNillableIPAddress sets the "ip_address" field if the given value is not nil.
+// SetNillableIPAddress sets the "IPAddress" field if the given value is not nil.
 func (rc *ResponseCreate) SetNillableIPAddress(s *string) *ResponseCreate {
 	if s != nil {
 		rc.SetIPAddress(*s)
@@ -65,13 +65,13 @@ func (rc *ResponseCreate) SetNillableIPAddress(s *string) *ResponseCreate {
 	return rc
 }
 
-// SetUserAgent sets the "user_agent" field.
+// SetUserAgent sets the "UserAgent" field.
 func (rc *ResponseCreate) SetUserAgent(s string) *ResponseCreate {
 	rc.mutation.SetUserAgent(s)
 	return rc
 }
 
-// SetNillableUserAgent sets the "user_agent" field if the given value is not nil.
+// SetNillableUserAgent sets the "UserAgent" field if the given value is not nil.
 func (rc *ResponseCreate) SetNillableUserAgent(s *string) *ResponseCreate {
 	if s != nil {
 		rc.SetUserAgent(*s)

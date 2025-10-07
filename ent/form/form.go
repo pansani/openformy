@@ -3,6 +3,7 @@
 package form
 
 import (
+	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -22,6 +23,8 @@ const (
 	FieldPublished = "published"
 	// FieldSlug holds the string denoting the slug field in the database.
 	FieldSlug = "slug"
+	// FieldDisplayMode holds the string denoting the display_mode field in the database.
+	FieldDisplayMode = "display_mode"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -66,6 +69,7 @@ var Columns = []string{
 	FieldDescription,
 	FieldPublished,
 	FieldSlug,
+	FieldDisplayMode,
 	FieldUserID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
@@ -96,6 +100,32 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 )
 
+// DisplayMode defines the type for the "display_mode" enum field.
+type DisplayMode string
+
+// DisplayModeTraditional is the default value of the DisplayMode enum.
+const DefaultDisplayMode = DisplayModeTraditional
+
+// DisplayMode values.
+const (
+	DisplayModeTraditional    DisplayMode = "traditional"
+	DisplayModeConversational DisplayMode = "conversational"
+)
+
+func (dm DisplayMode) String() string {
+	return string(dm)
+}
+
+// DisplayModeValidator is a validator for the "display_mode" field enum values. It is called by the builders before save.
+func DisplayModeValidator(dm DisplayMode) error {
+	switch dm {
+	case DisplayModeTraditional, DisplayModeConversational:
+		return nil
+	default:
+		return fmt.Errorf("form: invalid enum value for display_mode field: %q", dm)
+	}
+}
+
 // OrderOption defines the ordering options for the Form queries.
 type OrderOption func(*sql.Selector)
 
@@ -122,6 +152,11 @@ func ByPublished(opts ...sql.OrderTermOption) OrderOption {
 // BySlug orders the results by the slug field.
 func BySlug(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSlug, opts...).ToFunc()
+}
+
+// ByDisplayMode orders the results by the display_mode field.
+func ByDisplayMode(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDisplayMode, opts...).ToFunc()
 }
 
 // ByUserID orders the results by the user_id field.

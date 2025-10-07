@@ -47,11 +47,11 @@ func init() {
 	// form.SlugValidator is a validator for the "slug" field. It is called by the builders before save.
 	form.SlugValidator = formDescSlug.Validators[0].(func(string) error)
 	// formDescCreatedAt is the schema descriptor for created_at field.
-	formDescCreatedAt := formFields[5].Descriptor()
+	formDescCreatedAt := formFields[6].Descriptor()
 	// form.DefaultCreatedAt holds the default value on creation for the created_at field.
 	form.DefaultCreatedAt = formDescCreatedAt.Default.(func() time.Time)
 	// formDescUpdatedAt is the schema descriptor for updated_at field.
-	formDescUpdatedAt := formFields[6].Descriptor()
+	formDescUpdatedAt := formFields[7].Descriptor()
 	// form.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	form.DefaultUpdatedAt = formDescUpdatedAt.Default.(func() time.Time)
 	// form.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

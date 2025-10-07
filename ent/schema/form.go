@@ -24,6 +24,9 @@ func (Form) Fields() []ent.Field {
 		field.String("slug").
 			Unique().
 			NotEmpty(),
+		field.Enum("display_mode").
+			Values("traditional", "conversational").
+			Default("traditional"),
 		field.Int("user_id"),
 		field.Time("created_at").
 			Default(time.Now).

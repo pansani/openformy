@@ -44,13 +44,13 @@ func (ru *ResponseUpdate) SetNillableCompleted(b *bool) *ResponseUpdate {
 	return ru
 }
 
-// SetIPAddress sets the "ip_address" field.
+// SetIPAddress sets the "IPAddress" field.
 func (ru *ResponseUpdate) SetIPAddress(s string) *ResponseUpdate {
 	ru.mutation.SetIPAddress(s)
 	return ru
 }
 
-// SetNillableIPAddress sets the "ip_address" field if the given value is not nil.
+// SetNillableIPAddress sets the "IPAddress" field if the given value is not nil.
 func (ru *ResponseUpdate) SetNillableIPAddress(s *string) *ResponseUpdate {
 	if s != nil {
 		ru.SetIPAddress(*s)
@@ -58,19 +58,19 @@ func (ru *ResponseUpdate) SetNillableIPAddress(s *string) *ResponseUpdate {
 	return ru
 }
 
-// ClearIPAddress clears the value of the "ip_address" field.
+// ClearIPAddress clears the value of the "IPAddress" field.
 func (ru *ResponseUpdate) ClearIPAddress() *ResponseUpdate {
 	ru.mutation.ClearIPAddress()
 	return ru
 }
 
-// SetUserAgent sets the "user_agent" field.
+// SetUserAgent sets the "UserAgent" field.
 func (ru *ResponseUpdate) SetUserAgent(s string) *ResponseUpdate {
 	ru.mutation.SetUserAgent(s)
 	return ru
 }
 
-// SetNillableUserAgent sets the "user_agent" field if the given value is not nil.
+// SetNillableUserAgent sets the "UserAgent" field if the given value is not nil.
 func (ru *ResponseUpdate) SetNillableUserAgent(s *string) *ResponseUpdate {
 	if s != nil {
 		ru.SetUserAgent(*s)
@@ -78,7 +78,7 @@ func (ru *ResponseUpdate) SetNillableUserAgent(s *string) *ResponseUpdate {
 	return ru
 }
 
-// ClearUserAgent clears the value of the "user_agent" field.
+// ClearUserAgent clears the value of the "UserAgent" field.
 func (ru *ResponseUpdate) ClearUserAgent() *ResponseUpdate {
 	ru.mutation.ClearUserAgent()
 	return ru
@@ -366,13 +366,13 @@ func (ruo *ResponseUpdateOne) SetNillableCompleted(b *bool) *ResponseUpdateOne {
 	return ruo
 }
 
-// SetIPAddress sets the "ip_address" field.
+// SetIPAddress sets the "IPAddress" field.
 func (ruo *ResponseUpdateOne) SetIPAddress(s string) *ResponseUpdateOne {
 	ruo.mutation.SetIPAddress(s)
 	return ruo
 }
 
-// SetNillableIPAddress sets the "ip_address" field if the given value is not nil.
+// SetNillableIPAddress sets the "IPAddress" field if the given value is not nil.
 func (ruo *ResponseUpdateOne) SetNillableIPAddress(s *string) *ResponseUpdateOne {
 	if s != nil {
 		ruo.SetIPAddress(*s)
@@ -380,19 +380,19 @@ func (ruo *ResponseUpdateOne) SetNillableIPAddress(s *string) *ResponseUpdateOne
 	return ruo
 }
 
-// ClearIPAddress clears the value of the "ip_address" field.
+// ClearIPAddress clears the value of the "IPAddress" field.
 func (ruo *ResponseUpdateOne) ClearIPAddress() *ResponseUpdateOne {
 	ruo.mutation.ClearIPAddress()
 	return ruo
 }
 
-// SetUserAgent sets the "user_agent" field.
+// SetUserAgent sets the "UserAgent" field.
 func (ruo *ResponseUpdateOne) SetUserAgent(s string) *ResponseUpdateOne {
 	ruo.mutation.SetUserAgent(s)
 	return ruo
 }
 
-// SetNillableUserAgent sets the "user_agent" field if the given value is not nil.
+// SetNillableUserAgent sets the "UserAgent" field if the given value is not nil.
 func (ruo *ResponseUpdateOne) SetNillableUserAgent(s *string) *ResponseUpdateOne {
 	if s != nil {
 		ruo.SetUserAgent(*s)
@@ -400,7 +400,7 @@ func (ruo *ResponseUpdateOne) SetNillableUserAgent(s *string) *ResponseUpdateOne
 	return ruo
 }
 
-// ClearUserAgent clears the value of the "user_agent" field.
+// ClearUserAgent clears the value of the "UserAgent" field.
 func (ruo *ResponseUpdateOne) ClearUserAgent() *ResponseUpdateOne {
 	ruo.mutation.ClearUserAgent()
 	return ruo

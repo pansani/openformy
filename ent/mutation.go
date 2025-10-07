@@ -561,6 +561,7 @@ type FormMutation struct {
 	description      *string
 	published        *bool
 	slug             *string
+	display_mode     *form.DisplayMode
 	created_at       *time.Time
 	updated_at       *time.Time
 	clearedFields    map[string]struct{}
@@ -830,6 +831,42 @@ func (m *FormMutation) OldSlug(ctx context.Context) (v string, err error) {
 // ResetSlug resets all changes to the "slug" field.
 func (m *FormMutation) ResetSlug() {
 	m.slug = nil
+}
+
+// SetDisplayMode sets the "display_mode" field.
+func (m *FormMutation) SetDisplayMode(fm form.DisplayMode) {
+	m.display_mode = &fm
+}
+
+// DisplayMode returns the value of the "display_mode" field in the mutation.
+func (m *FormMutation) DisplayMode() (r form.DisplayMode, exists bool) {
+	v := m.display_mode
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDisplayMode returns the old "display_mode" field's value of the Form entity.
+// If the Form object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FormMutation) OldDisplayMode(ctx context.Context) (v form.DisplayMode, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDisplayMode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDisplayMode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDisplayMode: %w", err)
+	}
+	return oldValue.DisplayMode, nil
+}
+
+// ResetDisplayMode resets all changes to the "display_mode" field.
+func (m *FormMutation) ResetDisplayMode() {
+	m.display_mode = nil
 }
 
 // SetUserID sets the "user_id" field.
@@ -1122,7 +1159,7 @@ func (m *FormMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *FormMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.title != nil {
 		fields = append(fields, form.FieldTitle)
 	}
@@ -1134,6 +1171,9 @@ func (m *FormMutation) Fields() []string {
 	}
 	if m.slug != nil {
 		fields = append(fields, form.FieldSlug)
+	}
+	if m.display_mode != nil {
+		fields = append(fields, form.FieldDisplayMode)
 	}
 	if m.owner != nil {
 		fields = append(fields, form.FieldUserID)
@@ -1160,6 +1200,8 @@ func (m *FormMutation) Field(name string) (ent.Value, bool) {
 		return m.Published()
 	case form.FieldSlug:
 		return m.Slug()
+	case form.FieldDisplayMode:
+		return m.DisplayMode()
 	case form.FieldUserID:
 		return m.UserID()
 	case form.FieldCreatedAt:
@@ -1183,6 +1225,8 @@ func (m *FormMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldPublished(ctx)
 	case form.FieldSlug:
 		return m.OldSlug(ctx)
+	case form.FieldDisplayMode:
+		return m.OldDisplayMode(ctx)
 	case form.FieldUserID:
 		return m.OldUserID(ctx)
 	case form.FieldCreatedAt:
@@ -1225,6 +1269,13 @@ func (m *FormMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSlug(v)
+		return nil
+	case form.FieldDisplayMode:
+		v, ok := value.(form.DisplayMode)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDisplayMode(v)
 		return nil
 	case form.FieldUserID:
 		v, ok := value.(int)
@@ -1319,6 +1370,9 @@ func (m *FormMutation) ResetField(name string) error {
 		return nil
 	case form.FieldSlug:
 		m.ResetSlug()
+		return nil
+	case form.FieldDisplayMode:
+		m.ResetDisplayMode()
 		return nil
 	case form.FieldUserID:
 		m.ResetUserID()
@@ -6125,8 +6179,8 @@ type ResponseMutation struct {
 	id             *int
 	submitted_at   *time.Time
 	completed      *bool
-	ip_address     *string
-	user_agent     *string
+	_IPAddress     *string
+	_UserAgent     *string
 	clearedFields  map[string]struct{}
 	form           *int
 	clearedform    bool
@@ -6310,21 +6364,21 @@ func (m *ResponseMutation) ResetCompleted() {
 	m.completed = nil
 }
 
-// SetIPAddress sets the "ip_address" field.
+// SetIPAddress sets the "IPAddress" field.
 func (m *ResponseMutation) SetIPAddress(s string) {
-	m.ip_address = &s
+	m._IPAddress = &s
 }
 
-// IPAddress returns the value of the "ip_address" field in the mutation.
+// IPAddress returns the value of the "IPAddress" field in the mutation.
 func (m *ResponseMutation) IPAddress() (r string, exists bool) {
-	v := m.ip_address
+	v := m._IPAddress
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldIPAddress returns the old "ip_address" field's value of the Response entity.
+// OldIPAddress returns the old "IPAddress" field's value of the Response entity.
 // If the Response object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
 func (m *ResponseMutation) OldIPAddress(ctx context.Context) (v string, err error) {
@@ -6341,39 +6395,39 @@ func (m *ResponseMutation) OldIPAddress(ctx context.Context) (v string, err erro
 	return oldValue.IPAddress, nil
 }
 
-// ClearIPAddress clears the value of the "ip_address" field.
+// ClearIPAddress clears the value of the "IPAddress" field.
 func (m *ResponseMutation) ClearIPAddress() {
-	m.ip_address = nil
+	m._IPAddress = nil
 	m.clearedFields[response.FieldIPAddress] = struct{}{}
 }
 
-// IPAddressCleared returns if the "ip_address" field was cleared in this mutation.
+// IPAddressCleared returns if the "IPAddress" field was cleared in this mutation.
 func (m *ResponseMutation) IPAddressCleared() bool {
 	_, ok := m.clearedFields[response.FieldIPAddress]
 	return ok
 }
 
-// ResetIPAddress resets all changes to the "ip_address" field.
+// ResetIPAddress resets all changes to the "IPAddress" field.
 func (m *ResponseMutation) ResetIPAddress() {
-	m.ip_address = nil
+	m._IPAddress = nil
 	delete(m.clearedFields, response.FieldIPAddress)
 }
 
-// SetUserAgent sets the "user_agent" field.
+// SetUserAgent sets the "UserAgent" field.
 func (m *ResponseMutation) SetUserAgent(s string) {
-	m.user_agent = &s
+	m._UserAgent = &s
 }
 
-// UserAgent returns the value of the "user_agent" field in the mutation.
+// UserAgent returns the value of the "UserAgent" field in the mutation.
 func (m *ResponseMutation) UserAgent() (r string, exists bool) {
-	v := m.user_agent
+	v := m._UserAgent
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldUserAgent returns the old "user_agent" field's value of the Response entity.
+// OldUserAgent returns the old "UserAgent" field's value of the Response entity.
 // If the Response object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
 func (m *ResponseMutation) OldUserAgent(ctx context.Context) (v string, err error) {
@@ -6390,21 +6444,21 @@ func (m *ResponseMutation) OldUserAgent(ctx context.Context) (v string, err erro
 	return oldValue.UserAgent, nil
 }
 
-// ClearUserAgent clears the value of the "user_agent" field.
+// ClearUserAgent clears the value of the "UserAgent" field.
 func (m *ResponseMutation) ClearUserAgent() {
-	m.user_agent = nil
+	m._UserAgent = nil
 	m.clearedFields[response.FieldUserAgent] = struct{}{}
 }
 
-// UserAgentCleared returns if the "user_agent" field was cleared in this mutation.
+// UserAgentCleared returns if the "UserAgent" field was cleared in this mutation.
 func (m *ResponseMutation) UserAgentCleared() bool {
 	_, ok := m.clearedFields[response.FieldUserAgent]
 	return ok
 }
 
-// ResetUserAgent resets all changes to the "user_agent" field.
+// ResetUserAgent resets all changes to the "UserAgent" field.
 func (m *ResponseMutation) ResetUserAgent() {
-	m.user_agent = nil
+	m._UserAgent = nil
 	delete(m.clearedFields, response.FieldUserAgent)
 }
 
@@ -6581,10 +6635,10 @@ func (m *ResponseMutation) Fields() []string {
 	if m.completed != nil {
 		fields = append(fields, response.FieldCompleted)
 	}
-	if m.ip_address != nil {
+	if m._IPAddress != nil {
 		fields = append(fields, response.FieldIPAddress)
 	}
-	if m.user_agent != nil {
+	if m._UserAgent != nil {
 		fields = append(fields, response.FieldUserAgent)
 	}
 	return fields

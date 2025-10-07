@@ -305,6 +305,26 @@ func SlugContainsFold(v string) predicate.Form {
 	return predicate.Form(sql.FieldContainsFold(FieldSlug, v))
 }
 
+// DisplayModeEQ applies the EQ predicate on the "display_mode" field.
+func DisplayModeEQ(v DisplayMode) predicate.Form {
+	return predicate.Form(sql.FieldEQ(FieldDisplayMode, v))
+}
+
+// DisplayModeNEQ applies the NEQ predicate on the "display_mode" field.
+func DisplayModeNEQ(v DisplayMode) predicate.Form {
+	return predicate.Form(sql.FieldNEQ(FieldDisplayMode, v))
+}
+
+// DisplayModeIn applies the In predicate on the "display_mode" field.
+func DisplayModeIn(vs ...DisplayMode) predicate.Form {
+	return predicate.Form(sql.FieldIn(FieldDisplayMode, vs...))
+}
+
+// DisplayModeNotIn applies the NotIn predicate on the "display_mode" field.
+func DisplayModeNotIn(vs ...DisplayMode) predicate.Form {
+	return predicate.Form(sql.FieldNotIn(FieldDisplayMode, vs...))
+}
+
 // UserIDEQ applies the EQ predicate on the "user_id" field.
 func UserIDEQ(v int) predicate.Form {
 	return predicate.Form(sql.FieldEQ(FieldUserID, v))
