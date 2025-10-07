@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"crypto/tls"
 	"errors"
 	"fmt"
@@ -12,7 +11,6 @@ import (
 	"github.com/occult/pagode/pkg/handlers"
 	"github.com/occult/pagode/pkg/log"
 	"github.com/occult/pagode/pkg/services"
-	"github.com/occult/pagode/pkg/tasks"
 )
 
 func main() {
@@ -29,10 +27,12 @@ func main() {
 	}
 
 	// Register all task queues.
-	tasks.Register(c)
+	// TODO: Tasks disabled for MySQL
+	// tasks.Register(c)
 
 	// Start the task runner to execute queued tasks.
-	c.Tasks.Start(context.Background())
+	// TODO: Tasks disabled for MySQL
+	// c.Tasks.Start(context.Background())
 
 	// Start the server.
 	go func() {

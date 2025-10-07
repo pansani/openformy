@@ -102,6 +102,11 @@ type (
 		Driver         string
 		Connection     string
 		TestConnection string
+		Host           string
+		Port           int
+		Database       string
+		Username       string
+		Password       string
 	}
 
 	// FilesConfig stores the file system configuration.

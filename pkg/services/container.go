@@ -17,12 +17,12 @@ import (
 	entsql "entgo.io/ent/dialect/sql"
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo/v4"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/mikestefanello/backlite"
 	"github.com/occult/pagode/config"
 	"github.com/occult/pagode/ent"
-	"github.com/occult/pagode/pkg/log"
 	inertia "github.com/romsar/gonertia/v2"
 	"github.com/spf13/afero"
 
@@ -101,9 +101,10 @@ func (c *Container) Shutdown() error {
 	}
 
 	// Shutdown the task runner.
-	taskCtx, taskCancel := context.WithTimeout(context.Background(), c.Config.Tasks.ShutdownTimeout)
-	defer taskCancel()
-	c.Tasks.Stop(taskCtx)
+	// TODO: Tasks disabled for MySQL
+	// taskCtx, taskCancel := context.WithTimeout(context.Background(), c.Config.Tasks.ShutdownTimeout)
+	// defer taskCancel()
+	// c.Tasks.Stop(taskCtx)
 
 	// Shutdown the ORM.
 	if err := c.ORM.Close(); err != nil {
@@ -167,10 +168,15 @@ func (c *Container) initDatabase() {
 
 	switch c.Config.App.Environment {
 	case config.EnvTest:
-		// TODO: Drop/recreate the DB, if this isn't in memory?
 		connection = c.Config.Database.TestConnection
+		if connection == "" {
+			connection = buildConnectionString(c.Config.Database, true)
+		}
 	default:
 		connection = c.Config.Database.Connection
+		if connection == "" {
+			connection = buildConnectionString(c.Config.Database, false)
+		}
 	}
 
 	c.Database, err = openDB(c.Config.Database.Driver, connection)
@@ -231,23 +237,22 @@ func (c *Container) initMail() {
 
 // initTasks initializes the task client.
 func (c *Container) initTasks() {
-	var err error
-	// You could use a separate database for tasks, if you'd like. but using one
-	// makes transaction support easier.
-	c.Tasks, err = backlite.NewClient(backlite.ClientConfig{
-		DB:              c.Database,
-		Logger:          log.Default(),
-		NumWorkers:      c.Config.Tasks.Goroutines,
-		ReleaseAfter:    c.Config.Tasks.ReleaseAfter,
-		CleanupInterval: c.Config.Tasks.CleanupInterval,
-	})
-	if err != nil {
-		panic(fmt.Sprintf("failed to create task client: %v", err))
-	}
-
-	if err = c.Tasks.Install(); err != nil {
-		panic(fmt.Sprintf("failed to install task schema: %v", err))
-	}
+	// TODO: Backlite only supports SQLite, disabled for MySQL
+	// var err error
+	// c.Tasks, err = backlite.NewClient(backlite.ClientConfig{
+	// 	DB:              c.Database,
+	// 	Logger:          log.Default(),
+	// 	NumWorkers:      c.Config.Tasks.Goroutines,
+	// 	ReleaseAfter:    c.Config.Tasks.ReleaseAfter,
+	// 	CleanupInterval: c.Config.Tasks.CleanupInterval,
+	// })
+	// if err != nil {
+	// 	panic(fmt.Sprintf("failed to create task client: %v", err))
+	// }
+	//
+	// if err = c.Tasks.Install(); err != nil {
+	// 	panic(fmt.Sprintf("failed to install task schema: %v", err))
+	// }
 }
 
 // initPayment initializes the payment client.
@@ -381,6 +386,29 @@ func vite(manifestPath, buildDir string) func(path string) (template.HTML, error
 	}
 }
 
+// buildConnectionString builds a database connection string from individual components.
+func buildConnectionString(cfg config.DatabaseConfig, isTest bool) string {
+	switch cfg.Driver {
+	case "mysql":
+		dbName := cfg.Database
+		if isTest {
+			dbName = fmt.Sprintf("%s_test_%d", cfg.Database, rand.Int())
+		}
+		return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&charset=utf8mb4",
+			cfg.Username,
+			cfg.Password,
+			cfg.Host,
+			cfg.Port,
+			dbName,
+		)
+	case "sqlite3":
+		// For SQLite, use the legacy connection string
+		return cfg.Connection
+	default:
+		return cfg.Connection
+	}
+}
+
 // openDB opens a database connection.
 func openDB(driver, connection string) (*sql.DB, error) {
 	if driver == "sqlite3" {
@@ -396,6 +424,13 @@ func openDB(driver, connection string) (*sql.DB, error) {
 		}
 
 		// Check if a random value is required, which is often used for in-memory test databases.
+		if strings.Contains(connection, "$RAND") {
+			connection = strings.Replace(connection, "$RAND", fmt.Sprint(rand.Int()), 1)
+		}
+	}
+
+	if driver == "mysql" {
+		// Check if a random value is required for test databases.
 		if strings.Contains(connection, "$RAND") {
 			connection = strings.Replace(connection, "$RAND", fmt.Sprint(rand.Int()), 1)
 		}

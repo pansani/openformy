@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/occult/pagode/config"
 	"github.com/occult/pagode/ent"
+	"github.com/occult/pagode/ent/form"
 	"github.com/occult/pagode/pkg/context"
 	"github.com/occult/pagode/pkg/middleware"
 	"github.com/occult/pagode/pkg/msg"
@@ -120,13 +122,18 @@ func (h *Forms) Store(ctx echo.Context) error {
 		formCreate.SetDescription(description)
 	}
 
-	_, err := formCreate.Save(ctx.Request().Context())
+	createdForm, err := formCreate.Save(ctx.Request().Context())
 
 	if err != nil {
 		if ent.IsConstraintError(err) {
-			slug = fmt.Sprintf("%s-%d", slug, time.Now().Unix())
-			formCreate.SetSlug(slug)
-			_, err = formCreate.Save(ctx.Request().Context())
+			for i := 2; i <= 10; i++ {
+				slug = fmt.Sprintf("%s-%d", generateSlug(title), i)
+				formCreate.SetSlug(slug)
+				createdForm, err = formCreate.Save(ctx.Request().Context())
+				if err == nil {
+					break
+				}
+			}
 			if err != nil {
 				return fail(err, "failed to create form", h.Inertia, ctx)
 			}
@@ -136,19 +143,42 @@ func (h *Forms) Store(ctx echo.Context) error {
 	}
 
 	msg.Success(ctx, "Form created successfully!")
-	h.Inertia.Redirect(w, r, ctx.Echo().Reverse(routenames.Forms))
+	h.Inertia.Redirect(w, r, fmt.Sprintf("/forms/%d/edit", createdForm.ID))
 	return nil
 }
 
 func (h *Forms) Edit(ctx echo.Context) error {
+	user := ctx.Get(context.AuthenticatedUserKey).(*ent.User)
 	id := ctx.Param("id")
 
-	err := h.Inertia.Render(
+	formID, err := parseID(id)
+	if err != nil {
+		return fail(err, "invalid form ID", h.Inertia, ctx)
+	}
+
+	formData, err := h.orm.Form.
+		Query().
+		Where(form.ID(formID)).
+		WithOwner().
+		WithQuestions().
+		Only(ctx.Request().Context())
+
+	if err != nil {
+		return fail(err, "failed to fetch form", h.Inertia, ctx)
+	}
+
+	if formData.Edges.Owner.ID != user.ID {
+		msg.Danger(ctx, "Unauthorized access")
+		h.Inertia.Redirect(ctx.Response().Writer, ctx.Request(), ctx.Echo().Reverse(routenames.Forms))
+		return nil
+	}
+
+	err = h.Inertia.Render(
 		ctx.Response().Writer,
 		ctx.Request(),
 		"Forms/Edit",
 		inertia.Props{
-			"formId": id,
+			"form": formData,
 		},
 	)
 	if err != nil {
@@ -185,9 +215,41 @@ func (h *Forms) Update(ctx echo.Context) error {
 }
 
 func (h *Forms) Delete(ctx echo.Context) error {
-	return ctx.JSON(http.StatusOK, map[string]string{
-		"message": "Delete form - to be implemented",
-	})
+	user := ctx.Get(context.AuthenticatedUserKey).(*ent.User)
+	id := ctx.Param("id")
+	
+	w := ctx.Response().Writer
+	r := ctx.Request()
+
+	formID, err := parseID(id)
+	if err != nil {
+		return fail(err, "invalid form ID", h.Inertia, ctx)
+	}
+
+	formData, err := h.orm.Form.Query().
+		Where(form.ID(formID)).
+		WithOwner().
+		Only(ctx.Request().Context())
+
+	if err != nil {
+		return fail(err, "failed to fetch form", h.Inertia, ctx)
+	}
+
+	if formData.Edges.Owner.ID != user.ID {
+		msg.Danger(ctx, "Unauthorized access")
+		h.Inertia.Redirect(w, r, ctx.Echo().Reverse(routenames.Forms))
+		return nil
+	}
+
+	err = h.orm.Form.DeleteOne(formData).Exec(ctx.Request().Context())
+	if err != nil {
+		return fail(err, "failed to delete form", h.Inertia, ctx)
+	}
+
+	msg.Success(ctx, "Form deleted successfully")
+	ctx.Response().Header().Set("Location", "/forms")
+	ctx.Response().WriteHeader(http.StatusSeeOther)
+	return nil
 }
 
 func generateSlug(title string) string {
@@ -201,4 +263,8 @@ func generateSlug(title string) string {
 	}
 	
 	return slug
+}
+
+func parseID(id string) (int, error) {
+	return strconv.Atoi(id)
 }
