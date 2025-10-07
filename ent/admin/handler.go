@@ -11,10 +11,14 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/occult/pagode/ent"
+	"github.com/occult/pagode/ent/answer"
+	"github.com/occult/pagode/ent/form"
 	"github.com/occult/pagode/ent/passwordtoken"
 	"github.com/occult/pagode/ent/paymentcustomer"
 	"github.com/occult/pagode/ent/paymentintent"
 	"github.com/occult/pagode/ent/paymentmethod"
+	"github.com/occult/pagode/ent/question"
+	"github.com/occult/pagode/ent/response"
 	"github.com/occult/pagode/ent/subscription"
 	"github.com/occult/pagode/ent/user"
 )
@@ -36,6 +40,10 @@ func NewHandler(client *ent.Client, cfg HandlerConfig) *Handler {
 
 func (h *Handler) Create(ctx echo.Context, entityType string) error {
 	switch entityType {
+	case "Answer":
+		return h.AnswerCreate(ctx)
+	case "Form":
+		return h.FormCreate(ctx)
 	case "PasswordToken":
 		return h.PasswordTokenCreate(ctx)
 	case "PaymentCustomer":
@@ -44,6 +52,10 @@ func (h *Handler) Create(ctx echo.Context, entityType string) error {
 		return h.PaymentIntentCreate(ctx)
 	case "PaymentMethod":
 		return h.PaymentMethodCreate(ctx)
+	case "Question":
+		return h.QuestionCreate(ctx)
+	case "Response":
+		return h.ResponseCreate(ctx)
 	case "Subscription":
 		return h.SubscriptionCreate(ctx)
 	case "User":
@@ -55,6 +67,10 @@ func (h *Handler) Create(ctx echo.Context, entityType string) error {
 
 func (h *Handler) Get(ctx echo.Context, entityType string, id int) (url.Values, error) {
 	switch entityType {
+	case "Answer":
+		return h.AnswerGet(ctx, id)
+	case "Form":
+		return h.FormGet(ctx, id)
 	case "PasswordToken":
 		return h.PasswordTokenGet(ctx, id)
 	case "PaymentCustomer":
@@ -63,6 +79,10 @@ func (h *Handler) Get(ctx echo.Context, entityType string, id int) (url.Values, 
 		return h.PaymentIntentGet(ctx, id)
 	case "PaymentMethod":
 		return h.PaymentMethodGet(ctx, id)
+	case "Question":
+		return h.QuestionGet(ctx, id)
+	case "Response":
+		return h.ResponseGet(ctx, id)
 	case "Subscription":
 		return h.SubscriptionGet(ctx, id)
 	case "User":
@@ -74,6 +94,10 @@ func (h *Handler) Get(ctx echo.Context, entityType string, id int) (url.Values, 
 
 func (h *Handler) Delete(ctx echo.Context, entityType string, id int) error {
 	switch entityType {
+	case "Answer":
+		return h.AnswerDelete(ctx, id)
+	case "Form":
+		return h.FormDelete(ctx, id)
 	case "PasswordToken":
 		return h.PasswordTokenDelete(ctx, id)
 	case "PaymentCustomer":
@@ -82,6 +106,10 @@ func (h *Handler) Delete(ctx echo.Context, entityType string, id int) error {
 		return h.PaymentIntentDelete(ctx, id)
 	case "PaymentMethod":
 		return h.PaymentMethodDelete(ctx, id)
+	case "Question":
+		return h.QuestionDelete(ctx, id)
+	case "Response":
+		return h.ResponseDelete(ctx, id)
 	case "Subscription":
 		return h.SubscriptionDelete(ctx, id)
 	case "User":
@@ -93,6 +121,10 @@ func (h *Handler) Delete(ctx echo.Context, entityType string, id int) error {
 
 func (h *Handler) Update(ctx echo.Context, entityType string, id int) error {
 	switch entityType {
+	case "Answer":
+		return h.AnswerUpdate(ctx, id)
+	case "Form":
+		return h.FormUpdate(ctx, id)
 	case "PasswordToken":
 		return h.PasswordTokenUpdate(ctx, id)
 	case "PaymentCustomer":
@@ -101,6 +133,10 @@ func (h *Handler) Update(ctx echo.Context, entityType string, id int) error {
 		return h.PaymentIntentUpdate(ctx, id)
 	case "PaymentMethod":
 		return h.PaymentMethodUpdate(ctx, id)
+	case "Question":
+		return h.QuestionUpdate(ctx, id)
+	case "Response":
+		return h.ResponseUpdate(ctx, id)
 	case "Subscription":
 		return h.SubscriptionUpdate(ctx, id)
 	case "User":
@@ -112,6 +148,10 @@ func (h *Handler) Update(ctx echo.Context, entityType string, id int) error {
 
 func (h *Handler) List(ctx echo.Context, entityType string) (*EntityList, error) {
 	switch entityType {
+	case "Answer":
+		return h.AnswerList(ctx)
+	case "Form":
+		return h.FormList(ctx)
 	case "PasswordToken":
 		return h.PasswordTokenList(ctx)
 	case "PaymentCustomer":
@@ -120,6 +160,10 @@ func (h *Handler) List(ctx echo.Context, entityType string) (*EntityList, error)
 		return h.PaymentIntentList(ctx)
 	case "PaymentMethod":
 		return h.PaymentMethodList(ctx)
+	case "Question":
+		return h.QuestionList(ctx)
+	case "Response":
+		return h.ResponseList(ctx)
 	case "Subscription":
 		return h.SubscriptionList(ctx)
 	case "User":
@@ -127,6 +171,212 @@ func (h *Handler) List(ctx echo.Context, entityType string) (*EntityList, error)
 	default:
 		return nil, fmt.Errorf("unsupported entity type: %s", entityType)
 	}
+}
+
+func (h *Handler) AnswerCreate(ctx echo.Context) error {
+	var payload Answer
+	if err := h.bind(ctx, &payload); err != nil {
+		return err
+	}
+
+	op := h.client.Answer.Create()
+	op.SetValue(payload.Value)
+	if payload.CreatedAt != nil {
+		op.SetCreatedAt(*payload.CreatedAt)
+	}
+	_, err := op.Save(ctx.Request().Context())
+	return err
+}
+
+func (h *Handler) AnswerUpdate(ctx echo.Context, id int) error {
+	entity, err := h.client.Answer.Get(ctx.Request().Context(), id)
+	if err != nil {
+		return err
+	}
+
+	var payload Answer
+	if err = h.bind(ctx, &payload); err != nil {
+		return err
+	}
+
+	op := entity.Update()
+	op.SetValue(payload.Value)
+	_, err = op.Save(ctx.Request().Context())
+	return err
+}
+
+func (h *Handler) AnswerDelete(ctx echo.Context, id int) error {
+	return h.client.Answer.DeleteOneID(id).
+		Exec(ctx.Request().Context())
+}
+
+func (h *Handler) AnswerList(ctx echo.Context) (*EntityList, error) {
+	page, offset := h.getPageAndOffset(ctx)
+	res, err := h.client.Answer.
+		Query().
+		Limit(h.Config.ItemsPerPage + 1).
+		Offset(offset).
+		Order(answer.ByID(sql.OrderDesc())).
+		All(ctx.Request().Context())
+
+	if err != nil {
+		return nil, err
+	}
+
+	list := &EntityList{
+		Columns: []string{
+			"Value",
+			"Created at",
+		},
+		Entities:    make([]EntityValues, 0, len(res)),
+		Page:        page,
+		HasNextPage: len(res) > h.Config.ItemsPerPage,
+	}
+
+	for i := 0; i <= len(res)-1; i++ {
+		list.Entities = append(list.Entities, EntityValues{
+			ID: res[i].ID,
+			Values: []string{
+				res[i].Value,
+				res[i].CreatedAt.Format(h.Config.TimeFormat),
+			},
+		})
+	}
+
+	return list, err
+}
+
+func (h *Handler) AnswerGet(ctx echo.Context, id int) (url.Values, error) {
+	entity, err := h.client.Answer.Get(ctx.Request().Context(), id)
+	if err != nil {
+		return nil, err
+	}
+
+	v := url.Values{}
+	v.Set("value", entity.Value)
+	return v, err
+}
+
+func (h *Handler) FormCreate(ctx echo.Context) error {
+	var payload Form
+	if err := h.bind(ctx, &payload); err != nil {
+		return err
+	}
+
+	op := h.client.Form.Create()
+	op.SetTitle(payload.Title)
+	if payload.Description != nil {
+		op.SetDescription(*payload.Description)
+	}
+	op.SetPublished(payload.Published)
+	op.SetSlug(payload.Slug)
+	op.SetUserID(payload.UserID)
+	if payload.CreatedAt != nil {
+		op.SetCreatedAt(*payload.CreatedAt)
+	}
+	if payload.UpdatedAt != nil {
+		op.SetUpdatedAt(*payload.UpdatedAt)
+	}
+	_, err := op.Save(ctx.Request().Context())
+	return err
+}
+
+func (h *Handler) FormUpdate(ctx echo.Context, id int) error {
+	entity, err := h.client.Form.Get(ctx.Request().Context(), id)
+	if err != nil {
+		return err
+	}
+
+	var payload Form
+	if err = h.bind(ctx, &payload); err != nil {
+		return err
+	}
+
+	op := entity.Update()
+	op.SetTitle(payload.Title)
+	if payload.Description == nil {
+		op.ClearDescription()
+	} else {
+		op.SetDescription(*payload.Description)
+	}
+	op.SetPublished(payload.Published)
+	op.SetSlug(payload.Slug)
+	op.SetUserID(payload.UserID)
+	if payload.UpdatedAt == nil {
+		var empty time.Time
+		op.SetUpdatedAt(empty)
+	} else {
+		op.SetUpdatedAt(*payload.UpdatedAt)
+	}
+	_, err = op.Save(ctx.Request().Context())
+	return err
+}
+
+func (h *Handler) FormDelete(ctx echo.Context, id int) error {
+	return h.client.Form.DeleteOneID(id).
+		Exec(ctx.Request().Context())
+}
+
+func (h *Handler) FormList(ctx echo.Context) (*EntityList, error) {
+	page, offset := h.getPageAndOffset(ctx)
+	res, err := h.client.Form.
+		Query().
+		Limit(h.Config.ItemsPerPage + 1).
+		Offset(offset).
+		Order(form.ByID(sql.OrderDesc())).
+		All(ctx.Request().Context())
+
+	if err != nil {
+		return nil, err
+	}
+
+	list := &EntityList{
+		Columns: []string{
+			"Title",
+			"Description",
+			"Published",
+			"Slug",
+			"User ID",
+			"Created at",
+			"Updated at",
+		},
+		Entities:    make([]EntityValues, 0, len(res)),
+		Page:        page,
+		HasNextPage: len(res) > h.Config.ItemsPerPage,
+	}
+
+	for i := 0; i <= len(res)-1; i++ {
+		list.Entities = append(list.Entities, EntityValues{
+			ID: res[i].ID,
+			Values: []string{
+				res[i].Title,
+				res[i].Description,
+				fmt.Sprint(res[i].Published),
+				res[i].Slug,
+				fmt.Sprint(res[i].UserID),
+				res[i].CreatedAt.Format(h.Config.TimeFormat),
+				res[i].UpdatedAt.Format(h.Config.TimeFormat),
+			},
+		})
+	}
+
+	return list, err
+}
+
+func (h *Handler) FormGet(ctx echo.Context, id int) (url.Values, error) {
+	entity, err := h.client.Form.Get(ctx.Request().Context(), id)
+	if err != nil {
+		return nil, err
+	}
+
+	v := url.Values{}
+	v.Set("title", entity.Title)
+	v.Set("description", entity.Description)
+	v.Set("published", fmt.Sprint(entity.Published))
+	v.Set("slug", entity.Slug)
+	v.Set("user_id", fmt.Sprint(entity.UserID))
+	v.Set("updated_at", entity.UpdatedAt.Format(dateTimeFormat))
+	return v, err
 }
 
 func (h *Handler) PasswordTokenCreate(ctx echo.Context) error {
@@ -703,6 +953,281 @@ func (h *Handler) PaymentMethodGet(ctx echo.Context, id int) (url.Values, error)
 	v.Set("is_default", fmt.Sprint(entity.IsDefault))
 	v.Set("metadata", fmt.Sprint(entity.Metadata))
 	v.Set("updated_at", entity.UpdatedAt.Format(dateTimeFormat))
+	return v, err
+}
+
+func (h *Handler) QuestionCreate(ctx echo.Context) error {
+	var payload Question
+	if err := h.bind(ctx, &payload); err != nil {
+		return err
+	}
+
+	op := h.client.Question.Create()
+	if payload.Type != nil {
+		op.SetType(*payload.Type)
+	}
+	op.SetTitle(payload.Title)
+	if payload.Description != nil {
+		op.SetDescription(*payload.Description)
+	}
+	if payload.Placeholder != nil {
+		op.SetPlaceholder(*payload.Placeholder)
+	}
+	op.SetRequired(payload.Required)
+	if payload.Order != nil {
+		op.SetOrder(*payload.Order)
+	}
+	if payload.Options != nil {
+		op.SetOptions(*payload.Options)
+	}
+	if payload.Validation != nil {
+		op.SetValidation(*payload.Validation)
+	}
+	if payload.CreatedAt != nil {
+		op.SetCreatedAt(*payload.CreatedAt)
+	}
+	if payload.UpdatedAt != nil {
+		op.SetUpdatedAt(*payload.UpdatedAt)
+	}
+	_, err := op.Save(ctx.Request().Context())
+	return err
+}
+
+func (h *Handler) QuestionUpdate(ctx echo.Context, id int) error {
+	entity, err := h.client.Question.Get(ctx.Request().Context(), id)
+	if err != nil {
+		return err
+	}
+
+	var payload Question
+	if err = h.bind(ctx, &payload); err != nil {
+		return err
+	}
+
+	op := entity.Update()
+	if payload.Type == nil {
+		var empty question.Type
+		op.SetType(empty)
+	} else {
+		op.SetType(*payload.Type)
+	}
+	op.SetTitle(payload.Title)
+	if payload.Description == nil {
+		op.ClearDescription()
+	} else {
+		op.SetDescription(*payload.Description)
+	}
+	if payload.Placeholder == nil {
+		op.ClearPlaceholder()
+	} else {
+		op.SetPlaceholder(*payload.Placeholder)
+	}
+	op.SetRequired(payload.Required)
+	if payload.Order == nil {
+		var empty int
+		op.SetOrder(empty)
+	} else {
+		op.SetOrder(*payload.Order)
+	}
+	if payload.Options == nil {
+		op.ClearOptions()
+	} else {
+		op.SetOptions(*payload.Options)
+	}
+	if payload.Validation == nil {
+		op.ClearValidation()
+	} else {
+		op.SetValidation(*payload.Validation)
+	}
+	if payload.UpdatedAt == nil {
+		var empty time.Time
+		op.SetUpdatedAt(empty)
+	} else {
+		op.SetUpdatedAt(*payload.UpdatedAt)
+	}
+	_, err = op.Save(ctx.Request().Context())
+	return err
+}
+
+func (h *Handler) QuestionDelete(ctx echo.Context, id int) error {
+	return h.client.Question.DeleteOneID(id).
+		Exec(ctx.Request().Context())
+}
+
+func (h *Handler) QuestionList(ctx echo.Context) (*EntityList, error) {
+	page, offset := h.getPageAndOffset(ctx)
+	res, err := h.client.Question.
+		Query().
+		Limit(h.Config.ItemsPerPage + 1).
+		Offset(offset).
+		Order(question.ByID(sql.OrderDesc())).
+		All(ctx.Request().Context())
+
+	if err != nil {
+		return nil, err
+	}
+
+	list := &EntityList{
+		Columns: []string{
+			"Type",
+			"Title",
+			"Description",
+			"Placeholder",
+			"Required",
+			"Order",
+			"Options",
+			"Validation",
+			"Created at",
+			"Updated at",
+		},
+		Entities:    make([]EntityValues, 0, len(res)),
+		Page:        page,
+		HasNextPage: len(res) > h.Config.ItemsPerPage,
+	}
+
+	for i := 0; i <= len(res)-1; i++ {
+		list.Entities = append(list.Entities, EntityValues{
+			ID: res[i].ID,
+			Values: []string{
+				fmt.Sprint(res[i].Type),
+				res[i].Title,
+				res[i].Description,
+				res[i].Placeholder,
+				fmt.Sprint(res[i].Required),
+				fmt.Sprint(res[i].Order),
+				fmt.Sprint(res[i].Options),
+				fmt.Sprint(res[i].Validation),
+				res[i].CreatedAt.Format(h.Config.TimeFormat),
+				res[i].UpdatedAt.Format(h.Config.TimeFormat),
+			},
+		})
+	}
+
+	return list, err
+}
+
+func (h *Handler) QuestionGet(ctx echo.Context, id int) (url.Values, error) {
+	entity, err := h.client.Question.Get(ctx.Request().Context(), id)
+	if err != nil {
+		return nil, err
+	}
+
+	v := url.Values{}
+	v.Set("type", fmt.Sprint(entity.Type))
+	v.Set("title", entity.Title)
+	v.Set("description", entity.Description)
+	v.Set("placeholder", entity.Placeholder)
+	v.Set("required", fmt.Sprint(entity.Required))
+	v.Set("order", fmt.Sprint(entity.Order))
+	v.Set("options", fmt.Sprint(entity.Options))
+	v.Set("validation", fmt.Sprint(entity.Validation))
+	v.Set("updated_at", entity.UpdatedAt.Format(dateTimeFormat))
+	return v, err
+}
+
+func (h *Handler) ResponseCreate(ctx echo.Context) error {
+	var payload Response
+	if err := h.bind(ctx, &payload); err != nil {
+		return err
+	}
+
+	op := h.client.Response.Create()
+	if payload.SubmittedAt != nil {
+		op.SetSubmittedAt(*payload.SubmittedAt)
+	}
+	op.SetCompleted(payload.Completed)
+	if payload.IPAddress != nil {
+		op.SetIPAddress(*payload.IPAddress)
+	}
+	if payload.UserAgent != nil {
+		op.SetUserAgent(*payload.UserAgent)
+	}
+	_, err := op.Save(ctx.Request().Context())
+	return err
+}
+
+func (h *Handler) ResponseUpdate(ctx echo.Context, id int) error {
+	entity, err := h.client.Response.Get(ctx.Request().Context(), id)
+	if err != nil {
+		return err
+	}
+
+	var payload Response
+	if err = h.bind(ctx, &payload); err != nil {
+		return err
+	}
+
+	op := entity.Update()
+	op.SetCompleted(payload.Completed)
+	if payload.IPAddress == nil {
+		op.ClearIPAddress()
+	} else {
+		op.SetIPAddress(*payload.IPAddress)
+	}
+	if payload.UserAgent == nil {
+		op.ClearUserAgent()
+	} else {
+		op.SetUserAgent(*payload.UserAgent)
+	}
+	_, err = op.Save(ctx.Request().Context())
+	return err
+}
+
+func (h *Handler) ResponseDelete(ctx echo.Context, id int) error {
+	return h.client.Response.DeleteOneID(id).
+		Exec(ctx.Request().Context())
+}
+
+func (h *Handler) ResponseList(ctx echo.Context) (*EntityList, error) {
+	page, offset := h.getPageAndOffset(ctx)
+	res, err := h.client.Response.
+		Query().
+		Limit(h.Config.ItemsPerPage + 1).
+		Offset(offset).
+		Order(response.ByID(sql.OrderDesc())).
+		All(ctx.Request().Context())
+
+	if err != nil {
+		return nil, err
+	}
+
+	list := &EntityList{
+		Columns: []string{
+			"Submitted at",
+			"Completed",
+			"Ip address",
+			"User agent",
+		},
+		Entities:    make([]EntityValues, 0, len(res)),
+		Page:        page,
+		HasNextPage: len(res) > h.Config.ItemsPerPage,
+	}
+
+	for i := 0; i <= len(res)-1; i++ {
+		list.Entities = append(list.Entities, EntityValues{
+			ID: res[i].ID,
+			Values: []string{
+				res[i].SubmittedAt.Format(h.Config.TimeFormat),
+				fmt.Sprint(res[i].Completed),
+				res[i].IPAddress,
+				res[i].UserAgent,
+			},
+		})
+	}
+
+	return list, err
+}
+
+func (h *Handler) ResponseGet(ctx echo.Context, id int) (url.Values, error) {
+	entity, err := h.client.Response.Get(ctx.Request().Context(), id)
+	if err != nil {
+		return nil, err
+	}
+
+	v := url.Values{}
+	v.Set("completed", fmt.Sprint(entity.Completed))
+	v.Set("ip_address", entity.IPAddress)
+	v.Set("user_agent", entity.UserAgent)
 	return v, err
 }
 

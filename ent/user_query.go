@@ -12,9 +12,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/occult/pagode/ent/form"
 	"github.com/occult/pagode/ent/passwordtoken"
 	"github.com/occult/pagode/ent/paymentcustomer"
 	"github.com/occult/pagode/ent/predicate"
+	"github.com/occult/pagode/ent/response"
 	"github.com/occult/pagode/ent/user"
 )
 
@@ -27,6 +29,8 @@ type UserQuery struct {
 	predicates          []predicate.User
 	withOwner           *PasswordTokenQuery
 	withPaymentCustomer *PaymentCustomerQuery
+	withForms           *FormQuery
+	withResponses       *ResponseQuery
 	withFKs             bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -101,6 +105,50 @@ func (uq *UserQuery) QueryPaymentCustomer() *PaymentCustomerQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(paymentcustomer.Table, paymentcustomer.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, true, user.PaymentCustomerTable, user.PaymentCustomerColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryForms chains the current query on the "forms" edge.
+func (uq *UserQuery) QueryForms() *FormQuery {
+	query := (&FormClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(form.Table, form.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.FormsTable, user.FormsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryResponses chains the current query on the "responses" edge.
+func (uq *UserQuery) QueryResponses() *ResponseQuery {
+	query := (&ResponseClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(response.Table, response.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ResponsesTable, user.ResponsesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -302,6 +350,8 @@ func (uq *UserQuery) Clone() *UserQuery {
 		predicates:          append([]predicate.User{}, uq.predicates...),
 		withOwner:           uq.withOwner.Clone(),
 		withPaymentCustomer: uq.withPaymentCustomer.Clone(),
+		withForms:           uq.withForms.Clone(),
+		withResponses:       uq.withResponses.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -327,6 +377,28 @@ func (uq *UserQuery) WithPaymentCustomer(opts ...func(*PaymentCustomerQuery)) *U
 		opt(query)
 	}
 	uq.withPaymentCustomer = query
+	return uq
+}
+
+// WithForms tells the query-builder to eager-load the nodes that are connected to
+// the "forms" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithForms(opts ...func(*FormQuery)) *UserQuery {
+	query := (&FormClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withForms = query
+	return uq
+}
+
+// WithResponses tells the query-builder to eager-load the nodes that are connected to
+// the "responses" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithResponses(opts ...func(*ResponseQuery)) *UserQuery {
+	query := (&ResponseClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withResponses = query
 	return uq
 }
 
@@ -409,9 +481,11 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		nodes       = []*User{}
 		withFKs     = uq.withFKs
 		_spec       = uq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [4]bool{
 			uq.withOwner != nil,
 			uq.withPaymentCustomer != nil,
+			uq.withForms != nil,
+			uq.withResponses != nil,
 		}
 	)
 	if uq.withPaymentCustomer != nil {
@@ -448,6 +522,20 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	if query := uq.withPaymentCustomer; query != nil {
 		if err := uq.loadPaymentCustomer(ctx, query, nodes, nil,
 			func(n *User, e *PaymentCustomer) { n.Edges.PaymentCustomer = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withForms; query != nil {
+		if err := uq.loadForms(ctx, query, nodes,
+			func(n *User) { n.Edges.Forms = []*Form{} },
+			func(n *User, e *Form) { n.Edges.Forms = append(n.Edges.Forms, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withResponses; query != nil {
+		if err := uq.loadResponses(ctx, query, nodes,
+			func(n *User) { n.Edges.Responses = []*Response{} },
+			func(n *User, e *Response) { n.Edges.Responses = append(n.Edges.Responses, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -513,6 +601,67 @@ func (uq *UserQuery) loadPaymentCustomer(ctx context.Context, query *PaymentCust
 		for i := range nodes {
 			assign(nodes[i], n)
 		}
+	}
+	return nil
+}
+func (uq *UserQuery) loadForms(ctx context.Context, query *FormQuery, nodes []*User, init func(*User), assign func(*User, *Form)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(form.FieldUserID)
+	}
+	query.Where(predicate.Form(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.FormsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.UserID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadResponses(ctx context.Context, query *ResponseQuery, nodes []*User, init func(*User), assign func(*User, *Response)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Response(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.ResponsesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_responses
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_responses" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_responses" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }

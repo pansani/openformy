@@ -10,9 +10,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/occult/pagode/ent/form"
 	"github.com/occult/pagode/ent/passwordtoken"
 	"github.com/occult/pagode/ent/paymentcustomer"
 	"github.com/occult/pagode/ent/predicate"
+	"github.com/occult/pagode/ent/response"
 	"github.com/occult/pagode/ent/user"
 )
 
@@ -133,6 +135,36 @@ func (uu *UserUpdate) SetPaymentCustomer(p *PaymentCustomer) *UserUpdate {
 	return uu.SetPaymentCustomerID(p.ID)
 }
 
+// AddFormIDs adds the "forms" edge to the Form entity by IDs.
+func (uu *UserUpdate) AddFormIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddFormIDs(ids...)
+	return uu
+}
+
+// AddForms adds the "forms" edges to the Form entity.
+func (uu *UserUpdate) AddForms(f ...*Form) *UserUpdate {
+	ids := make([]int, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return uu.AddFormIDs(ids...)
+}
+
+// AddResponseIDs adds the "responses" edge to the Response entity by IDs.
+func (uu *UserUpdate) AddResponseIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddResponseIDs(ids...)
+	return uu
+}
+
+// AddResponses adds the "responses" edges to the Response entity.
+func (uu *UserUpdate) AddResponses(r ...*Response) *UserUpdate {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uu.AddResponseIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -163,6 +195,48 @@ func (uu *UserUpdate) RemoveOwner(p ...*PasswordToken) *UserUpdate {
 func (uu *UserUpdate) ClearPaymentCustomer() *UserUpdate {
 	uu.mutation.ClearPaymentCustomer()
 	return uu
+}
+
+// ClearForms clears all "forms" edges to the Form entity.
+func (uu *UserUpdate) ClearForms() *UserUpdate {
+	uu.mutation.ClearForms()
+	return uu
+}
+
+// RemoveFormIDs removes the "forms" edge to Form entities by IDs.
+func (uu *UserUpdate) RemoveFormIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveFormIDs(ids...)
+	return uu
+}
+
+// RemoveForms removes "forms" edges to Form entities.
+func (uu *UserUpdate) RemoveForms(f ...*Form) *UserUpdate {
+	ids := make([]int, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return uu.RemoveFormIDs(ids...)
+}
+
+// ClearResponses clears all "responses" edges to the Response entity.
+func (uu *UserUpdate) ClearResponses() *UserUpdate {
+	uu.mutation.ClearResponses()
+	return uu
+}
+
+// RemoveResponseIDs removes the "responses" edge to Response entities by IDs.
+func (uu *UserUpdate) RemoveResponseIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveResponseIDs(ids...)
+	return uu
+}
+
+// RemoveResponses removes "responses" edges to Response entities.
+func (uu *UserUpdate) RemoveResponses(r ...*Response) *UserUpdate {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uu.RemoveResponseIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -313,6 +387,96 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.FormsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FormsTable,
+			Columns: []string{user.FormsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(form.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedFormsIDs(); len(nodes) > 0 && !uu.mutation.FormsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FormsTable,
+			Columns: []string{user.FormsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(form.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.FormsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FormsTable,
+			Columns: []string{user.FormsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(form.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.ResponsesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ResponsesTable,
+			Columns: []string{user.ResponsesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(response.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedResponsesIDs(); len(nodes) > 0 && !uu.mutation.ResponsesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ResponsesTable,
+			Columns: []string{user.ResponsesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(response.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.ResponsesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ResponsesTable,
+			Columns: []string{user.ResponsesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(response.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -437,6 +601,36 @@ func (uuo *UserUpdateOne) SetPaymentCustomer(p *PaymentCustomer) *UserUpdateOne 
 	return uuo.SetPaymentCustomerID(p.ID)
 }
 
+// AddFormIDs adds the "forms" edge to the Form entity by IDs.
+func (uuo *UserUpdateOne) AddFormIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddFormIDs(ids...)
+	return uuo
+}
+
+// AddForms adds the "forms" edges to the Form entity.
+func (uuo *UserUpdateOne) AddForms(f ...*Form) *UserUpdateOne {
+	ids := make([]int, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return uuo.AddFormIDs(ids...)
+}
+
+// AddResponseIDs adds the "responses" edge to the Response entity by IDs.
+func (uuo *UserUpdateOne) AddResponseIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddResponseIDs(ids...)
+	return uuo
+}
+
+// AddResponses adds the "responses" edges to the Response entity.
+func (uuo *UserUpdateOne) AddResponses(r ...*Response) *UserUpdateOne {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uuo.AddResponseIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -467,6 +661,48 @@ func (uuo *UserUpdateOne) RemoveOwner(p ...*PasswordToken) *UserUpdateOne {
 func (uuo *UserUpdateOne) ClearPaymentCustomer() *UserUpdateOne {
 	uuo.mutation.ClearPaymentCustomer()
 	return uuo
+}
+
+// ClearForms clears all "forms" edges to the Form entity.
+func (uuo *UserUpdateOne) ClearForms() *UserUpdateOne {
+	uuo.mutation.ClearForms()
+	return uuo
+}
+
+// RemoveFormIDs removes the "forms" edge to Form entities by IDs.
+func (uuo *UserUpdateOne) RemoveFormIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveFormIDs(ids...)
+	return uuo
+}
+
+// RemoveForms removes "forms" edges to Form entities.
+func (uuo *UserUpdateOne) RemoveForms(f ...*Form) *UserUpdateOne {
+	ids := make([]int, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return uuo.RemoveFormIDs(ids...)
+}
+
+// ClearResponses clears all "responses" edges to the Response entity.
+func (uuo *UserUpdateOne) ClearResponses() *UserUpdateOne {
+	uuo.mutation.ClearResponses()
+	return uuo
+}
+
+// RemoveResponseIDs removes the "responses" edge to Response entities by IDs.
+func (uuo *UserUpdateOne) RemoveResponseIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveResponseIDs(ids...)
+	return uuo
+}
+
+// RemoveResponses removes "responses" edges to Response entities.
+func (uuo *UserUpdateOne) RemoveResponses(r ...*Response) *UserUpdateOne {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uuo.RemoveResponseIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -640,6 +876,96 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(paymentcustomer.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.FormsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FormsTable,
+			Columns: []string{user.FormsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(form.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedFormsIDs(); len(nodes) > 0 && !uuo.mutation.FormsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FormsTable,
+			Columns: []string{user.FormsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(form.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.FormsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FormsTable,
+			Columns: []string{user.FormsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(form.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.ResponsesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ResponsesTable,
+			Columns: []string{user.ResponsesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(response.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedResponsesIDs(); len(nodes) > 0 && !uuo.mutation.ResponsesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ResponsesTable,
+			Columns: []string{user.ResponsesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(response.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.ResponsesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ResponsesTable,
+			Columns: []string{user.ResponsesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(response.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

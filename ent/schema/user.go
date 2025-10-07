@@ -53,6 +53,8 @@ func (User) Edges() []ent.Edge {
 		edge.From("payment_customer", PaymentCustomer.Type).
 			Ref("user").
 			Unique(),
+		edge.To("forms", Form.Type),
+		edge.To("responses", Response.Type),
 	}
 }
 

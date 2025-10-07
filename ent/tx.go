@@ -12,6 +12,10 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// Answer is the client for interacting with the Answer builders.
+	Answer *AnswerClient
+	// Form is the client for interacting with the Form builders.
+	Form *FormClient
 	// PasswordToken is the client for interacting with the PasswordToken builders.
 	PasswordToken *PasswordTokenClient
 	// PaymentCustomer is the client for interacting with the PaymentCustomer builders.
@@ -20,6 +24,10 @@ type Tx struct {
 	PaymentIntent *PaymentIntentClient
 	// PaymentMethod is the client for interacting with the PaymentMethod builders.
 	PaymentMethod *PaymentMethodClient
+	// Question is the client for interacting with the Question builders.
+	Question *QuestionClient
+	// Response is the client for interacting with the Response builders.
+	Response *ResponseClient
 	// Subscription is the client for interacting with the Subscription builders.
 	Subscription *SubscriptionClient
 	// User is the client for interacting with the User builders.
@@ -155,10 +163,14 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.Answer = NewAnswerClient(tx.config)
+	tx.Form = NewFormClient(tx.config)
 	tx.PasswordToken = NewPasswordTokenClient(tx.config)
 	tx.PaymentCustomer = NewPaymentCustomerClient(tx.config)
 	tx.PaymentIntent = NewPaymentIntentClient(tx.config)
 	tx.PaymentMethod = NewPaymentMethodClient(tx.config)
+	tx.Question = NewQuestionClient(tx.config)
+	tx.Response = NewResponseClient(tx.config)
 	tx.Subscription = NewSubscriptionClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
@@ -170,7 +182,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: PasswordToken.QueryXXX(), the query will be executed
+// applies a query, for example: Answer.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

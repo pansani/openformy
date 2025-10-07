@@ -43,9 +43,13 @@ type UserEdges struct {
 	Owner []*PasswordToken `json:"owner,omitempty"`
 	// PaymentCustomer holds the value of the payment_customer edge.
 	PaymentCustomer *PaymentCustomer `json:"payment_customer,omitempty"`
+	// Forms holds the value of the forms edge.
+	Forms []*Form `json:"forms,omitempty"`
+	// Responses holds the value of the responses edge.
+	Responses []*Response `json:"responses,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [4]bool
 }
 
 // OwnerOrErr returns the Owner value or an error if the edge
@@ -66,6 +70,24 @@ func (e UserEdges) PaymentCustomerOrErr() (*PaymentCustomer, error) {
 		return nil, &NotFoundError{label: paymentcustomer.Label}
 	}
 	return nil, &NotLoadedError{edge: "payment_customer"}
+}
+
+// FormsOrErr returns the Forms value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) FormsOrErr() ([]*Form, error) {
+	if e.loadedTypes[2] {
+		return e.Forms, nil
+	}
+	return nil, &NotLoadedError{edge: "forms"}
+}
+
+// ResponsesOrErr returns the Responses value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) ResponsesOrErr() ([]*Response, error) {
+	if e.loadedTypes[3] {
+		return e.Responses, nil
+	}
+	return nil, &NotLoadedError{edge: "responses"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -168,6 +190,16 @@ func (u *User) QueryOwner() *PasswordTokenQuery {
 // QueryPaymentCustomer queries the "payment_customer" edge of the User entity.
 func (u *User) QueryPaymentCustomer() *PaymentCustomerQuery {
 	return NewUserClient(u.config).QueryPaymentCustomer(u)
+}
+
+// QueryForms queries the "forms" edge of the User entity.
+func (u *User) QueryForms() *FormQuery {
+	return NewUserClient(u.config).QueryForms(u)
+}
+
+// QueryResponses queries the "responses" edge of the User entity.
+func (u *User) QueryResponses() *ResponseQuery {
+	return NewUserClient(u.config).QueryResponses(u)
 }
 
 // Update returns a builder for updating this User.

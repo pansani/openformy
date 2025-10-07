@@ -46,6 +46,13 @@ const (
 	Premium               = "premium"
 	Billing               = "billing"
 	BillingCancel         = "billing.cancel"
+	Forms                 = "forms"
+	FormsCreate           = "forms.create"
+	FormsStore            = "forms.store"
+	FormsEdit             = "forms.edit"
+	FormsUpdate           = "forms.update"
+	FormsDelete           = "forms.delete"
+	FormsShow             = "forms.show"
 )
 
 func AdminEntityList(entityTypeName string) string {

@@ -9,6 +9,30 @@ import (
 	"github.com/occult/pagode/ent"
 )
 
+// The AnswerFunc type is an adapter to allow the use of ordinary
+// function as Answer mutator.
+type AnswerFunc func(context.Context, *ent.AnswerMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AnswerFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AnswerMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AnswerMutation", m)
+}
+
+// The FormFunc type is an adapter to allow the use of ordinary
+// function as Form mutator.
+type FormFunc func(context.Context, *ent.FormMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f FormFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.FormMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FormMutation", m)
+}
+
 // The PasswordTokenFunc type is an adapter to allow the use of ordinary
 // function as PasswordToken mutator.
 type PasswordTokenFunc func(context.Context, *ent.PasswordTokenMutation) (ent.Value, error)
@@ -55,6 +79,30 @@ func (f PaymentMethodFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Valu
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PaymentMethodMutation", m)
+}
+
+// The QuestionFunc type is an adapter to allow the use of ordinary
+// function as Question mutator.
+type QuestionFunc func(context.Context, *ent.QuestionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f QuestionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.QuestionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.QuestionMutation", m)
+}
+
+// The ResponseFunc type is an adapter to allow the use of ordinary
+// function as Response mutator.
+type ResponseFunc func(context.Context, *ent.ResponseMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ResponseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ResponseMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ResponseMutation", m)
 }
 
 // The SubscriptionFunc type is an adapter to allow the use of ordinary

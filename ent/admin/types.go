@@ -6,8 +6,24 @@ import (
 
 	"github.com/occult/pagode/ent/paymentintent"
 	"github.com/occult/pagode/ent/paymentmethod"
+	"github.com/occult/pagode/ent/question"
 	"github.com/occult/pagode/ent/subscription"
 )
+
+type Answer struct {
+	Value     string     `form:"value"`
+	CreatedAt *time.Time `form:"created_at"`
+}
+
+type Form struct {
+	Title       string     `form:"title"`
+	Description *string    `form:"description"`
+	Published   bool       `form:"published"`
+	Slug        string     `form:"slug"`
+	UserID      int        `form:"user_id"`
+	CreatedAt   *time.Time `form:"created_at"`
+	UpdatedAt   *time.Time `form:"updated_at"`
+}
 
 type PasswordToken struct {
 	Token     *string    `form:"token"`
@@ -50,6 +66,26 @@ type PaymentMethod struct {
 	Metadata                *map[string]interface{} `form:"metadata"`
 	CreatedAt               *time.Time              `form:"created_at"`
 	UpdatedAt               *time.Time              `form:"updated_at"`
+}
+
+type Question struct {
+	Type        *question.Type          `form:"type"`
+	Title       string                  `form:"title"`
+	Description *string                 `form:"description"`
+	Placeholder *string                 `form:"placeholder"`
+	Required    bool                    `form:"required"`
+	Order       *int                    `form:"order"`
+	Options     *map[string]interface{} `form:"options"`
+	Validation  *map[string]interface{} `form:"validation"`
+	CreatedAt   *time.Time              `form:"created_at"`
+	UpdatedAt   *time.Time              `form:"updated_at"`
+}
+
+type Response struct {
+	SubmittedAt *time.Time `form:"submitted_at"`
+	Completed   bool       `form:"completed"`
+	IPAddress   *string    `form:"ip_address"`
+	UserAgent   *string    `form:"user_agent"`
 }
 
 type Subscription struct {
@@ -101,10 +137,14 @@ type HandlerConfig struct {
 
 func GetEntityTypeNames() []string {
 	return []string{
+		"Answer",
+		"Form",
 		"PasswordToken",
 		"PaymentCustomer",
 		"PaymentIntent",
 		"PaymentMethod",
+		"Question",
+		"Response",
 		"Subscription",
 		"User",
 	}

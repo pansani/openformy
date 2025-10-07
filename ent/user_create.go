@@ -10,8 +10,10 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/occult/pagode/ent/form"
 	"github.com/occult/pagode/ent/passwordtoken"
 	"github.com/occult/pagode/ent/paymentcustomer"
+	"github.com/occult/pagode/ent/response"
 	"github.com/occult/pagode/ent/user"
 )
 
@@ -114,6 +116,36 @@ func (uc *UserCreate) SetNillablePaymentCustomerID(id *int) *UserCreate {
 // SetPaymentCustomer sets the "payment_customer" edge to the PaymentCustomer entity.
 func (uc *UserCreate) SetPaymentCustomer(p *PaymentCustomer) *UserCreate {
 	return uc.SetPaymentCustomerID(p.ID)
+}
+
+// AddFormIDs adds the "forms" edge to the Form entity by IDs.
+func (uc *UserCreate) AddFormIDs(ids ...int) *UserCreate {
+	uc.mutation.AddFormIDs(ids...)
+	return uc
+}
+
+// AddForms adds the "forms" edges to the Form entity.
+func (uc *UserCreate) AddForms(f ...*Form) *UserCreate {
+	ids := make([]int, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return uc.AddFormIDs(ids...)
+}
+
+// AddResponseIDs adds the "responses" edge to the Response entity by IDs.
+func (uc *UserCreate) AddResponseIDs(ids ...int) *UserCreate {
+	uc.mutation.AddResponseIDs(ids...)
+	return uc
+}
+
+// AddResponses adds the "responses" edges to the Response entity.
+func (uc *UserCreate) AddResponses(r ...*Response) *UserCreate {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uc.AddResponseIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -287,6 +319,38 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.payment_customer_user = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.FormsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FormsTable,
+			Columns: []string{user.FormsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(form.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.ResponsesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ResponsesTable,
+			Columns: []string{user.ResponsesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(response.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

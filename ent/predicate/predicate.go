@@ -6,6 +6,12 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Answer is the predicate function for answer builders.
+type Answer func(*sql.Selector)
+
+// Form is the predicate function for form builders.
+type Form func(*sql.Selector)
+
 // PasswordToken is the predicate function for passwordtoken builders.
 type PasswordToken func(*sql.Selector)
 
@@ -17,6 +23,12 @@ type PaymentIntent func(*sql.Selector)
 
 // PaymentMethod is the predicate function for paymentmethod builders.
 type PaymentMethod func(*sql.Selector)
+
+// Question is the predicate function for question builders.
+type Question func(*sql.Selector)
+
+// Response is the predicate function for response builders.
+type Response func(*sql.Selector)
 
 // Subscription is the predicate function for subscription builders.
 type Subscription func(*sql.Selector)

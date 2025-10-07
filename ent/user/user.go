@@ -31,6 +31,10 @@ const (
 	EdgeOwner = "owner"
 	// EdgePaymentCustomer holds the string denoting the payment_customer edge name in mutations.
 	EdgePaymentCustomer = "payment_customer"
+	// EdgeForms holds the string denoting the forms edge name in mutations.
+	EdgeForms = "forms"
+	// EdgeResponses holds the string denoting the responses edge name in mutations.
+	EdgeResponses = "responses"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// OwnerTable is the table that holds the owner relation/edge.
@@ -47,6 +51,20 @@ const (
 	PaymentCustomerInverseTable = "payment_customers"
 	// PaymentCustomerColumn is the table column denoting the payment_customer relation/edge.
 	PaymentCustomerColumn = "payment_customer_user"
+	// FormsTable is the table that holds the forms relation/edge.
+	FormsTable = "forms"
+	// FormsInverseTable is the table name for the Form entity.
+	// It exists in this package in order to avoid circular dependency with the "form" package.
+	FormsInverseTable = "forms"
+	// FormsColumn is the table column denoting the forms relation/edge.
+	FormsColumn = "user_id"
+	// ResponsesTable is the table that holds the responses relation/edge.
+	ResponsesTable = "responses"
+	// ResponsesInverseTable is the table name for the Response entity.
+	// It exists in this package in order to avoid circular dependency with the "response" package.
+	ResponsesInverseTable = "responses"
+	// ResponsesColumn is the table column denoting the responses relation/edge.
+	ResponsesColumn = "user_responses"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -160,6 +178,34 @@ func ByPaymentCustomerField(field string, opts ...sql.OrderTermOption) OrderOpti
 		sqlgraph.OrderByNeighborTerms(s, newPaymentCustomerStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByFormsCount orders the results by forms count.
+func ByFormsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newFormsStep(), opts...)
+	}
+}
+
+// ByForms orders the results by forms terms.
+func ByForms(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFormsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByResponsesCount orders the results by responses count.
+func ByResponsesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newResponsesStep(), opts...)
+	}
+}
+
+// ByResponses orders the results by responses terms.
+func ByResponses(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newResponsesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newOwnerStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -172,5 +218,19 @@ func newPaymentCustomerStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PaymentCustomerInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2O, true, PaymentCustomerTable, PaymentCustomerColumn),
+	)
+}
+func newFormsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(FormsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, FormsTable, FormsColumn),
+	)
+}
+func newResponsesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ResponsesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ResponsesTable, ResponsesColumn),
 	)
 }

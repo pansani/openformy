@@ -386,6 +386,52 @@ func HasPaymentCustomerWith(preds ...predicate.PaymentCustomer) predicate.User {
 	})
 }
 
+// HasForms applies the HasEdge predicate on the "forms" edge.
+func HasForms() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, FormsTable, FormsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasFormsWith applies the HasEdge predicate on the "forms" edge with a given conditions (other predicates).
+func HasFormsWith(preds ...predicate.Form) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newFormsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasResponses applies the HasEdge predicate on the "responses" edge.
+func HasResponses() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ResponsesTable, ResponsesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasResponsesWith applies the HasEdge predicate on the "responses" edge with a given conditions (other predicates).
+func HasResponsesWith(preds ...predicate.Response) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newResponsesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(sql.AndPredicates(predicates...))

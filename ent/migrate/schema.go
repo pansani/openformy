@@ -8,6 +8,66 @@ import (
 )
 
 var (
+	// AnswersColumns holds the columns for the "answers" table.
+	AnswersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "value", Type: field.TypeString, Size: 2147483647},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "question_answers", Type: field.TypeInt},
+		{Name: "response_answers", Type: field.TypeInt},
+	}
+	// AnswersTable holds the schema information for the "answers" table.
+	AnswersTable = &schema.Table{
+		Name:       "answers",
+		Columns:    AnswersColumns,
+		PrimaryKey: []*schema.Column{AnswersColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "answers_questions_answers",
+				Columns:    []*schema.Column{AnswersColumns[3]},
+				RefColumns: []*schema.Column{QuestionsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "answers_responses_answers",
+				Columns:    []*schema.Column{AnswersColumns[4]},
+				RefColumns: []*schema.Column{ResponsesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// FormsColumns holds the columns for the "forms" table.
+	FormsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "title", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Nullable: true, Size: 2147483647},
+		{Name: "published", Type: field.TypeBool, Default: false},
+		{Name: "slug", Type: field.TypeString, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "user_id", Type: field.TypeInt},
+	}
+	// FormsTable holds the schema information for the "forms" table.
+	FormsTable = &schema.Table{
+		Name:       "forms",
+		Columns:    FormsColumns,
+		PrimaryKey: []*schema.Column{FormsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "forms_users_forms",
+				Columns:    []*schema.Column{FormsColumns[7]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "form_slug",
+				Unique:  true,
+				Columns: []*schema.Column{FormsColumns[4]},
+			},
+		},
+	}
 	// PasswordTokensColumns holds the columns for the "password_tokens" table.
 	PasswordTokensColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -105,6 +165,79 @@ var (
 			},
 		},
 	}
+	// QuestionsColumns holds the columns for the "questions" table.
+	QuestionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"text", "email", "number", "textarea", "dropdown", "radio", "checkbox", "date", "phone", "url"}, Default: "text"},
+		{Name: "title", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Nullable: true, Size: 2147483647},
+		{Name: "placeholder", Type: field.TypeString, Nullable: true},
+		{Name: "required", Type: field.TypeBool, Default: false},
+		{Name: "order", Type: field.TypeInt, Default: 0},
+		{Name: "options", Type: field.TypeJSON, Nullable: true},
+		{Name: "validation", Type: field.TypeJSON, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "form_questions", Type: field.TypeInt},
+	}
+	// QuestionsTable holds the schema information for the "questions" table.
+	QuestionsTable = &schema.Table{
+		Name:       "questions",
+		Columns:    QuestionsColumns,
+		PrimaryKey: []*schema.Column{QuestionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "questions_forms_questions",
+				Columns:    []*schema.Column{QuestionsColumns[11]},
+				RefColumns: []*schema.Column{FormsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "question_order",
+				Unique:  false,
+				Columns: []*schema.Column{QuestionsColumns[6]},
+			},
+		},
+	}
+	// ResponsesColumns holds the columns for the "responses" table.
+	ResponsesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "submitted_at", Type: field.TypeTime},
+		{Name: "completed", Type: field.TypeBool, Default: true},
+		{Name: "ip_address", Type: field.TypeString, Nullable: true},
+		{Name: "user_agent", Type: field.TypeString, Nullable: true},
+		{Name: "form_responses", Type: field.TypeInt},
+		{Name: "user_responses", Type: field.TypeInt, Nullable: true},
+	}
+	// ResponsesTable holds the schema information for the "responses" table.
+	ResponsesTable = &schema.Table{
+		Name:       "responses",
+		Columns:    ResponsesColumns,
+		PrimaryKey: []*schema.Column{ResponsesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "responses_forms_responses",
+				Columns:    []*schema.Column{ResponsesColumns[5]},
+				RefColumns: []*schema.Column{FormsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "responses_users_responses",
+				Columns:    []*schema.Column{ResponsesColumns[6]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "response_submitted_at",
+				Unique:  false,
+				Columns: []*schema.Column{ResponsesColumns[1]},
+			},
+		},
+	}
 	// SubscriptionsColumns holds the columns for the "subscriptions" table.
 	SubscriptionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -168,19 +301,29 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		AnswersTable,
+		FormsTable,
 		PasswordTokensTable,
 		PaymentCustomersTable,
 		PaymentIntentsTable,
 		PaymentMethodsTable,
+		QuestionsTable,
+		ResponsesTable,
 		SubscriptionsTable,
 		UsersTable,
 	}
 )
 
 func init() {
+	AnswersTable.ForeignKeys[0].RefTable = QuestionsTable
+	AnswersTable.ForeignKeys[1].RefTable = ResponsesTable
+	FormsTable.ForeignKeys[0].RefTable = UsersTable
 	PasswordTokensTable.ForeignKeys[0].RefTable = UsersTable
 	PaymentIntentsTable.ForeignKeys[0].RefTable = PaymentCustomersTable
 	PaymentMethodsTable.ForeignKeys[0].RefTable = PaymentCustomersTable
+	QuestionsTable.ForeignKeys[0].RefTable = FormsTable
+	ResponsesTable.ForeignKeys[0].RefTable = FormsTable
+	ResponsesTable.ForeignKeys[1].RefTable = UsersTable
 	SubscriptionsTable.ForeignKeys[0].RefTable = PaymentCustomersTable
 	UsersTable.ForeignKeys[0].RefTable = PaymentCustomersTable
 }

@@ -5,10 +5,14 @@ package runtime
 import (
 	"time"
 
+	"github.com/occult/pagode/ent/answer"
+	"github.com/occult/pagode/ent/form"
 	"github.com/occult/pagode/ent/passwordtoken"
 	"github.com/occult/pagode/ent/paymentcustomer"
 	"github.com/occult/pagode/ent/paymentintent"
 	"github.com/occult/pagode/ent/paymentmethod"
+	"github.com/occult/pagode/ent/question"
+	"github.com/occult/pagode/ent/response"
 	"github.com/occult/pagode/ent/schema"
 	"github.com/occult/pagode/ent/subscription"
 	"github.com/occult/pagode/ent/user"
@@ -18,6 +22,40 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	answerFields := schema.Answer{}.Fields()
+	_ = answerFields
+	// answerDescValue is the schema descriptor for value field.
+	answerDescValue := answerFields[0].Descriptor()
+	// answer.ValueValidator is a validator for the "value" field. It is called by the builders before save.
+	answer.ValueValidator = answerDescValue.Validators[0].(func(string) error)
+	// answerDescCreatedAt is the schema descriptor for created_at field.
+	answerDescCreatedAt := answerFields[1].Descriptor()
+	// answer.DefaultCreatedAt holds the default value on creation for the created_at field.
+	answer.DefaultCreatedAt = answerDescCreatedAt.Default.(func() time.Time)
+	formFields := schema.Form{}.Fields()
+	_ = formFields
+	// formDescTitle is the schema descriptor for title field.
+	formDescTitle := formFields[0].Descriptor()
+	// form.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	form.TitleValidator = formDescTitle.Validators[0].(func(string) error)
+	// formDescPublished is the schema descriptor for published field.
+	formDescPublished := formFields[2].Descriptor()
+	// form.DefaultPublished holds the default value on creation for the published field.
+	form.DefaultPublished = formDescPublished.Default.(bool)
+	// formDescSlug is the schema descriptor for slug field.
+	formDescSlug := formFields[3].Descriptor()
+	// form.SlugValidator is a validator for the "slug" field. It is called by the builders before save.
+	form.SlugValidator = formDescSlug.Validators[0].(func(string) error)
+	// formDescCreatedAt is the schema descriptor for created_at field.
+	formDescCreatedAt := formFields[5].Descriptor()
+	// form.DefaultCreatedAt holds the default value on creation for the created_at field.
+	form.DefaultCreatedAt = formDescCreatedAt.Default.(func() time.Time)
+	// formDescUpdatedAt is the schema descriptor for updated_at field.
+	formDescUpdatedAt := formFields[6].Descriptor()
+	// form.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	form.DefaultUpdatedAt = formDescUpdatedAt.Default.(func() time.Time)
+	// form.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	form.UpdateDefaultUpdatedAt = formDescUpdatedAt.UpdateDefault.(func() time.Time)
 	passwordtokenHooks := schema.PasswordToken{}.Hooks()
 	passwordtoken.Hooks[0] = passwordtokenHooks[0]
 	passwordtokenFields := schema.PasswordToken{}.Fields()
@@ -132,6 +170,42 @@ func init() {
 	paymentmethod.DefaultUpdatedAt = paymentmethodDescUpdatedAt.Default.(func() time.Time)
 	// paymentmethod.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	paymentmethod.UpdateDefaultUpdatedAt = paymentmethodDescUpdatedAt.UpdateDefault.(func() time.Time)
+	questionFields := schema.Question{}.Fields()
+	_ = questionFields
+	// questionDescTitle is the schema descriptor for title field.
+	questionDescTitle := questionFields[1].Descriptor()
+	// question.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	question.TitleValidator = questionDescTitle.Validators[0].(func(string) error)
+	// questionDescRequired is the schema descriptor for required field.
+	questionDescRequired := questionFields[4].Descriptor()
+	// question.DefaultRequired holds the default value on creation for the required field.
+	question.DefaultRequired = questionDescRequired.Default.(bool)
+	// questionDescOrder is the schema descriptor for order field.
+	questionDescOrder := questionFields[5].Descriptor()
+	// question.DefaultOrder holds the default value on creation for the order field.
+	question.DefaultOrder = questionDescOrder.Default.(int)
+	// question.OrderValidator is a validator for the "order" field. It is called by the builders before save.
+	question.OrderValidator = questionDescOrder.Validators[0].(func(int) error)
+	// questionDescCreatedAt is the schema descriptor for created_at field.
+	questionDescCreatedAt := questionFields[8].Descriptor()
+	// question.DefaultCreatedAt holds the default value on creation for the created_at field.
+	question.DefaultCreatedAt = questionDescCreatedAt.Default.(func() time.Time)
+	// questionDescUpdatedAt is the schema descriptor for updated_at field.
+	questionDescUpdatedAt := questionFields[9].Descriptor()
+	// question.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	question.DefaultUpdatedAt = questionDescUpdatedAt.Default.(func() time.Time)
+	// question.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	question.UpdateDefaultUpdatedAt = questionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	responseFields := schema.Response{}.Fields()
+	_ = responseFields
+	// responseDescSubmittedAt is the schema descriptor for submitted_at field.
+	responseDescSubmittedAt := responseFields[0].Descriptor()
+	// response.DefaultSubmittedAt holds the default value on creation for the submitted_at field.
+	response.DefaultSubmittedAt = responseDescSubmittedAt.Default.(func() time.Time)
+	// responseDescCompleted is the schema descriptor for completed field.
+	responseDescCompleted := responseFields[1].Descriptor()
+	// response.DefaultCompleted holds the default value on creation for the completed field.
+	response.DefaultCompleted = responseDescCompleted.Default.(bool)
 	subscriptionFields := schema.Subscription{}.Fields()
 	_ = subscriptionFields
 	// subscriptionDescProviderSubscriptionID is the schema descriptor for provider_subscription_id field.
