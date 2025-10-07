@@ -1,7 +1,7 @@
 import { Link, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Edit, Eye, Copy, Trash2, Calendar, ExternalLink, MoreVertical } from 'lucide-react';
+import { Edit, Eye, Copy, Trash2, Calendar, ExternalLink, MoreVertical, Settings } from 'lucide-react';
 import { useState } from 'react';
 import {
   DropdownMenu,
@@ -78,7 +78,7 @@ export function FormCard({ form }: FormCardProps) {
                     : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
                 }`}
               >
-                {form.published ? 'Publicado' : 'Rascunho'}
+                {form.published ? 'Published' : 'Draft'}
               </span>
             </div>
             {form.description && (
@@ -101,18 +101,18 @@ export function FormCard({ form }: FormCardProps) {
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={handleCopyLink}>
                 <Copy className="h-4 w-4 mr-2" />
-                Copiar link
+                Copy link
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <a href={formUrl} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="h-4 w-4 mr-2" />
-                  Abrir em nova aba
+                  Open in new tab
                 </a>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleDelete} className="text-red-600">
                 <Trash2 className="h-4 w-4 mr-2" />
-                Deletar
+                Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -120,7 +120,7 @@ export function FormCard({ form }: FormCardProps) {
 
         <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
           <Calendar className="h-3.5 w-3.5" />
-          <span>Criado em {formatDate(form.created_at)}</span>
+          <span>Created on {formatDate(form.created_at)}</span>
         </div>
 
         <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent mb-4" />
@@ -128,21 +128,21 @@ export function FormCard({ form }: FormCardProps) {
         <div className="flex gap-2">
           <Link href={`/forms/${form.id}/edit`} className="flex-1">
             <Button
-              variant="outline"
               className="w-full group/btn"
               size="sm"
             >
-              <Edit className="h-4 w-4 mr-2 group-hover/btn:rotate-12 transition-transform" />
-              Editar
+              <Settings className="h-4 w-4 mr-2 group-hover/btn:rotate-12 transition-transform" />
+              Configure
             </Button>
           </Link>
           <Link href={`/forms/${form.id}`} className="flex-1">
             <Button
+              variant="outline"
               className="w-full group/btn"
               size="sm"
             >
               <Eye className="h-4 w-4 mr-2 group-hover/btn:scale-110 transition-transform" />
-              Ver
+              View
             </Button>
           </Link>
         </div>

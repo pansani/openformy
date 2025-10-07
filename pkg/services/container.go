@@ -392,7 +392,7 @@ func buildConnectionString(cfg config.DatabaseConfig, isTest bool) string {
 	case "mysql":
 		dbName := cfg.Database
 		if isTest {
-			dbName = fmt.Sprintf("%s_test_%d", cfg.Database, rand.Int())
+			dbName = fmt.Sprintf("%s_test", cfg.Database)
 		}
 		return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&charset=utf8mb4",
 			cfg.Username,
