@@ -53,6 +53,8 @@ const (
 	FormsUpdate           = "forms.update"
 	FormsDelete           = "forms.delete"
 	FormsShow             = "forms.show"
+	FormsView             = "forms.view"
+	FormsSubmit           = "forms.submit"
 )
 
 func AdminEntityList(entityTypeName string) string {

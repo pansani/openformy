@@ -37,17 +37,17 @@ export default function Index({ forms }: Props) {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
             <div>
               <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
-                Meus Formulários
+                My Forms
               </h1>
               <p className="text-muted-foreground text-lg">
-                Crie e gerencie seus formulários
+                Create and manage your forms
               </p>
             </div>
             
             <Link href="/forms/create">
               <Button size="lg" className="group">
                 <Plus className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
-                Novo Formulário
+                New Form
               </Button>
             </Link>
           </div>
@@ -56,7 +56,7 @@ export default function Index({ forms }: Props) {
             <div className="mb-8">
               <input
                 type="text"
-                placeholder="Buscar formulários..."
+                placeholder="Search forms..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full md:w-96 px-4 py-3 border border-input rounded-lg bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
@@ -77,13 +77,13 @@ export default function Index({ forms }: Props) {
                   <Plus className="h-10 w-10 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">
-                  Nenhum formulário encontrado
+                  No forms found
                 </h3>
                 <p className="text-muted-foreground mb-6">
-                  Tente uma busca diferente
+                  Try a different search
                 </p>
                 <Button onClick={() => setSearchQuery('')} variant="outline">
-                  Limpar busca
+                  Clear search
                 </Button>
               </div>
             </Card>
@@ -97,15 +97,15 @@ export default function Index({ forms }: Props) {
                   <div className="absolute inset-0 w-24 h-24 mx-auto rounded-full bg-primary/10 animate-ping" />
                 </div>
                 <h3 className="text-2xl font-bold mb-3">
-                  Nenhum formulário ainda
+                  No forms yet
                 </h3>
                 <p className="text-muted-foreground text-lg mb-8">
-                  Comece criando seu primeiro formulário
+                  Start by creating your first form
                 </p>
                 <Link href="/forms/create">
                   <Button size="lg" className="group">
                     <Plus className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
-                    Criar Primeiro Formulário
+                    Create First Form
                   </Button>
                 </Link>
               </div>

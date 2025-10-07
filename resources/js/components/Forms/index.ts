@@ -4,3 +4,4 @@ export { FormDescriptionInput } from './FormDescriptionInput';
 export { FormTips } from './FormTips';
 export { FormActionButtons } from './FormActionButtons';
 export { FormCard } from './FormCard';
+export { FormQuestion } from './FormQuestion';

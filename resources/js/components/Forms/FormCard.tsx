@@ -135,7 +135,7 @@ export function FormCard({ form }: FormCardProps) {
               Configure
             </Button>
           </Link>
-          <Link href={`/forms/${form.id}`} className="flex-1">
+          <a href={`/f/${form.slug}`} target="_blank" rel="noopener noreferrer" className="flex-1">
             <Button
               variant="outline"
               className="w-full group/btn"
@@ -144,7 +144,7 @@ export function FormCard({ form }: FormCardProps) {
               <Eye className="h-4 w-4 mr-2 group-hover/btn:scale-110 transition-transform" />
               View
             </Button>
-          </Link>
+          </a>
         </div>
       </div>
 

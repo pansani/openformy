@@ -16,5 +16,6 @@ func TestNewContainer(t *testing.T) {
 	assert.NotNil(t, c.ORM)
 	assert.NotNil(t, c.Mail)
 	assert.NotNil(t, c.Auth)
-	assert.NotNil(t, c.Tasks)
+	// Tasks disabled for MySQL - see container.go:239-253
+	// assert.NotNil(t, c.Tasks)
 }

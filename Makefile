@@ -22,6 +22,10 @@ ent-new: ## Create a new Ent entity (ie, make ent-new name=MyEntity)
 admin: ## Create a new admin user (ie, make admin email=myemail@web.com)
 	go run cmd/admin/main.go --email=$(email)
 
+.PHONY: seed
+seed: ## Seed the database with demo data
+	go run cmd/seed/main.go
+
 .PHONY: run
 run: ## Run the application
 	clear

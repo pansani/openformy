@@ -1,9 +1,12 @@
 import { Head, router } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Save, Eye } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ArrowLeft, Save, Eye, AlertTriangle } from 'lucide-react';
 import { Link } from '@inertiajs/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FieldTypesSidebar, FormPreview, FieldSettings } from '@/components/FormBuilder';
 
 interface Question {
@@ -38,6 +41,50 @@ export default function Edit({ form }: Props) {
   );
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isPublished, setIsPublished] = useState(form.published);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [initialState, setInitialState] = useState({
+    questions: JSON.stringify(form.edges.questions?.sort((a, b) => a.order - b.order) || []),
+    published: form.published,
+  });
+
+  // Track changes
+  useEffect(() => {
+    const currentState = {
+      questions: JSON.stringify(questions),
+      published: isPublished,
+    };
+    
+    const hasChanges = 
+      currentState.questions !== initialState.questions ||
+      currentState.published !== initialState.published;
+    
+    setHasUnsavedChanges(hasChanges);
+  }, [questions, isPublished, initialState]);
+
+  // Warn before leaving with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges]);
+
+  // Prevent Inertia navigation with unsaved changes
+  useEffect(() => {
+    const removeListener = router.on('before', (event) => {
+      if (hasUnsavedChanges && !confirm('You have unsaved changes. Do you want to leave without saving?')) {
+        return false;
+      }
+    });
+
+    return () => removeListener();
+  }, [hasUnsavedChanges]);
 
   const handleFieldSelect = (type: string) => {
     const newQuestion: Question = {
@@ -75,12 +122,26 @@ export default function Edit({ form }: Props) {
     setIsSaving(true);
     router.put(
       `/forms/${form.id}`,
-      { questions: JSON.stringify(questions) },
+      { 
+        questions: JSON.stringify(questions),
+        published: isPublished ? '1' : '0',
+      },
       {
         forceFormData: true,
         onFinish: () => setIsSaving(false),
+        onSuccess: () => {
+          setInitialState({
+            questions: JSON.stringify(questions),
+            published: isPublished,
+          });
+          setHasUnsavedChanges(false);
+        },
       }
     );
+  };
+
+  const handlePublishToggle = (checked: boolean) => {
+    setIsPublished(checked);
   };
 
   const selectedQuestion = questions.find((q) => q.id === selectedQuestionId) || null;
@@ -90,6 +151,15 @@ export default function Edit({ form }: Props) {
       <Head title={`Edit Form: ${form.title}`} />
 
       <div className="flex flex-col h-full bg-background -mt-16 pt-16">
+        {hasUnsavedChanges && (
+          <Alert className="rounded-none border-l-0 border-r-0 border-t-0 border-amber-500 bg-amber-50 dark:bg-amber-950/20">
+            <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-500" />
+            <AlertDescription className="text-amber-800 dark:text-amber-200">
+              You have unsaved changes. Click <strong>Save</strong> to keep your changes.
+            </AlertDescription>
+          </Alert>
+        )}
+        
         <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="flex items-center justify-between h-14 px-6">
             <div className="flex items-center gap-4">
@@ -106,7 +176,18 @@ export default function Edit({ form }: Props) {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="published"
+                  checked={isPublished}
+                  onCheckedChange={handlePublishToggle}
+                />
+                <Label htmlFor="published" className="text-sm cursor-pointer">
+                  {isPublished ? 'Published' : 'Draft'}
+                </Label>
+              </div>
+              
               <Link href={`/f/${form.slug}`} target="_blank">
                 <Button variant="outline" size="sm">
                   <Eye className="h-4 w-4 mr-2" />

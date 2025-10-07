@@ -1,0 +1,239 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"time"
+
+	"github.com/occult/pagode/ent/question"
+	"github.com/occult/pagode/pkg/log"
+	"github.com/occult/pagode/pkg/services"
+)
+
+func main() {
+	c := services.NewContainer()
+	defer func() {
+		if err := c.Shutdown(); err != nil {
+			log.Default().Error("shutdown failed", "error", err)
+		}
+	}()
+
+	ctx := context.Background()
+
+	fmt.Println("🌱 Seeding database...")
+
+	// Create demo user
+	user, err := c.ORM.User.
+		Create().
+		SetEmail("demo@example.com").
+		SetName("Demo User").
+		SetPassword("password123").
+		SetVerified(true).
+		Save(ctx)
+
+	if err != nil {
+		fmt.Printf("❌ Failed to create user: %v\n", err)
+		return
+	}
+	fmt.Printf("✅ Created user: %s\n", user.Email)
+
+	// Create contact form
+	contactForm, err := c.ORM.Form.
+		Create().
+		SetTitle("Contact Us").
+		SetDescription("Get in touch with our team").
+		SetSlug("contact-us").
+		SetPublished(true).
+		SetOwner(user).
+		Save(ctx)
+
+	if err != nil {
+		fmt.Printf("❌ Failed to create contact form: %v\n", err)
+		return
+	}
+	fmt.Printf("✅ Created form: %s (published)\n", contactForm.Title)
+
+	// Add questions to contact form
+	questions := []struct {
+		Type        question.Type
+		Title       string
+		Description string
+		Placeholder string
+		Required    bool
+		Order       int
+		Options     map[string]interface{}
+	}{
+		{
+			Type:        question.TypeText,
+			Title:       "Nome completo",
+			Description: "Como devemos te chamar?",
+			Placeholder: "João Silva",
+			Required:    true,
+			Order:       0,
+		},
+		{
+			Type:        question.TypeEmail,
+			Title:       "Email",
+			Description: "Seu melhor endereço de email",
+			Placeholder: "joao@example.com",
+			Required:    true,
+			Order:       1,
+		},
+		{
+			Type:        question.TypePhone,
+			Title:       "Telefone",
+			Description: "Número de telefone com DDD",
+			Placeholder: "(11) 99999-9999",
+			Required:    false,
+			Order:       2,
+		},
+		{
+			Type:        question.TypeDropdown,
+			Title:       "Assunto",
+			Description: "Qual o motivo do contato?",
+			Required:    true,
+			Order:       3,
+			Options: map[string]interface{}{
+				"items": []string{"Suporte", "Vendas", "Parceria", "Outro"},
+			},
+		},
+		{
+			Type:        question.TypeTextarea,
+			Title:       "Mensagem",
+			Description: "Conte-nos mais detalhes",
+			Placeholder: "Escreva sua mensagem aqui...",
+			Required:    true,
+			Order:       4,
+		},
+	}
+
+	for _, q := range questions {
+		create := c.ORM.Question.Create().
+			SetType(q.Type).
+			SetTitle(q.Title).
+			SetDescription(q.Description).
+			SetPlaceholder(q.Placeholder).
+			SetRequired(q.Required).
+			SetOrder(q.Order).
+			SetFormID(contactForm.ID)
+
+		if q.Options != nil {
+			create.SetOptions(q.Options)
+		}
+
+		_, err := create.Save(ctx)
+		if err != nil {
+			fmt.Printf("❌ Failed to create question: %v\n", err)
+			return
+		}
+	}
+	fmt.Printf("✅ Added %d questions to contact form\n", len(questions))
+
+	// Create survey form
+	surveyForm, err := c.ORM.Form.
+		Create().
+		SetTitle("Customer Satisfaction Survey").
+		SetDescription("Help us improve our service").
+		SetSlug("customer-satisfaction").
+		SetPublished(true).
+		SetOwner(user).
+		Save(ctx)
+
+	if err != nil {
+		fmt.Printf("❌ Failed to create survey form: %v\n", err)
+		return
+	}
+	fmt.Printf("✅ Created form: %s (published)\n", surveyForm.Title)
+
+	// Add questions to survey
+	surveyQuestions := []struct {
+		Type        question.Type
+		Title       string
+		Description string
+		Required    bool
+		Order       int
+		Options     map[string]interface{}
+	}{
+		{
+			Type:        question.TypeRadio,
+			Title:       "How satisfied are you with our service?",
+			Description: "Please rate your overall experience",
+			Required:    true,
+			Order:       0,
+			Options: map[string]interface{}{
+				"items": []string{"Very Satisfied", "Satisfied", "Neutral", "Dissatisfied", "Very Dissatisfied"},
+			},
+		},
+		{
+			Type:        question.TypeCheckbox,
+			Title:       "Which features do you use most?",
+			Description: "Select all that apply",
+			Required:    false,
+			Order:       1,
+			Options: map[string]interface{}{
+				"items": []string{"Form Builder", "Analytics", "Integrations", "Custom Branding", "Export Data"},
+			},
+		},
+		{
+			Type:        question.TypeNumber,
+			Title:       "How likely are you to recommend us? (0-10)",
+			Description: "0 = Not at all likely, 10 = Extremely likely",
+			Required:    true,
+			Order:       2,
+		},
+		{
+			Type:        question.TypeTextarea,
+			Title:       "Any additional feedback?",
+			Description: "We'd love to hear your suggestions",
+			Required:    false,
+			Order:       3,
+		},
+	}
+
+	for _, q := range surveyQuestions {
+		create := c.ORM.Question.Create().
+			SetType(q.Type).
+			SetTitle(q.Title).
+			SetDescription(q.Description).
+			SetRequired(q.Required).
+			SetOrder(q.Order).
+			SetFormID(surveyForm.ID)
+
+		if q.Options != nil {
+			create.SetOptions(q.Options)
+		}
+
+		_, err := create.Save(ctx)
+		if err != nil {
+			fmt.Printf("❌ Failed to create question: %v\n", err)
+			return
+		}
+	}
+	fmt.Printf("✅ Added %d questions to survey form\n", len(surveyQuestions))
+
+	// Create draft form
+	draftForm, err := c.ORM.Form.
+		Create().
+		SetTitle("Event Registration (Draft)").
+		SetDescription("Register for our upcoming event").
+		SetSlug(fmt.Sprintf("event-registration-%d", time.Now().Unix())).
+		SetPublished(false).
+		SetOwner(user).
+		Save(ctx)
+
+	if err != nil {
+		fmt.Printf("❌ Failed to create draft form: %v\n", err)
+		return
+	}
+	fmt.Printf("✅ Created form: %s (draft)\n", draftForm.Title)
+
+	fmt.Println("\n🎉 Database seeded successfully!")
+	fmt.Println("\n📋 Forms created:")
+	fmt.Printf("   • Contact Us: /f/contact-us\n")
+	fmt.Printf("   • Customer Satisfaction: /f/customer-satisfaction\n")
+	fmt.Printf("   • Event Registration: (draft, not publicly accessible)\n")
+	fmt.Println("\n👤 Demo user credentials:")
+	fmt.Printf("   Email: demo@example.com\n")
+	fmt.Printf("   Password: password123\n")
+	fmt.Println("")
+}
