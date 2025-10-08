@@ -195,42 +195,6 @@ export default function Welcome() {
             </div>
           </div>
 
-          <div className="py-20 border-t">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Deploy Anywhere
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                OpenFormy works wherever you need it. Deploy with Docker, on your
-                VPS, or use our cloud version.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
-              <div className="p-6 rounded-lg border bg-card">
-                <Download className="h-8 w-8 text-primary mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Self-Hosted</h3>
-                <p className="text-muted-foreground mb-4">
-                  Run on your own servers. Full control, zero monthly fees.
-                </p>
-                <code className="text-xs bg-muted px-3 py-2 rounded block">
-                  docker run -p 8000:8000 openformy
-                </code>
-              </div>
-
-              <div className="p-6 rounded-lg border bg-card">
-                <Github className="h-8 w-8 text-primary mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Open Source</h3>
-                <p className="text-muted-foreground mb-4">
-                  Clone, modify, and deploy. MIT licensed for maximum freedom.
-                </p>
-                <code className="text-xs bg-muted px-3 py-2 rounded block">
-                  git clone github.com/pansani/openformy
-                </code>
-              </div>
-            </div>
-          </div>
-
           <div className="py-20 border-t text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
               Ready to Get Started?
