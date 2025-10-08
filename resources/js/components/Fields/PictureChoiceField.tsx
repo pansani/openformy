@@ -1,6 +1,6 @@
 import { Image } from 'lucide-react';
 
-export function PictureChoicePreview() {
+export function PictureChoiceField() {
   return (
     <div className="grid grid-cols-2 gap-3">
       {[1, 2, 3, 4].map((num) => (

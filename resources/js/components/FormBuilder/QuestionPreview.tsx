@@ -1,25 +1,25 @@
 import {
-  TextInputPreview,
-  TextareaPreview,
-  DateInputPreview,
-  FileUploadPreview,
-  SelectPreview,
-  RadioPreview,
-  CheckboxPreview,
-  YesNoPreview,
-  RatingPreview,
-  StatementPreview,
-  OpinionScalePreview,
-  RankingPreview,
-  PictureChoicePreview,
-  MatrixPreview,
-  MultiSelectPreview,
-  SignaturePreview,
-  TimePreview,
-  DateRangePreview,
-  LegalPreview,
-  HiddenPreview,
-} from './previews';
+  TextInputField,
+  TextareaField,
+  DateInputField,
+  FileUploadField,
+  SelectField,
+  RadioField,
+  CheckboxField,
+  YesNoField,
+  RatingField,
+  StatementField,
+  OpinionScaleField,
+  RankingField,
+  PictureChoiceField,
+  MatrixField,
+  MultiSelectField,
+  SignatureField,
+  TimeField,
+  DateRangeField,
+  LegalField,
+  HiddenField,
+} from '@/components/Fields';
 
 interface Question {
   type: string;
@@ -35,69 +35,77 @@ export function QuestionPreview({ question }: QuestionPreviewProps) {
     switch (question.type) {
       case 'text':
       case 'short-text':
+        return <TextInputField type="short-text" placeholder={question.placeholder} />;
+      
       case 'email':
+        return <TextInputField type="email" placeholder={question.placeholder} />;
+      
       case 'number':
+        return <TextInputField type="number" placeholder={question.placeholder} />;
+      
       case 'phone':
+        return <TextInputField type="phone" placeholder={question.placeholder} />;
+      
       case 'url':
-        return <TextInputPreview type={question.type as any} placeholder={question.placeholder} />;
+        return <TextInputField type="url" placeholder={question.placeholder} />;
       
       case 'textarea':
       case 'long-text':
-        return <TextareaPreview placeholder={question.placeholder} />;
+        return <TextareaField placeholder={question.placeholder} />;
       
       case 'date':
-        return <DateInputPreview />;
+        return <DateInputField />;
       
       case 'file':
-        return <FileUploadPreview />;
+        return <FileUploadField />;
       
       case 'dropdown':
-        return <SelectPreview />;
+        return <SelectField />;
       
       case 'radio':
-        return <RadioPreview />;
+        return <RadioField />;
       
       case 'checkbox':
-        return <CheckboxPreview />;
+        return <CheckboxField />;
       
       case 'yesno':
-        return <YesNoPreview />;
+        return <YesNoField />;
       
       case 'rating':
-        return <RatingPreview />;
+        return <RatingField />;
       
       case 'statement':
-        return <StatementPreview />;
+        return <StatementField />;
       
       case 'opinion-scale':
-        return <OpinionScalePreview />;
+        return <OpinionScaleField />;
       
       case 'ranking':
-        return <RankingPreview />;
+        return <RankingField />;
       
       case 'picture-choice':
-        return <PictureChoicePreview />;
+        return <PictureChoiceField />;
       
       case 'matrix':
-        return <MatrixPreview />;
+        return <MatrixField />;
       
       case 'multi-select':
-        return <MultiSelectPreview />;
+        return <MultiSelectField />;
       
       case 'signature':
-        return <SignaturePreview />;
+        return <SignatureField />;
       
       case 'time':
-        return <TimePreview />;
+        return <TimeField />;
       
       case 'date-range':
-        return <DateRangePreview />;
+        return <DateRangeField />;
       
       case 'legal':
-        return <LegalPreview />;
+        return <LegalField />;
       
       case 'hidden':
-        return <HiddenPreview />;
+        return <HiddenField />;
       
       default:
         return <p className="text-sm text-muted-foreground">Preview not available</p>;

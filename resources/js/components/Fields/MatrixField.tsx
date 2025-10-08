@@ -1,4 +1,4 @@
-export function MatrixPreview() {
+export function MatrixField() {
   return (
     <div className="overflow-x-auto">
       <table className="w-full border-collapse">

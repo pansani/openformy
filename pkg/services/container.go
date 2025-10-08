@@ -179,7 +179,13 @@ func (c *Container) initDatabase() {
 		}
 	}
 
-	c.Database, err = openDB(c.Config.Database.Driver, connection)
+	driver := c.Config.Database.Driver
+	// Use SQLite for test environment with in-memory database
+	if c.Config.App.Environment == config.EnvTest && c.Config.Database.TestConnection != "" {
+		driver = "sqlite3"
+	}
+
+	c.Database, err = openDB(driver, connection)
 	if err != nil {
 		panic(err)
 	}
@@ -202,7 +208,13 @@ func (c *Container) initFiles() {
 
 // initORM initializes the ORM.
 func (c *Container) initORM() {
-	drv := entsql.OpenDB(c.Config.Database.Driver, c.Database)
+	driver := c.Config.Database.Driver
+	// Use SQLite for test environment with in-memory database
+	if c.Config.App.Environment == config.EnvTest && c.Config.Database.TestConnection != "" {
+		driver = "sqlite3"
+	}
+	
+	drv := entsql.OpenDB(driver, c.Database)
 	c.ORM = ent.NewClient(ent.Driver(drv))
 
 	// Run the auto migration tool.

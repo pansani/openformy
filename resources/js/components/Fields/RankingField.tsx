@@ -1,6 +1,6 @@
 import { GripVertical } from 'lucide-react';
 
-export function RankingPreview() {
+export function RankingField() {
   return (
     <div className="space-y-2">
       {['Option 1', 'Option 2', 'Option 3'].map((option, idx) => (

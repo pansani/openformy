@@ -38,7 +38,7 @@ database:
   password: "root"
   # Legacy connection strings (will be built from above if not set)
   connection: ""
-  testConnection: ""
+  testConnection: "file::memory:?cache=shared&_fk=1"
 
 files:
   directory: "uploads"
