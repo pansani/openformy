@@ -39,8 +39,8 @@ func (e *Error) Page(err error, ctx echo.Context) {
 		logger.Warn(err.Error())
 	}
 
-	// Write status code header
-	ctx.Response().WriteHeader(code)
+	// Set status code
+	ctx.Response().Status = code
 
 	// Render Inertia error page
 	renderErr := e.Inertia.Render(
@@ -53,5 +53,7 @@ func (e *Error) Page(err error, ctx echo.Context) {
 	)
 	if renderErr != nil {
 		log.Ctx(ctx).Error("failed to render error page", "error", renderErr)
+		ctx.Response().WriteHeader(code)
+		ctx.Response().Write([]byte(http.StatusText(code)))
 	}
 }

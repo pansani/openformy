@@ -28,7 +28,7 @@ export default function Welcome() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-              <Link href="/register">
+              <Link href="/user/register">
                 <Button size="lg" className="text-lg px-8 py-6">
                   Get Started Free
                 </Button>
@@ -239,7 +239,7 @@ export default function Welcome() {
               Create your first form in minutes. No credit card required.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register">
+              <Link href="/user/register">
                 <Button size="lg" className="text-lg px-8 py-6">
                   Create Free Account
                 </Button>

@@ -6,6 +6,7 @@ interface ErrorPageProps {
 }
 
 const defaultMessages: Record<number, string> = {
+  401: "Unauthorized",
   403: "Forbidden",
   404: "Not Found",
   419: "Page Expired",
