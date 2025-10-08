@@ -143,6 +143,14 @@ export function useFormEditor(form: Form) {
     setDisplayMode(mode);
   };
 
+  const handleReset = () => {
+    const initialQuestions = JSON.parse(initialStateRef.current.questions);
+    setQuestions(initialQuestions);
+    setIsPublished(initialStateRef.current.published);
+    setDisplayMode(initialStateRef.current.display_mode);
+    setSelectedQuestionId(null);
+  };
+
   const selectedQuestion = questions.find((q) => q.id === selectedQuestionId) || null;
 
   return {
@@ -164,5 +172,6 @@ export function useFormEditor(form: Form) {
     handleDisplayModeChange,
     handleConfirmLeave,
     handleCancelLeave,
+    handleReset,
   };
 }

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { X, Plus, GripVertical } from 'lucide-react';
+import React from 'react';
 
 interface Question {
   id: string;
@@ -47,7 +48,9 @@ export function FieldSettings({ question, onUpdate, onClose }: FieldSettingsProp
     );
   }
 
-  const isSelectionField = ['dropdown', 'radio', 'checkbox'].includes(question.type);
+  const isSelectionField = ['dropdown', 'radio', 'checkbox', 'multi-select', 'picture-choice'].includes(question.type);
+  const isContentField = ['statement', 'legal', 'hidden'].includes(question.type);
+  const hasPlaceholder = !isSelectionField && !isContentField;
 
   return (
     <div className="h-full flex flex-col bg-background border-l">
@@ -90,7 +93,7 @@ export function FieldSettings({ question, onUpdate, onClose }: FieldSettingsProp
           />
         </div>
 
-        {!isSelectionField && (
+        {hasPlaceholder && (
           <div className="space-y-3">
             <Label htmlFor="placeholder" className="text-sm font-semibold">
               Placeholder Text <span className="text-muted-foreground font-normal">(optional)</span>
@@ -147,6 +150,8 @@ export function FieldSettings({ question, onUpdate, onClose }: FieldSettingsProp
 }
 
 function OptionsEditor({ options, onChange }: { options: string[]; onChange: (options: string[]) => void }) {
+  const [draggedIndex, setDraggedIndex] = React.useState<number | null>(null);
+
   const addOption = () => {
     onChange([...options, `Option ${options.length + 1}`]);
   };
@@ -163,16 +168,46 @@ function OptionsEditor({ options, onChange }: { options: string[]; onChange: (op
     }
   };
 
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
+
+    const newOptions = [...options];
+    const draggedOption = newOptions[draggedIndex];
+    newOptions.splice(draggedIndex, 1);
+    newOptions.splice(index, 0, draggedOption);
+
+    setDraggedIndex(index);
+    onChange(newOptions);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+  };
+
   return (
     <div className="space-y-2">
       {options.map((option, index) => (
-        <Card key={index} className="p-2 flex items-center gap-2">
-          <GripVertical className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+        <div 
+          key={index} 
+          className="flex items-center gap-2"
+          draggable
+          onDragStart={() => handleDragStart(index)}
+          onDragOver={(e) => handleDragOver(e, index)}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="cursor-grab active:cursor-grabbing">
+            <GripVertical className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+          </div>
           <Input
             type="text"
             value={option}
             onChange={(e) => updateOption(index, e.target.value)}
-            className="flex-1 h-8"
+            className="flex-1"
             placeholder={`Option ${index + 1}`}
           />
           {options.length > 1 && (
@@ -180,12 +215,12 @@ function OptionsEditor({ options, onChange }: { options: string[]; onChange: (op
               variant="ghost"
               size="sm"
               onClick={() => removeOption(index)}
-              className="h-8 w-8 p-0"
+              className="h-10 w-10 p-0"
             >
               <X className="h-4 w-4" />
             </Button>
           )}
-        </Card>
+        </div>
       ))}
       <Button
         variant="outline"

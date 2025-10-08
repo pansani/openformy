@@ -30,8 +30,8 @@ test.describe('Form Field Types', () => {
     await page.waitForURL(/\/forms\/\d+\/edit/);
   });
 
-  test('should add and configure text input field', async ({ page }) => {
-    await page.getByRole('heading', { name: 'Text Input' }).click();
+  test('should add and configure short text input field', async ({ page }) => {
+    await page.getByRole('heading', { name: /^(Text Input|Short Text)$/ }).click();
     
     await expect(page.getByRole('heading', { name: 'Field Settings' })).toBeVisible();
     
@@ -72,8 +72,8 @@ test.describe('Form Field Types', () => {
     await expect(page.getByText('How old are you?')).toBeVisible();
   });
 
-  test('should add and configure textarea field', async ({ page }) => {
-    await page.getByRole('heading', { name: 'Textarea' }).click();
+  test('should add and configure long text field', async ({ page }) => {
+    await page.getByRole('heading', { name: /^(Textarea|Long Text)$/ }).click();
     
     await expect(page.getByRole('heading', { name: 'Field Settings' })).toBeVisible();
     
@@ -122,7 +122,7 @@ test.describe('Form Field Types', () => {
   });
 
   test('should add and configure date field', async ({ page }) => {
-    await page.getByRole('heading', { name: 'Date' }).click();
+    await page.getByRole('heading', { name: 'Date', exact: true }).click();
     
     await expect(page.getByRole('heading', { name: 'Field Settings' })).toBeVisible();
     
@@ -193,7 +193,7 @@ test.describe('Form Field Operations', () => {
   });
 
   test('should add multiple fields to form', async ({ page }) => {
-    await page.getByRole('heading', { name: 'Text Input' }).click();
+    await page.getByRole('heading', { name: /^(Text Input|Short Text)$/ }).click();
     await page.waitForTimeout(500);
     
     await page.getByRole('heading', { name: 'Email' }).click();
@@ -209,7 +209,7 @@ test.describe('Form Field Operations', () => {
   });
 
   test('should delete a field from form', async ({ page }) => {
-    await page.getByRole('heading', { name: 'Text Input' }).click();
+    await page.getByRole('heading', { name: /^(Text Input|Short Text)$/ }).click();
     
     await expect(page.getByRole('heading', { name: 'Field Settings' })).toBeVisible();
   });
@@ -219,16 +219,16 @@ test.describe('Form Field Operations', () => {
     await searchInput.fill('email');
     
     await expect(page.getByRole('heading', { name: 'Email' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Text Input' })).not.toBeVisible();
+    await expect(page.getByRole('heading', { name: /^(Text Input|Short Text)$/ })).not.toBeVisible();
     
     await searchInput.clear();
     
-    await expect(page.getByRole('heading', { name: 'Text Input' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /^(Text Input|Short Text)$/ })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Email' })).toBeVisible();
   });
 
   test('should toggle required field setting', async ({ page }) => {
-    await page.getByRole('heading', { name: 'Text Input' }).click();
+    await page.getByRole('heading', { name: /^(Text Input|Short Text)$/ }).click();
     
     await expect(page.getByRole('heading', { name: 'Field Settings' })).toBeVisible();
     
@@ -248,6 +248,6 @@ test.describe('Form Field Operations', () => {
   });
 
   test('should show field descriptions on hover or click', async ({ page }) => {
-    await expect(page.getByText('A single line for short text responses')).toBeVisible();
+    await expect(page.getByText(/single line for (short )?text responses/i)).toBeVisible();
   });
 });

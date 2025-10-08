@@ -58,9 +58,10 @@ test.describe('Forms Management', () => {
     await page.waitForURL(/\/forms\/\d+\/edit/);
     
     await expect(page.getByRole('heading', { name: 'INPUT FIELDS' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Text Input' })).toBeVisible();
     
-    await page.getByRole('heading', { name: 'Text Input' }).click();
+    const textFieldHeading = page.getByRole('heading', { name: /^(Text Input|Short Text)$/ });
+    await expect(textFieldHeading).toBeVisible();
+    await textFieldHeading.click();
     
     await expect(page.getByRole('heading', { name: 'Field Settings' })).toBeVisible();
   });
@@ -74,7 +75,7 @@ test.describe('Forms Management', () => {
     
     await page.waitForURL(/\/forms\/\d+\/edit/);
     
-    await page.getByRole('heading', { name: 'Text Input' }).click();
+    await page.getByRole('heading', { name: /^(Text Input|Short Text)$/ }).click();
     
     await expect(page.getByRole('heading', { name: 'Field Settings' })).toBeVisible();
     await expect(page.getByRole('textbox', { name: 'Question Title *' })).toBeVisible();
@@ -92,8 +93,11 @@ test.describe('Forms Management', () => {
     await page.getByRole('button', { name: 'Back' }).click();
     
     await expect(page).toHaveURL('/forms');
+    await page.waitForTimeout(500);
     
-    await page.getByRole('link', { name: 'Configure' }).first().click();
+    const formCard = page.locator('.group.relative').first();
+    const editButton = formCard.locator('a[href*="/forms/"][href*="/edit"]').first();
+    await editButton.click();
     
     await expect(page).toHaveURL(/\/forms\/\d+\/edit/);
   });
@@ -122,10 +126,8 @@ test.describe('Forms Management', () => {
     await page.goto('/forms');
     await page.waitForTimeout(1000);
     
-    // The form card should be visible
     await expect(page.getByText(formTitle)).toBeVisible();
     
-    // Form card has 3 icon buttons: Configure (settings), Responses (chart), View (eye)
     const formCard = page.locator(`text=${formTitle}`).locator('..').locator('..').locator('..');
     await expect(formCard.locator('button').first()).toBeVisible(); // Settings button
   });

@@ -25,6 +25,7 @@ interface Form {
   description?: string;
   slug: string;
   display_mode?: string;
+  userIdentifier?: string;
   edges: {
     questions?: Question[];
   };
@@ -91,11 +92,13 @@ export default function View({ form }: Props) {
     }
 
     setIsSubmitting(true);
+    const identifier = form.userIdentifier || window.location.pathname.split('/')[1];
     router.post(
-      `/f/${form.slug}`,
+      `/${identifier}/${form.slug}`,
       { answers: JSON.stringify(answers) },
       {
         onFinish: () => setIsSubmitting(false),
+        forceFormData: true,
       }
     );
   };

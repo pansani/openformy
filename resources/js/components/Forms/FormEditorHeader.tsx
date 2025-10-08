@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Save, Eye, HelpCircle, Lightbulb } from 'lucide-react';
+import { ArrowLeft, Save, Eye, HelpCircle, Lightbulb, RotateCcw } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 import {
   Tooltip,
@@ -23,9 +23,11 @@ interface FormEditorHeaderProps {
   displayMode: string;
   isPublished: boolean;
   isSaving: boolean;
+  hasUnsavedChanges: boolean;
   onDisplayModeChange: (mode: string) => void;
   onPublishToggle: (checked: boolean) => void;
   onSave: () => void;
+  onReset: () => void;
 }
 
 export function FormEditorHeader({
@@ -34,9 +36,11 @@ export function FormEditorHeader({
   displayMode,
   isPublished,
   isSaving,
+  hasUnsavedChanges,
   onDisplayModeChange,
   onPublishToggle,
   onSave,
+  onReset,
 }: FormEditorHeaderProps) {
   return (
     <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -144,6 +148,15 @@ export function FormEditorHeader({
               Preview
             </Button>
           </Link>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onReset}
+            disabled={!hasUnsavedChanges}
+          >
+            <RotateCcw className="h-4 w-4 mr-2" />
+            Reset
+          </Button>
           <Button size="sm" onClick={onSave} disabled={isSaving}>
             <Save className="h-4 w-4 mr-2" />
             {isSaving ? 'Saving...' : 'Save'}

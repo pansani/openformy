@@ -10,7 +10,20 @@ import {
   CheckSquare, 
   Calendar, 
   Phone, 
-  Link as LinkIcon 
+  Link as LinkIcon,
+  Upload,
+  Star,
+  ToggleLeft,
+  Info,
+  Sliders,
+  GripVertical,
+  Image,
+  Table,
+  Pen,
+  Clock,
+  CalendarRange,
+  ShieldCheck,
+  EyeOff
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -22,19 +35,39 @@ interface FieldType {
 }
 
 const inputFields: FieldType[] = [
-  { type: 'text', label: 'Text Input', icon: <Type className="h-5 w-5" />, description: 'A single line for short text responses.' },
+  { type: 'short-text', label: 'Short Text', icon: <Type className="h-5 w-5" />, description: 'A single line for short text responses.' },
+  { type: 'long-text', label: 'Long Text', icon: <AlignLeft className="h-5 w-5" />, description: 'A multi-line field for longer text responses.' },
   { type: 'email', label: 'Email', icon: <Mail className="h-5 w-5" />, description: 'Collect a valid email address.' },
   { type: 'number', label: 'Number', icon: <Hash className="h-5 w-5" />, description: 'Input for numeric values.' },
-  { type: 'textarea', label: 'Textarea', icon: <AlignLeft className="h-5 w-5" />, description: 'A multi-line field for longer text.' },
   { type: 'phone', label: 'Phone Number', icon: <Phone className="h-5 w-5" />, description: 'Input for phone numbers with validation.' },
   { type: 'url', label: 'Link', icon: <LinkIcon className="h-5 w-5" />, description: 'Input for a valid website URL.' },
   { type: 'date', label: 'Date', icon: <Calendar className="h-5 w-5" />, description: 'Pick a date from a calendar.' },
+  { type: 'date-range', label: 'Date Range', icon: <CalendarRange className="h-5 w-5" />, description: 'Select a start and end date.' },
+  { type: 'time', label: 'Time', icon: <Clock className="h-5 w-5" />, description: 'Pick a specific time.' },
+  { type: 'file', label: 'File Upload', icon: <Upload className="h-5 w-5" />, description: 'Allow users to upload files or images.' },
+  { type: 'signature', label: 'Signature', icon: <Pen className="h-5 w-5" />, description: 'Capture electronic signatures.' },
 ];
 
 const selectionFields: FieldType[] = [
   { type: 'dropdown', label: 'Select Dropdown', icon: <ChevronDown className="h-5 w-5" />, description: 'Dropdown to choose one option.' },
+  { type: 'multi-select', label: 'Multi-Select', icon: <CheckSquare className="h-5 w-5" />, description: 'Select multiple options from a list.' },
   { type: 'radio', label: 'Radio Buttons', icon: <Circle className="h-5 w-5" />, description: 'Pick a single option from a list.' },
   { type: 'checkbox', label: 'Checkboxes', icon: <CheckSquare className="h-5 w-5" />, description: 'Select one or more options.' },
+  { type: 'yesno', label: 'Yes/No', icon: <ToggleLeft className="h-5 w-5" />, description: 'Simple yes or no question.' },
+  { type: 'picture-choice', label: 'Picture Choice', icon: <Image className="h-5 w-5" />, description: 'Multiple choice with images.' },
+];
+
+const feedbackFields: FieldType[] = [
+  { type: 'rating', label: 'Rating (Stars)', icon: <Star className="h-5 w-5" />, description: 'Star rating from 1 to 5.' },
+  { type: 'opinion-scale', label: 'Opinion Scale', icon: <Sliders className="h-5 w-5" />, description: 'Numeric scale from 1 to 10.' },
+  { type: 'ranking', label: 'Ranking', icon: <GripVertical className="h-5 w-5" />, description: 'Drag to rank options in order of preference.' },
+  { type: 'matrix', label: 'Matrix/Grid', icon: <Table className="h-5 w-5" />, description: 'Multiple questions with same answer options.' },
+];
+
+const contentFields: FieldType[] = [
+  { type: 'statement', label: 'Statement', icon: <Info className="h-5 w-5" />, description: 'Display text without collecting input.' },
+  { type: 'legal', label: 'Legal Consent', icon: <ShieldCheck className="h-5 w-5" />, description: 'Checkbox for terms and conditions.' },
+  { type: 'hidden', label: 'Hidden Field', icon: <EyeOff className="h-5 w-5" />, description: 'Hidden field for tracking data.' },
 ];
 
 interface FieldTypesSidebarProps {
@@ -44,7 +77,7 @@ interface FieldTypesSidebarProps {
 export function FieldTypesSidebar({ onFieldSelect }: FieldTypesSidebarProps) {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const allFields = [...inputFields, ...selectionFields];
+  const allFields = [...inputFields, ...selectionFields, ...feedbackFields, ...contentFields];
   const filteredFields = allFields.filter((field) =>
     field.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
     field.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -86,6 +119,28 @@ export function FieldTypesSidebar({ onFieldSelect }: FieldTypesSidebarProps) {
               </h3>
               <div className="space-y-2">
                 {selectionFields.map((field) => (
+                  <FieldTypeCard key={field.type} field={field} onSelect={onFieldSelect} />
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                FEEDBACK
+              </h3>
+              <div className="space-y-2">
+                {feedbackFields.map((field) => (
+                  <FieldTypeCard key={field.type} field={field} onSelect={onFieldSelect} />
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                CONTENT
+              </h3>
+              <div className="space-y-2">
+                {contentFields.map((field) => (
                   <FieldTypeCard key={field.type} field={field} onSelect={onFieldSelect} />
                 ))}
               </div>

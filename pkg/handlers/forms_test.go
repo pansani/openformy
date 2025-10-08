@@ -611,3 +611,113 @@ func TestForms__ResponsesExport_CSVFormat(t *testing.T) {
 	assert.Len(t, responses, 1)
 	assert.Len(t, responses[0].Edges.Answers, 2)
 }
+
+func TestQuestions__CreateNewFieldTypes(t *testing.T) {
+	user := createTestUser(t)
+	formData := createTestForm(t, user, "New Field Types Test", "Testing all new field types")
+
+	newFieldTypes := []struct {
+		fieldType string
+		title     string
+	}{
+		{"short-text", "Short Text Question"},
+		{"long-text", "Long Text Question"},
+		{"opinion-scale", "Opinion Scale Question"},
+		{"ranking", "Ranking Question"},
+		{"picture-choice", "Picture Choice Question"},
+		{"matrix", "Matrix Question"},
+		{"multi-select", "Multi-Select Question"},
+		{"signature", "Signature Question"},
+		{"time", "Time Question"},
+		{"date-range", "Date Range Question"},
+		{"legal", "Legal Consent Question"},
+		{"hidden", "Hidden Field"},
+		{"rating", "Rating Question"},
+		{"statement", "Statement"},
+		{"yesno", "Yes/No Question"},
+		{"file", "File Upload Question"},
+	}
+
+	for i, ft := range newFieldTypes {
+		question, err := c.ORM.Question.Create().
+			SetType(entQuestion.Type(ft.fieldType)).
+			SetTitle(ft.title).
+			SetRequired(false).
+			SetOrder(i).
+			SetFormID(formData.ID).
+			Save(context.Background())
+
+		require.NoError(t, err, "Failed to create %s field", ft.fieldType)
+		assert.Equal(t, ft.fieldType, string(question.Type))
+		assert.Equal(t, ft.title, question.Title)
+	}
+
+	questions, err := c.ORM.Question.Query().
+		Where(entQuestion.HasFormWith(entForm.ID(formData.ID))).
+		All(context.Background())
+	require.NoError(t, err)
+	assert.Len(t, questions, len(newFieldTypes))
+}
+
+func TestQuestions__BackwardCompatibility(t *testing.T) {
+	user := createTestUser(t)
+	formData := createTestForm(t, user, "Backward Compatibility Test", "Testing old field types")
+
+	oldTypes := []struct {
+		fieldType string
+		title     string
+	}{
+		{"text", "Old Text Field"},
+		{"textarea", "Old Textarea Field"},
+	}
+
+	for i, ft := range oldTypes {
+		question, err := c.ORM.Question.Create().
+			SetType(entQuestion.Type(ft.fieldType)).
+			SetTitle(ft.title).
+			SetRequired(false).
+			SetOrder(i).
+			SetFormID(formData.ID).
+			Save(context.Background())
+
+		require.NoError(t, err, "Failed to create %s field (backward compatibility)", ft.fieldType)
+		assert.Equal(t, ft.fieldType, string(question.Type))
+	}
+
+	questions, err := c.ORM.Question.Query().
+		Where(entQuestion.HasFormWith(entForm.ID(formData.ID))).
+		All(context.Background())
+	require.NoError(t, err)
+	assert.Len(t, questions, len(oldTypes))
+}
+
+func TestQuestions__OptionsForSelectionFields(t *testing.T) {
+	user := createTestUser(t)
+	formData := createTestForm(t, user, "Selection Fields Test", "Testing fields with options")
+
+	options := map[string]interface{}{
+		"items": []string{"Option 1", "Option 2", "Option 3"},
+	}
+
+	selectionTypes := []string{"dropdown", "radio", "checkbox", "multi-select"}
+
+	for i, fieldType := range selectionTypes {
+		question, err := c.ORM.Question.Create().
+			SetType(entQuestion.Type(fieldType)).
+			SetTitle(fmt.Sprintf("%s Question", fieldType)).
+			SetRequired(false).
+			SetOrder(i).
+			SetOptions(options).
+			SetFormID(formData.ID).
+			Save(context.Background())
+
+		require.NoError(t, err, "Failed to create %s field with options", fieldType)
+		assert.NotNil(t, question.Options)
+		
+		savedOptions := question.Options
+		items, ok := savedOptions["items"]
+		assert.True(t, ok, "Options should contain items key")
+		assert.NotNil(t, items, "Items should not be nil")
+	}
+}
+

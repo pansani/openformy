@@ -32,6 +32,7 @@ export default function Edit({ form, userIdentifier }: Props) {
     handleDisplayModeChange,
     handleConfirmLeave,
     handleCancelLeave,
+    handleReset,
   } = useFormEditor(form);
 
   return (
@@ -53,9 +54,11 @@ export default function Edit({ form, userIdentifier }: Props) {
           displayMode={displayMode}
           isPublished={isPublished}
           isSaving={isSaving}
+          hasUnsavedChanges={hasUnsavedChanges}
           onDisplayModeChange={handleDisplayModeChange}
           onPublishToggle={handlePublishToggle}
           onSave={handleSave}
+          onReset={handleReset}
         />
 
         <div className="flex-1 flex overflow-hidden">

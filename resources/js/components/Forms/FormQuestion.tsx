@@ -54,7 +54,11 @@ export function FormQuestion({ question, value, error, onChange }: FormQuestionP
   const renderField = () => {
     switch (question.type) {
       case 'text':
+      case 'short-text':
         return <Input {...commonInputProps} type="text" />;
+      
+      case 'long-text':
+        return <Textarea {...commonTextareaProps} rows={4} />;
       
       case 'email':
         return <Input {...commonInputProps} type="email" />;
@@ -63,18 +67,24 @@ export function FormQuestion({ question, value, error, onChange }: FormQuestionP
         return <Input {...commonInputProps} type="number" />;
       
       case 'phone':
+      case 'phone-number':
         return <Input {...commonInputProps} type="tel" />;
       
       case 'url':
+      case 'link':
         return <Input {...commonInputProps} type="url" />;
       
       case 'date':
         return <Input {...commonInputProps} type="date" />;
       
+      case 'time':
+        return <Input {...commonInputProps} type="time" />;
+      
       case 'textarea':
         return <Textarea {...commonTextareaProps} rows={4} />;
       
       case 'dropdown':
+      case 'select-dropdown':
         return (
           <select {...commonSelectProps}>
             <option value="">Select an option</option>
@@ -84,6 +94,32 @@ export function FormQuestion({ question, value, error, onChange }: FormQuestionP
               </option>
             ))}
           </select>
+        );
+      
+      case 'multi-select':
+        return (
+          <div className="space-y-2">
+            {question.options?.items?.map((option, idx) => {
+              const isChecked = arrayValue.includes(option);
+              return (
+                <div key={idx} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`q${question.id}-opt${idx}`}
+                    checked={isChecked}
+                    onCheckedChange={(checked) => {
+                      const newValues = checked
+                        ? [...arrayValue, option]
+                        : arrayValue.filter((v) => v !== option);
+                      onChange(newValues);
+                    }}
+                  />
+                  <Label htmlFor={`q${question.id}-opt${idx}`} className="font-normal">
+                    {option}
+                  </Label>
+                </div>
+              );
+            })}
+          </div>
         );
       
       case 'radio':
@@ -134,10 +170,145 @@ export function FormQuestion({ question, value, error, onChange }: FormQuestionP
           </div>
         );
       
+      case 'file':
+      case 'file-upload':
+        return (
+          <Input 
+            id={`question-${question.id}`}
+            type="file" 
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                onChange(file.name);
+              }
+            }}
+            className={error ? 'border-red-500' : ''}
+          />
+        );
+      
+      case 'yesno':
+        return (
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => onChange('yes')}
+              className={`px-6 py-3 rounded-lg border-2 transition-all ${
+                stringValue === 'yes'
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'border-input hover:border-primary/50'
+              }`}
+            >
+              Yes
+            </button>
+            <button
+              type="button"
+              onClick={() => onChange('no')}
+              className={`px-6 py-3 rounded-lg border-2 transition-all ${
+                stringValue === 'no'
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'border-input hover:border-primary/50'
+              }`}
+            >
+              No
+            </button>
+          </div>
+        );
+      
+      case 'rating':
+        return (
+          <div className="flex gap-2">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <button
+                key={star}
+                type="button"
+                onClick={() => onChange(star.toString())}
+                className={`text-4xl transition-all hover:scale-110 ${
+                  parseInt(stringValue) >= star
+                    ? 'text-yellow-400'
+                    : 'text-gray-300 dark:text-gray-600'
+                }`}
+              >
+                ★
+              </button>
+            ))}
+          </div>
+        );
+      
+      case 'opinion-scale':
+        return (
+          <div className="flex gap-2 flex-wrap">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+              <button
+                key={num}
+                type="button"
+                onClick={() => onChange(num.toString())}
+                className={`w-12 h-12 rounded-lg border-2 transition-all ${
+                  stringValue === num.toString()
+                    ? 'border-primary bg-primary text-primary-foreground'
+                    : 'border-input hover:border-primary/50'
+                }`}
+              >
+                {num}
+              </button>
+            ))}
+          </div>
+        );
+      
+      case 'date-range':
+        return (
+          <div className="space-y-2">
+            <Input {...commonInputProps} type="date" placeholder="Start date" />
+            <Input {...commonInputProps} type="date" placeholder="End date" />
+          </div>
+        );
+      
+      case 'signature':
+        return (
+          <div className="border-2 border-dashed border-input rounded-lg p-4 text-center">
+            <p className="text-sm text-muted-foreground">Signature field (simplified for demo)</p>
+            <Input {...commonInputProps} placeholder="Type your name to sign" className="mt-2" />
+          </div>
+        );
+      
+      case 'legal':
+        return (
+          <div className="flex items-start space-x-2">
+            <Checkbox
+              id={`question-${question.id}`}
+              checked={stringValue === 'true'}
+              onCheckedChange={(checked) => onChange(checked ? 'true' : 'false')}
+            />
+            <Label htmlFor={`question-${question.id}`} className="font-normal leading-tight">
+              {question.description || 'I agree to the terms and conditions'}
+            </Label>
+          </div>
+        );
+      
+      case 'hidden':
+        return <input type="hidden" value={stringValue} />;
+      
+      case 'statement':
+        return null;
+      
       default:
         return null;
     }
   };
+
+  if (question.type === 'statement') {
+    return (
+      <Card className="p-6 bg-blue-50 dark:bg-blue-950/20 border-l-4 border-blue-500">
+        <div>
+          <h3 className="text-lg font-semibold mb-2">{question.title}</h3>
+          {question.description && (
+            <p className="text-sm text-muted-foreground">
+              {question.description}
+            </p>
+          )}
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="p-6">

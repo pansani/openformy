@@ -5,7 +5,6 @@ test.describe('Form Submission Flow', () => {
     const timestamp = Date.now();
     const email = `user${timestamp}@example.com`;
     
-    // Register and login
     await page.goto('/user/register');
     await page.getByRole('textbox', { name: 'Name' }).fill('Test User');
     await page.getByRole('textbox', { name: 'Email address' }).fill(email);
@@ -22,7 +21,6 @@ test.describe('Form Submission Flow', () => {
       await page.waitForURL('/dashboard', { timeout: 10000 });
     }
     
-    // Create form
     await page.goto('/forms/create');
     const formTitle = `Test Survey ${timestamp}`;
     await page.getByRole('textbox', { name: 'Form Title *' }).fill(formTitle);
@@ -31,23 +29,19 @@ test.describe('Form Submission Flow', () => {
     
     await page.waitForURL(/\/forms\/\d+\/edit/);
     
-    // Add text field
-    await page.getByRole('heading', { name: 'Text Input' }).click();
+    await page.getByRole('heading', { name: /^(Text Input|Short Text)$/ }).click();
     await page.waitForTimeout(500);
     await page.getByRole('textbox', { name: 'Question Title *' }).fill('Your name');
     await page.getByRole('switch', { name: 'Required Field' }).click();
     await page.waitForTimeout(300);
     
-    // Save form
     await page.getByRole('button', { name: 'Save' }).click();
     await page.waitForTimeout(1500);
     
-    // Get slug
     const slugElement = page.locator('text=/\\/[a-z0-9-]+/').first();
     const slugText = await slugElement.textContent();
     const formSlug = slugText?.replace(/^\//, '') || '';
     
-    // Test unpublished form returns 404
     const newPage = await page.context().newPage();
     await newPage.goto(`/f/${formSlug}`);
     const has404 = await newPage.locator('text=404').or(newPage.locator('text=not found')).isVisible().catch(() => false);
@@ -87,7 +81,7 @@ test.describe('Form Builder Save Functionality', () => {
   });
 
   test('should save form with questions', async ({ page }) => {
-    await page.getByRole('heading', { name: 'Text Input' }).click();
+    await page.getByRole('heading', { name: /^(Text Input|Short Text)$/ }).click();
     await page.waitForTimeout(800);
     await expect(page.getByRole('textbox', { name: 'Question Title *' })).toBeVisible();
     await page.getByRole('textbox', { name: 'Question Title *' }).fill('Question 1');
@@ -104,7 +98,7 @@ test.describe('Form Builder Save Functionality', () => {
   });
 
   test('should persist questions after save and reload', async ({ page }) => {
-    await page.getByRole('heading', { name: 'Text Input' }).click();
+    await page.getByRole('heading', { name: /^(Text Input|Short Text)$/ }).click();
     await page.waitForTimeout(800);
     await expect(page.getByRole('textbox', { name: 'Question Title *' })).toBeVisible();
     await page.getByRole('textbox', { name: 'Question Title *' }).fill('Persistent Question');
@@ -121,7 +115,7 @@ test.describe('Form Builder Save Functionality', () => {
 
   test('should save all field types', async ({ page }) => {
     const fieldTypes = [
-      { name: 'Text Input', title: 'Text Question' },
+      { name: /^(Text Input|Short Text)$/, title: 'Text Question' },
       { name: 'Email', title: 'Email Question' },
       { name: 'Number', title: 'Number Question', exact: true },
     ];

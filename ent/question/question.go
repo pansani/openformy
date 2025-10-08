@@ -118,16 +118,32 @@ const DefaultType = TypeText
 
 // Type values.
 const (
-	TypeText     Type = "text"
-	TypeEmail    Type = "email"
-	TypeNumber   Type = "number"
-	TypeTextarea Type = "textarea"
-	TypeDropdown Type = "dropdown"
-	TypeRadio    Type = "radio"
-	TypeCheckbox Type = "checkbox"
-	TypeDate     Type = "date"
-	TypePhone    Type = "phone"
-	TypeURL      Type = "url"
+	TypeText          Type = "text"
+	TypeShortText     Type = "short-text"
+	TypeLongText      Type = "long-text"
+	TypeEmail         Type = "email"
+	TypeNumber        Type = "number"
+	TypePhone         Type = "phone"
+	TypeURL           Type = "url"
+	TypeTextarea      Type = "textarea"
+	TypeDate          Type = "date"
+	TypeTime          Type = "time"
+	TypeDateRange     Type = "date-range"
+	TypeFile          Type = "file"
+	TypeSignature     Type = "signature"
+	TypeDropdown      Type = "dropdown"
+	TypeRadio         Type = "radio"
+	TypeCheckbox      Type = "checkbox"
+	TypeMultiSelect   Type = "multi-select"
+	TypePictureChoice Type = "picture-choice"
+	TypeYesno         Type = "yesno"
+	TypeRating        Type = "rating"
+	TypeOpinionScale  Type = "opinion-scale"
+	TypeRanking       Type = "ranking"
+	TypeMatrix        Type = "matrix"
+	TypeStatement     Type = "statement"
+	TypeLegal         Type = "legal"
+	TypeHidden        Type = "hidden"
 )
 
 func (_type Type) String() string {
@@ -137,7 +153,7 @@ func (_type Type) String() string {
 // TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
 func TypeValidator(_type Type) error {
 	switch _type {
-	case TypeText, TypeEmail, TypeNumber, TypeTextarea, TypeDropdown, TypeRadio, TypeCheckbox, TypeDate, TypePhone, TypeURL:
+	case TypeText, TypeShortText, TypeLongText, TypeEmail, TypeNumber, TypePhone, TypeURL, TypeTextarea, TypeDate, TypeTime, TypeDateRange, TypeFile, TypeSignature, TypeDropdown, TypeRadio, TypeCheckbox, TypeMultiSelect, TypePictureChoice, TypeYesno, TypeRating, TypeOpinionScale, TypeRanking, TypeMatrix, TypeStatement, TypeLegal, TypeHidden:
 		return nil
 	default:
 		return fmt.Errorf("question: invalid enum value for type field: %q", _type)

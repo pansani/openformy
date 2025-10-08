@@ -17,7 +17,16 @@ type Question struct {
 func (Question) Fields() []ent.Field {
 	return []ent.Field{
 		field.Enum("type").
-			Values("text", "email", "number", "textarea", "dropdown", "radio", "checkbox", "date", "phone", "url").
+			Values(
+				"text", "short-text", "long-text",
+				"email", "number", "phone", "url",
+				"textarea",
+				"date", "time", "date-range",
+				"file", "signature",
+				"dropdown", "radio", "checkbox", "multi-select", "picture-choice",
+				"yesno", "rating", "opinion-scale", "ranking", "matrix",
+				"statement", "legal", "hidden",
+			).
 			Default("text"),
 		field.String("title").
 			NotEmpty(),
