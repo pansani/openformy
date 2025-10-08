@@ -51,42 +51,37 @@ export default function Welcome() {
 
             <div className="relative max-w-5xl mx-auto">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-600/20 blur-3xl -z-10" />
-              <Link href="/demo/contact-us" className="block group">
-                <div className="bg-card border rounded-xl shadow-2xl overflow-hidden transition-all group-hover:shadow-3xl group-hover:scale-[1.01]">
-                  <div className="bg-muted border-b px-4 py-3 flex items-center gap-2">
-                    <div className="flex gap-2">
-                      <div className="h-3 w-3 rounded-full bg-red-500" />
-                      <div className="h-3 w-3 rounded-full bg-yellow-500" />
-                      <div className="h-3 w-3 rounded-full bg-green-500" />
-                    </div>
-                    <div className="text-xs text-muted-foreground ml-4">
-                      demo/contact-us
-                    </div>
+              <div className="bg-card border rounded-xl shadow-2xl overflow-hidden">
+                <div className="bg-muted border-b px-4 py-3 flex items-center gap-2">
+                  <div className="flex gap-2">
+                    <div className="h-3 w-3 rounded-full bg-red-500" />
+                    <div className="h-3 w-3 rounded-full bg-yellow-500" />
+                    <div className="h-3 w-3 rounded-full bg-green-500" />
                   </div>
-                  <div className="p-8 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
-                    <div className="text-left w-full">
-                      <div className="text-sm text-muted-foreground mb-2">
-                        1 / 3
-                      </div>
-                      <h2 className="text-3xl font-bold mb-4">
-                        What's your best email?
-                      </h2>
-                      <input
-                        type="email"
-                        placeholder="name@example.com"
-                        className="w-full px-4 py-3 rounded-lg border bg-background"
-                        disabled
-                      />
-                      <div className="mt-6 flex justify-end">
-                        <Button>Next</Button>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-primary/5 border-t px-6 py-3 text-sm text-center text-muted-foreground">
-                    Click to try the interactive demo →
+                  <div className="text-xs text-muted-foreground ml-4">
+                    conversational-form
                   </div>
                 </div>
-              </Link>
+                <div className="p-8 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+                  <div className="text-left w-full">
+                    <div className="text-sm text-muted-foreground mb-2">
+                      1 / 3
+                    </div>
+                    <h2 className="text-3xl font-bold mb-4">
+                      What's your best email?
+                    </h2>
+                    <input
+                      type="email"
+                      placeholder="name@example.com"
+                      className="w-full px-4 py-3 rounded-lg border bg-background"
+                      disabled
+                    />
+                    <div className="mt-6 flex justify-end">
+                      <Button disabled>Next</Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -208,15 +203,20 @@ export default function Welcome() {
                   Create Free Account
                 </Button>
               </Link>
-              <Link href="/demo/contact-us">
+              <a
+                href="https://github.com/pansani/openformy"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Button
                   size="lg"
                   variant="outline"
                   className="text-lg px-8 py-6"
                 >
-                  Try Demo Form
+                  <Github className="h-5 w-5 mr-2" />
+                  Star on GitHub
                 </Button>
-              </Link>
+              </a>
             </div>
           </div>
         </div>
