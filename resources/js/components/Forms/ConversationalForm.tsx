@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { FormQuestion } from './FormQuestion';
+import { validateAnswer } from '@/utils/validation';
 
 interface Question {
   id: number;
@@ -44,17 +45,20 @@ export function ConversationalForm({
   const canAdvance = () => {
     if (!currentQuestion) return false;
     const answer = answers[currentQuestion.id];
-    if (currentQuestion.required) {
-      if (Array.isArray(answer)) {
-        return answer.length > 0;
-      }
-      return answer && answer.length > 0;
-    }
-    return true;
+    const validation = validateAnswer(currentQuestion, answer);
+    return validation.valid;
   };
 
   const handleNext = () => {
-    if (!canAdvance() || isAnimating) {
+    if (isAnimating) {
+      return;
+    }
+
+    const answer = answers[currentQuestion.id];
+    const validation = validateAnswer(currentQuestion, answer);
+    
+    if (!validation.valid) {
+      onAnswerChange(currentQuestion.id, answer || '');
       return;
     }
     

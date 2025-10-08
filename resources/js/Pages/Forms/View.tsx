@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Send } from 'lucide-react';
 import { FormQuestion } from '@/components/Forms/FormQuestion';
 import { ConversationalForm } from '@/components/Forms/ConversationalForm';
+import { validateAnswer } from '@/utils/validation';
 
 interface Question {
   id: number;
@@ -55,26 +56,10 @@ export default function View({ form }: Props) {
     
     questions.forEach((q) => {
       const answer = answers[q.id];
+      const validation = validateAnswer(q, answer);
       
-      if (q.required && !answer) {
-        newErrors[q.id] = 'This field is required';
-      }
-
-      if (answer && typeof answer === 'string') {
-        if (q.type === 'email') {
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if (!emailRegex.test(answer)) {
-            newErrors[q.id] = 'Invalid email';
-          }
-        }
-
-        if (q.type === 'url') {
-          try {
-            new URL(answer);
-          } catch {
-            newErrors[q.id] = 'Invalid URL';
-          }
-        }
+      if (!validation.valid) {
+        newErrors[q.id] = validation.error;
       }
     });
 

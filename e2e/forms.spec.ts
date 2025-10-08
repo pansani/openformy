@@ -131,6 +131,39 @@ test.describe('Forms Management', () => {
     const formCard = page.locator(`text=${formTitle}`).locator('..').locator('..').locator('..');
     await expect(formCard.locator('button').first()).toBeVisible(); // Settings button
   });
+
+  test('should disable preview button when form has no questions', async ({ page }) => {
+    await page.goto('/forms/create');
+    
+    const formTitle = `No Questions Test ${Date.now()}`;
+    await page.getByRole('textbox', { name: 'Form Title *' }).fill(formTitle);
+    await page.getByRole('button', { name: 'Create Form & Start Building' }).click();
+    
+    await page.waitForURL(/\/forms\/\d+\/edit/);
+    
+    const previewButton = page.getByRole('button', { name: 'Preview' });
+    await expect(previewButton).toBeVisible();
+    await expect(previewButton).toBeDisabled();
+  });
+
+  test('should enable preview button when form has questions', async ({ page }) => {
+    await page.goto('/forms/create');
+    
+    const formTitle = `With Questions Test ${Date.now()}`;
+    await page.getByRole('textbox', { name: 'Form Title *' }).fill(formTitle);
+    await page.getByRole('button', { name: 'Create Form & Start Building' }).click();
+    
+    await page.waitForURL(/\/forms\/\d+\/edit/);
+    
+    await page.getByRole('heading', { name: /^(Text Input|Short Text)$/ }).click();
+    await page.getByRole('textbox', { name: 'Question Title *' }).fill('Test Question');
+    await page.getByRole('button', { name: 'Save' }).click();
+    await page.waitForTimeout(500);
+    
+    const previewButton = page.getByRole('button', { name: 'Preview' });
+    await expect(previewButton).toBeVisible();
+    await expect(previewButton).toBeEnabled();
+  });
 });
 
 test.describe('Forms Authorization', () => {

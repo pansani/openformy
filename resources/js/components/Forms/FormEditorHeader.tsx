@@ -142,12 +142,19 @@ export function FormEditorHeader({
             </PopoverContent>
           </Popover>
           
-          <Link href={`/${userIdentifier}/${form.slug}`} target="_blank">
-            <Button variant="outline" size="sm">
+          {form.edges?.questions && form.edges.questions.length > 0 ? (
+            <Link href={`/${userIdentifier}/${form.slug}`} target="_blank">
+              <Button variant="outline" size="sm">
+                <Eye className="h-4 w-4 mr-2" />
+                Preview
+              </Button>
+            </Link>
+          ) : (
+            <Button variant="outline" size="sm" disabled>
               <Eye className="h-4 w-4 mr-2" />
               Preview
             </Button>
-          </Link>
+          )}
           <Button 
             variant="outline" 
             size="sm" 

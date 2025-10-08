@@ -22,7 +22,6 @@ func main() {
 
 	fmt.Println("🌱 Seeding database...")
 
-	// Create demo user
 	user, err := c.ORM.User.
 		Create().
 		SetEmail("demo@example.com").
@@ -30,14 +29,12 @@ func main() {
 		SetPassword("password123").
 		SetVerified(true).
 		Save(ctx)
-
 	if err != nil {
 		fmt.Printf("❌ Failed to create user: %v\n", err)
 		return
 	}
 	fmt.Printf("✅ Created user: %s\n", user.Email)
 
-	// Create contact form
 	contactForm, err := c.ORM.Form.
 		Create().
 		SetTitle("Contact Us").
@@ -46,14 +43,12 @@ func main() {
 		SetPublished(true).
 		SetOwner(user).
 		Save(ctx)
-
 	if err != nil {
 		fmt.Printf("❌ Failed to create contact form: %v\n", err)
 		return
 	}
 	fmt.Printf("✅ Created form: %s (published)\n", contactForm.Title)
 
-	// Add questions to contact form
 	questions := []struct {
 		Type        question.Type
 		Title       string
@@ -65,43 +60,43 @@ func main() {
 	}{
 		{
 			Type:        question.TypeText,
-			Title:       "Nome completo",
-			Description: "Como devemos te chamar?",
-			Placeholder: "João Silva",
+			Title:       "Full Name",
+			Description: "What should we call you?",
+			Placeholder: "John Smith",
 			Required:    true,
 			Order:       0,
 		},
 		{
 			Type:        question.TypeEmail,
 			Title:       "Email",
-			Description: "Seu melhor endereço de email",
-			Placeholder: "joao@example.com",
+			Description: "Your best email address",
+			Placeholder: "john@example.com",
 			Required:    true,
 			Order:       1,
 		},
 		{
 			Type:        question.TypePhone,
-			Title:       "Telefone",
-			Description: "Número de telefone com DDD",
-			Placeholder: "(11) 99999-9999",
+			Title:       "Phone",
+			Description: "Phone number with area code",
+			Placeholder: "(555) 123-4567",
 			Required:    false,
 			Order:       2,
 		},
 		{
 			Type:        question.TypeDropdown,
-			Title:       "Assunto",
-			Description: "Qual o motivo do contato?",
+			Title:       "Subject",
+			Description: "What is your reason for contacting us?",
 			Required:    true,
 			Order:       3,
 			Options: map[string]interface{}{
-				"items": []string{"Suporte", "Vendas", "Parceria", "Outro"},
+				"items": []string{"Support", "Sales", "Partnership", "Other"},
 			},
 		},
 		{
 			Type:        question.TypeTextarea,
-			Title:       "Mensagem",
-			Description: "Conte-nos mais detalhes",
-			Placeholder: "Escreva sua mensagem aqui...",
+			Title:       "Message",
+			Description: "Tell us more details",
+			Placeholder: "Write your message here...",
 			Required:    true,
 			Order:       4,
 		},
@@ -129,7 +124,6 @@ func main() {
 	}
 	fmt.Printf("✅ Added %d questions to contact form\n", len(questions))
 
-	// Create survey form
 	surveyForm, err := c.ORM.Form.
 		Create().
 		SetTitle("Customer Satisfaction Survey").
@@ -138,14 +132,12 @@ func main() {
 		SetPublished(true).
 		SetOwner(user).
 		Save(ctx)
-
 	if err != nil {
 		fmt.Printf("❌ Failed to create survey form: %v\n", err)
 		return
 	}
 	fmt.Printf("✅ Created form: %s (published)\n", surveyForm.Title)
 
-	// Add questions to survey
 	surveyQuestions := []struct {
 		Type        question.Type
 		Title       string
@@ -211,7 +203,6 @@ func main() {
 	}
 	fmt.Printf("✅ Added %d questions to survey form\n", len(surveyQuestions))
 
-	// Create draft form
 	draftForm, err := c.ORM.Form.
 		Create().
 		SetTitle("Event Registration (Draft)").
@@ -220,7 +211,6 @@ func main() {
 		SetPublished(false).
 		SetOwner(user).
 		Save(ctx)
-
 	if err != nil {
 		fmt.Printf("❌ Failed to create draft form: %v\n", err)
 		return

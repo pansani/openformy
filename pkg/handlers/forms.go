@@ -46,7 +46,7 @@ func (h *Forms) Routes(g *echo.Group) {
 	g.GET("/:identifier/:slug", h.View).Name = routenames.FormsView
 	g.POST("/:identifier/:slug", h.Submit).Name = routenames.FormsSubmit
 	g.GET("/:identifier/:slug/thank-you", h.ThankYou).Name = routenames.FormsThankYou
-	
+
 	// Authenticated routes
 	formsGroup := g.Group("/forms", middleware.RequireAuthentication)
 	formsGroup.GET("", h.Index).Name = routenames.Forms
@@ -68,7 +68,6 @@ func (h *Forms) Index(ctx echo.Context) error {
 		WithOwner().
 		Order(ent.Desc("created_at")).
 		All(ctx.Request().Context())
-
 	if err != nil {
 		return fail(err, "failed to query forms", h.Inertia, ctx)
 	}
@@ -108,7 +107,7 @@ func (h *Forms) Create(ctx echo.Context) error {
 
 func (h *Forms) Store(ctx echo.Context) error {
 	user := ctx.Get(context.AuthenticatedUserKey).(*ent.User)
-	
+
 	w := ctx.Response().Writer
 	r := ctx.Request()
 
@@ -136,7 +135,6 @@ func (h *Forms) Store(ctx echo.Context) error {
 	}
 
 	createdForm, err := formCreate.Save(ctx.Request().Context())
-
 	if err != nil {
 		if ent.IsConstraintError(err) {
 			for i := 2; i <= 10; i++ {
@@ -175,7 +173,6 @@ func (h *Forms) Edit(ctx echo.Context) error {
 		WithOwner().
 		WithQuestions().
 		Only(ctx.Request().Context())
-
 	if err != nil {
 		return fail(err, "failed to fetch form", h.Inertia, ctx)
 	}
@@ -225,7 +222,7 @@ func (h *Forms) Show(ctx echo.Context) error {
 func (h *Forms) Update(ctx echo.Context) error {
 	user := ctx.Get(context.AuthenticatedUserKey).(*ent.User)
 	id := ctx.Param("id")
-	
+
 	w := ctx.Response().Writer
 	r := ctx.Request()
 
@@ -238,7 +235,6 @@ func (h *Forms) Update(ctx echo.Context) error {
 		Where(form.ID(formID)).
 		WithOwner().
 		Only(ctx.Request().Context())
-
 	if err != nil {
 		return fail(err, "failed to fetch form", h.Inertia, ctx)
 	}
@@ -249,20 +245,19 @@ func (h *Forms) Update(ctx echo.Context) error {
 		return nil
 	}
 
-	// Update form settings
 	update := h.orm.Form.UpdateOne(formData)
-	
+
 	publishedStr := ctx.FormValue("published")
 	if publishedStr != "" {
 		published := publishedStr == "1" || publishedStr == "true"
 		update.SetPublished(published)
 	}
-	
+
 	displayMode := ctx.FormValue("display_mode")
 	if displayMode != "" {
 		update.SetDisplayMode(form.DisplayMode(displayMode))
 	}
-	
+
 	_, err = update.Save(ctx.Request().Context())
 	if err != nil {
 		return fail(err, "failed to update form settings", h.Inertia, ctx)
@@ -286,7 +281,6 @@ func (h *Forms) Update(ctx echo.Context) error {
 	_, err = tx.Question.Delete().
 		Where(question.HasFormWith(form.ID(formID))).
 		Exec(ctx.Request().Context())
-	
 	if err != nil {
 		tx.Rollback()
 		return fail(err, "failed to delete existing questions", h.Inertia, ctx)
@@ -365,7 +359,6 @@ func (h *Forms) View(ctx echo.Context) error {
 		Where(form.UserID(foundUser.ID), form.Slug(slug), form.Published(true)).
 		WithQuestions().
 		Only(ctx.Request().Context())
-
 	if err != nil {
 		return ctx.JSON(http.StatusNotFound, map[string]string{
 			"error": "Form not found",
@@ -391,8 +384,6 @@ func (h *Forms) View(ctx echo.Context) error {
 func (h *Forms) Submit(ctx echo.Context) error {
 	identifier := ctx.Param("identifier")
 	slug := ctx.Param("slug")
-	w := ctx.Response().Writer
-	r := ctx.Request()
 
 	users, err := h.orm.User.Query().All(ctx.Request().Context())
 	if err != nil {
@@ -419,7 +410,6 @@ func (h *Forms) Submit(ctx echo.Context) error {
 		Where(form.UserID(foundUser.ID), form.Slug(slug), form.Published(true)).
 		WithQuestions().
 		Only(ctx.Request().Context())
-
 	if err != nil {
 		return ctx.JSON(http.StatusNotFound, map[string]string{
 			"error": "Form not found or not published",
@@ -454,7 +444,6 @@ func (h *Forms) Submit(ctx echo.Context) error {
 		SetUserAgent(userAgent).
 		SetCompleted(true).
 		Save(ctx.Request().Context())
-
 	if err != nil {
 		tx.Rollback()
 		return fail(err, "failed to create response", h.Inertia, ctx)
@@ -488,7 +477,6 @@ func (h *Forms) Submit(ctx echo.Context) error {
 			SetQuestionID(q.ID).
 			SetValue(answerStr).
 			Save(ctx.Request().Context())
-
 		if err != nil {
 			tx.Rollback()
 			return fail(err, "failed to save answer", h.Inertia, ctx)
@@ -499,7 +487,8 @@ func (h *Forms) Submit(ctx echo.Context) error {
 		return fail(err, "failed to commit transaction", h.Inertia, ctx)
 	}
 
-	h.Inertia.Location(w, r, fmt.Sprintf("/%s/%s/thank-you", identifier, slug))
+	ctx.Response().Header().Set("Location", fmt.Sprintf("/%s/%s/thank-you", identifier, slug))
+	ctx.Response().WriteHeader(http.StatusSeeOther)
 	return nil
 }
 
@@ -531,7 +520,6 @@ func (h *Forms) ThankYou(ctx echo.Context) error {
 	formData, err := h.orm.Form.Query().
 		Where(form.UserID(foundUser.ID), form.Slug(slug)).
 		Only(ctx.Request().Context())
-
 	if err != nil {
 		return ctx.JSON(http.StatusNotFound, map[string]string{
 			"error": "Form not found",
@@ -557,7 +545,7 @@ func (h *Forms) ThankYou(ctx echo.Context) error {
 func (h *Forms) Delete(ctx echo.Context) error {
 	user := ctx.Get(context.AuthenticatedUserKey).(*ent.User)
 	id := ctx.Param("id")
-	
+
 	w := ctx.Response().Writer
 	r := ctx.Request()
 
@@ -570,7 +558,6 @@ func (h *Forms) Delete(ctx echo.Context) error {
 		Where(form.ID(formID)).
 		WithOwner().
 		Only(ctx.Request().Context())
-
 	if err != nil {
 		return fail(err, "failed to fetch form", h.Inertia, ctx)
 	}
@@ -597,11 +584,11 @@ func generateSlug(title string) string {
 	slug = regexp.MustCompile(`[^a-z0-9\s-]`).ReplaceAllString(slug, "")
 	slug = regexp.MustCompile(`[\s-]+`).ReplaceAllString(slug, "-")
 	slug = strings.Trim(slug, "-")
-	
+
 	if slug == "" {
 		slug = fmt.Sprintf("form-%d", time.Now().Unix())
 	}
-	
+
 	return slug
 }
 
@@ -636,7 +623,6 @@ func (h *Forms) Responses(ctx echo.Context) error {
 		Where(form.ID(formID)).
 		WithOwner().
 		Only(ctx.Request().Context())
-
 	if err != nil {
 		return fail(err, "failed to fetch form", h.Inertia, ctx)
 	}
@@ -654,7 +640,6 @@ func (h *Forms) Responses(ctx echo.Context) error {
 		}).
 		Order(ent.Desc("submitted_at")).
 		All(ctx.Request().Context())
-
 	if err != nil {
 		return fail(err, "failed to fetch responses", h.Inertia, ctx)
 	}
@@ -677,11 +662,11 @@ func (h *Forms) Responses(ctx echo.Context) error {
 		ctx.Request(),
 		"Forms/Responses/Index",
 		inertia.Props{
-			"form":            formData,
-			"responses":       responses,
-			"totalResponses":  totalResponses,
-			"completionRate":  completionRate,
-			"userIdentifier":  getUserIdentifier(user),
+			"form":           formData,
+			"responses":      responses,
+			"totalResponses": totalResponses,
+			"completionRate": completionRate,
+			"userIdentifier": getUserIdentifier(user),
 		},
 	)
 	if err != nil {
@@ -712,7 +697,6 @@ func (h *Forms) ResponseShow(ctx echo.Context) error {
 		WithOwner().
 		WithQuestions().
 		Only(ctx.Request().Context())
-
 	if err != nil {
 		return fail(err, "failed to fetch form", h.Inertia, ctx)
 	}
@@ -729,7 +713,6 @@ func (h *Forms) ResponseShow(ctx echo.Context) error {
 			q.WithQuestion()
 		}).
 		Only(ctx.Request().Context())
-
 	if err != nil {
 		return fail(err, "failed to fetch response", h.Inertia, ctx)
 	}
@@ -765,7 +748,6 @@ func (h *Forms) ResponsesExport(ctx echo.Context) error {
 		WithOwner().
 		WithQuestions().
 		Only(ctx.Request().Context())
-
 	if err != nil {
 		return fail(err, "failed to fetch form", h.Inertia, ctx)
 	}
@@ -783,7 +765,6 @@ func (h *Forms) ResponsesExport(ctx echo.Context) error {
 		}).
 		Order(ent.Desc("submitted_at")).
 		All(ctx.Request().Context())
-
 	if err != nil {
 		return fail(err, "failed to fetch responses", h.Inertia, ctx)
 	}
