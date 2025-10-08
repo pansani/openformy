@@ -1,4 +1,4 @@
-# OpenForm - Roadmap
+# OpenFormy - Roadmap
 
 **Open-source form builder inspired by Typeform and ikiform**
 
@@ -165,7 +165,7 @@ Create an open-source alternative to Typeform and Google Forms with a focus on b
 
 ## Phase 10: Developer Features & Integrations
 
-**Goal:** Make OpenForm extensible and integratable.
+**Goal:** Make OpenFormy extensible and integratable.
 
 ### API & Webhooks
 - [ ] Public REST API for form management
@@ -205,7 +205,7 @@ Create an open-source alternative to Typeform and Google Forms with a focus on b
 - [ ] Unlimited responses
 - [ ] Advanced question types (file upload, signature)
 - [ ] Conditional logic
-- [ ] Custom branding (remove "Powered by OpenForm")
+- [ ] Custom branding (remove "Powered by OpenFormy")
 - [ ] File upload storage (increased limits)
 - [ ] Priority support
 - [ ] AI features
@@ -276,7 +276,7 @@ Create an open-source alternative to Typeform and Google Forms with a focus on b
 - External API field data fetching
 - Open-source positioning
 
-### Original OpenForm Features
+### Original OpenFormy Features
 - Built on modern Go + React stack
 - Self-hostable with SQLite (simple deployment)
 - Integrated with existing auth and payment system
@@ -333,4 +333,4 @@ Create an open-source alternative to Typeform and Google Forms with a focus on b
 
 ---
 
-**Built with ❤️ by the OpenForm community**
+**Built with ❤️ by the OpenFormy community**

@@ -1,7 +1,7 @@
 # Form Builder UI Inspiration
 
 ## Overview
-This document captures UI/UX inspiration for the OpenForm form builder interface.
+This document captures UI/UX inspiration for the OpenFormy form builder interface.
 
 ## Layout Structure
 

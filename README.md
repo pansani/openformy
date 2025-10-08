@@ -1,4 +1,4 @@
-# OpenForm
+# OpenFormy
 
 **Open-source form builder inspired by Typeform - beautiful, conversational forms made simple.**
 
@@ -8,9 +8,9 @@
 
 ---
 
-## About OpenForm
+## About OpenFormy
 
-OpenForm is a modern, open-source alternative to Typeform and Google Forms. Built on the powerful [Pagode](https://pagode.dev) framework, it combines the speed and type-safety of Go with the flexibility of React to deliver beautiful, engaging forms.
+OpenFormy is a modern, open-source alternative to Typeform and Google Forms. Built on the powerful [Pagode](https://pagode.dev) framework, it combines the speed and type-safety of Go with the flexibility of React to deliver beautiful, engaging forms.
 
 ### Key Features
 
@@ -52,8 +52,8 @@ OpenForm is a modern, open-source alternative to Typeform and Google Forms. Buil
 
 ```bash
 # Clone the repository
-git clone https://github.com/pansani/openform.git
-cd openform
+git clone https://github.com/pansani/openformy.git
+cd openformy
 
 # Install backend dependencies
 go mod download
@@ -110,7 +110,7 @@ make watch
 
 ## Documentation
 
-OpenForm is built on **Pagode**, a full-stack Go + React starter kit. For detailed documentation on the underlying framework:
+OpenFormy is built on **Pagode**, a full-stack Go + React starter kit. For detailed documentation on the underlying framework:
 
 - 📖 [Pagode Documentation](https://pagode.dev/)
 - 🏗️ [Architecture Guide](https://pagode.dev/docs/intro)
@@ -152,7 +152,7 @@ make admin email=user@example.com
 ## Project Structure
 
 ```
-openform/
+openformy/
 ├── cmd/                    # Application entry points
 │   ├── web/               # Main web application
 │   └── admin/             # Admin CLI tools
@@ -210,7 +210,7 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## Credits
 
-OpenForm is built with and inspired by many amazing open-source projects:
+OpenFormy is built with and inspired by many amazing open-source projects:
 
 ### Core Framework
 - [Pagode](https://pagode.dev/) - Full-stack Go + React starter kit
@@ -242,8 +242,8 @@ OpenForm is built with and inspired by many amazing open-source projects:
 ## Support
 
 - 📚 [Documentation](https://pagode.dev/)
-- 🐛 [Issue Tracker](https://github.com/pansani/openform/issues)
-- 💬 [Discussions](https://github.com/pansani/openform/discussions)
+- 🐛 [Issue Tracker](https://github.com/pansani/openformy/issues)
+- 💬 [Discussions](https://github.com/pansani/openformy/discussions)
 
 ---
 

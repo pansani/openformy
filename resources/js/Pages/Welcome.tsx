@@ -34,7 +34,7 @@ export default function Welcome() {
                 </Button>
               </Link>
               <a
-                href="https://github.com/pansani/openform"
+                href="https://github.com/pansani/openformy"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -93,7 +93,7 @@ export default function Welcome() {
           <div className="py-20 border-t">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Why Choose OpenForm?
+                Why Choose OpenFormy?
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Everything you need to create, share, and analyze forms without
@@ -201,7 +201,7 @@ export default function Welcome() {
                 Deploy Anywhere
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                OpenForm works wherever you need it. Deploy with Docker, on your
+                OpenFormy works wherever you need it. Deploy with Docker, on your
                 VPS, or use our cloud version.
               </p>
             </div>
@@ -214,7 +214,7 @@ export default function Welcome() {
                   Run on your own servers. Full control, zero monthly fees.
                 </p>
                 <code className="text-xs bg-muted px-3 py-2 rounded block">
-                  docker run -p 8000:8000 openform
+                  docker run -p 8000:8000 openformy
                 </code>
               </div>
 
@@ -225,7 +225,7 @@ export default function Welcome() {
                   Clone, modify, and deploy. MIT licensed for maximum freedom.
                 </p>
                 <code className="text-xs bg-muted px-3 py-2 rounded block">
-                  git clone github.com/you/openform
+                  git clone github.com/pansani/openformy
                 </code>
               </div>
             </div>
