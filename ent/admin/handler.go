@@ -1491,6 +1491,12 @@ func (h *Handler) UserCreate(ctx echo.Context) error {
 	if payload.Password != nil {
 		op.SetPassword(*payload.Password)
 	}
+	if payload.Username != nil {
+		op.SetUsername(*payload.Username)
+	}
+	if payload.CompanyName != nil {
+		op.SetCompanyName(*payload.CompanyName)
+	}
 	op.SetVerified(payload.Verified)
 	op.SetAdmin(payload.Admin)
 	if payload.CreatedAt != nil {
@@ -1516,6 +1522,16 @@ func (h *Handler) UserUpdate(ctx echo.Context, id int) error {
 	op.SetEmail(payload.Email)
 	if payload.Password != nil {
 		op.SetPassword(*payload.Password)
+	}
+	if payload.Username == nil {
+		op.ClearUsername()
+	} else {
+		op.SetUsername(*payload.Username)
+	}
+	if payload.CompanyName == nil {
+		op.ClearCompanyName()
+	} else {
+		op.SetCompanyName(*payload.CompanyName)
 	}
 	op.SetVerified(payload.Verified)
 	op.SetAdmin(payload.Admin)
@@ -1545,6 +1561,8 @@ func (h *Handler) UserList(ctx echo.Context) (*EntityList, error) {
 		Columns: []string{
 			"Name",
 			"Email",
+			"Username",
+			"Company name",
 			"Verified",
 			"Admin",
 			"Created at",
@@ -1560,6 +1578,8 @@ func (h *Handler) UserList(ctx echo.Context) (*EntityList, error) {
 			Values: []string{
 				res[i].Name,
 				res[i].Email,
+				res[i].Username,
+				res[i].CompanyName,
 				fmt.Sprint(res[i].Verified),
 				fmt.Sprint(res[i].Admin),
 				res[i].CreatedAt.Format(h.Config.TimeFormat),
@@ -1579,6 +1599,8 @@ func (h *Handler) UserGet(ctx echo.Context, id int) (url.Values, error) {
 	v := url.Values{}
 	v.Set("name", entity.Name)
 	v.Set("email", entity.Email)
+	v.Set("username", entity.Username)
+	v.Set("company_name", entity.CompanyName)
 	v.Set("verified", fmt.Sprint(entity.Verified))
 	v.Set("admin", fmt.Sprint(entity.Admin))
 	return v, err

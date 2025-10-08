@@ -22,7 +22,6 @@ func (Form) Fields() []ent.Field {
 		field.Bool("published").
 			Default(false),
 		field.String("slug").
-			Unique().
 			NotEmpty(),
 		field.Enum("display_mode").
 			Values("traditional", "conversational").
@@ -51,7 +50,7 @@ func (Form) Edges() []ent.Edge {
 
 func (Form) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("slug").
+		index.Fields("user_id", "slug").
 			Unique(),
 	}
 }

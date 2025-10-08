@@ -20,9 +20,10 @@ interface Props {
   responses: Response[];
   totalResponses: number;
   completionRate: number;
+  userIdentifier: string;
 }
 
-export default function Index({ form, responses, totalResponses, completionRate }: Props) {
+export default function Index({ form, responses, totalResponses, completionRate, userIdentifier }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredResponses = responses.filter((response) => {
@@ -56,7 +57,7 @@ export default function Index({ form, responses, totalResponses, completionRate 
         ) : totalResponses > 0 ? (
           <NoSearchResults onClearSearch={() => setSearchQuery('')} />
         ) : (
-          <EmptyResponsesState formSlug={form.slug} />
+          <EmptyResponsesState formSlug={form.slug} userIdentifier={userIdentifier} />
         )}
       </div>
     </AppLayout>

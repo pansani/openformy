@@ -35,6 +35,11 @@ func (User) Fields() []ent.Field {
 		field.String("password").
 			Sensitive().
 			NotEmpty(),
+		field.String("username").
+			Unique().
+			Optional(),
+		field.String("company_name").
+			Optional(),
 		field.Bool("verified").
 			Default(false),
 		field.Bool("admin").

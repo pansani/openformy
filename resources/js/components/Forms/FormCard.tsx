@@ -32,13 +32,14 @@ interface Form {
 
 interface FormCardProps {
   form: Form;
+  userIdentifier: string;
 }
 
-export function FormCard({ form }: FormCardProps) {
+export function FormCard({ form, userIdentifier }: FormCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const formUrl = `${window.location.origin}/f/${form.slug}`;
+  const formUrl = `${window.location.origin}/${userIdentifier}/${form.slug}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(formUrl);
@@ -145,7 +146,7 @@ export function FormCard({ form }: FormCardProps) {
               <BarChart3 className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
             </Button>
           </Link>
-          <a href={`/f/${form.slug}`} target="_blank" rel="noopener noreferrer">
+          <a href={`/${userIdentifier}/${form.slug}`} target="_blank" rel="noopener noreferrer">
             <Button variant="outline" className="w-full group/btn" size="sm">
               <Eye className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
             </Button>

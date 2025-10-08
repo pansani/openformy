@@ -4,9 +4,10 @@ import { FileSpreadsheet, Eye } from 'lucide-react';
 
 interface EmptyResponsesStateProps {
   formSlug: string;
+  userIdentifier: string;
 }
 
-export function EmptyResponsesState({ formSlug }: EmptyResponsesStateProps) {
+export function EmptyResponsesState({ formSlug, userIdentifier }: EmptyResponsesStateProps) {
   return (
     <Card className="p-16 text-center border-2 border-dashed">
       <div className="max-w-md mx-auto">
@@ -18,7 +19,7 @@ export function EmptyResponsesState({ formSlug }: EmptyResponsesStateProps) {
           Share your form to start collecting responses
         </p>
         <div className="flex gap-3 justify-center">
-          <a href={`/f/${formSlug}`} target="_blank" rel="noopener noreferrer">
+          <a href={`/${userIdentifier}/${formSlug}`} target="_blank" rel="noopener noreferrer">
             <Button variant="outline">
               <Eye className="h-4 w-4 mr-2" />
               View Form
@@ -27,7 +28,7 @@ export function EmptyResponsesState({ formSlug }: EmptyResponsesStateProps) {
           <Button
             variant="outline"
             onClick={() => {
-              navigator.clipboard.writeText(`${window.location.origin}/f/${formSlug}`);
+              navigator.clipboard.writeText(`${window.location.origin}/${userIdentifier}/${formSlug}`);
             }}
           >
             Copy Link

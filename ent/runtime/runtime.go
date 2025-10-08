@@ -279,15 +279,15 @@ func init() {
 	// user.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
 	user.PasswordValidator = userDescPassword.Validators[0].(func(string) error)
 	// userDescVerified is the schema descriptor for verified field.
-	userDescVerified := userFields[3].Descriptor()
+	userDescVerified := userFields[5].Descriptor()
 	// user.DefaultVerified holds the default value on creation for the verified field.
 	user.DefaultVerified = userDescVerified.Default.(bool)
 	// userDescAdmin is the schema descriptor for admin field.
-	userDescAdmin := userFields[4].Descriptor()
+	userDescAdmin := userFields[6].Descriptor()
 	// user.DefaultAdmin holds the default value on creation for the admin field.
 	user.DefaultAdmin = userDescAdmin.Default.(bool)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[5].Descriptor()
+	userDescCreatedAt := userFields[7].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 }

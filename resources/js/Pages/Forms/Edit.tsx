@@ -9,9 +9,10 @@ import { Form } from '@/types/form';
 
 interface Props {
   form: Form;
+  userIdentifier: string;
 }
 
-export default function Edit({ form }: Props) {
+export default function Edit({ form, userIdentifier }: Props) {
   const {
     questions,
     selectedQuestionId,
@@ -48,6 +49,7 @@ export default function Edit({ form }: Props) {
         
         <FormEditorHeader
           form={form}
+          userIdentifier={userIdentifier}
           displayMode={displayMode}
           isPublished={isPublished}
           isSaving={isSaving}

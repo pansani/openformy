@@ -19,6 +19,7 @@ import { Form } from '@/types/form';
 
 interface FormEditorHeaderProps {
   form: Form;
+  userIdentifier: string;
   displayMode: string;
   isPublished: boolean;
   isSaving: boolean;
@@ -29,6 +30,7 @@ interface FormEditorHeaderProps {
 
 export function FormEditorHeader({
   form,
+  userIdentifier,
   displayMode,
   isPublished,
   isSaving,
@@ -136,7 +138,7 @@ export function FormEditorHeader({
             </PopoverContent>
           </Popover>
           
-          <Link href={`/f/${form.slug}`} target="_blank">
+          <Link href={`/${userIdentifier}/${form.slug}`} target="_blank">
             <Button variant="outline" size="sm">
               <Eye className="h-4 w-4 mr-2" />
               Preview

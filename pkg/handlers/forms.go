@@ -43,9 +43,9 @@ func (h *Forms) Init(c *services.Container) error {
 
 func (h *Forms) Routes(g *echo.Group) {
 	// Public routes (no auth required)
-	g.GET("/f/:slug", h.View).Name = routenames.FormsView
-	g.POST("/f/:slug", h.Submit).Name = routenames.FormsSubmit
-	g.GET("/f/:slug/thank-you", h.ThankYou).Name = routenames.FormsThankYou
+	g.GET("/:identifier/:slug", h.View).Name = routenames.FormsView
+	g.POST("/:identifier/:slug", h.Submit).Name = routenames.FormsSubmit
+	g.GET("/:identifier/:slug/thank-you", h.ThankYou).Name = routenames.FormsThankYou
 	
 	// Authenticated routes
 	formsGroup := g.Group("/forms", middleware.RequireAuthentication)
@@ -78,8 +78,9 @@ func (h *Forms) Index(ctx echo.Context) error {
 		ctx.Request(),
 		"Forms/Index",
 		inertia.Props{
-			"forms": forms,
-			"user":  user,
+			"forms":          forms,
+			"user":           user,
+			"userIdentifier": getUserIdentifier(user),
 		},
 	)
 	if err != nil {
@@ -190,7 +191,8 @@ func (h *Forms) Edit(ctx echo.Context) error {
 		ctx.Request(),
 		"Forms/Edit",
 		inertia.Props{
-			"form": formData,
+			"form":           formData,
+			"userIdentifier": getUserIdentifier(user),
 		},
 	)
 	if err != nil {
@@ -335,10 +337,32 @@ func (h *Forms) Update(ctx echo.Context) error {
 }
 
 func (h *Forms) View(ctx echo.Context) error {
+	identifier := ctx.Param("identifier")
 	slug := ctx.Param("slug")
 
+	users, err := h.orm.User.Query().All(ctx.Request().Context())
+	if err != nil {
+		return ctx.JSON(http.StatusNotFound, map[string]string{
+			"error": "Error finding user",
+		})
+	}
+
+	var foundUser *ent.User
+	for _, u := range users {
+		if getUserIdentifier(u) == identifier {
+			foundUser = u
+			break
+		}
+	}
+
+	if foundUser == nil {
+		return ctx.JSON(http.StatusNotFound, map[string]string{
+			"error": "User not found",
+		})
+	}
+
 	formData, err := h.orm.Form.Query().
-		Where(form.Slug(slug), form.Published(true)).
+		Where(form.UserID(foundUser.ID), form.Slug(slug), form.Published(true)).
 		WithQuestions().
 		Only(ctx.Request().Context())
 
@@ -365,12 +389,34 @@ func (h *Forms) View(ctx echo.Context) error {
 }
 
 func (h *Forms) Submit(ctx echo.Context) error {
+	identifier := ctx.Param("identifier")
 	slug := ctx.Param("slug")
 	w := ctx.Response().Writer
 	r := ctx.Request()
 
+	users, err := h.orm.User.Query().All(ctx.Request().Context())
+	if err != nil {
+		return ctx.JSON(http.StatusNotFound, map[string]string{
+			"error": "Error finding user",
+		})
+	}
+
+	var foundUser *ent.User
+	for _, u := range users {
+		if getUserIdentifier(u) == identifier {
+			foundUser = u
+			break
+		}
+	}
+
+	if foundUser == nil {
+		return ctx.JSON(http.StatusNotFound, map[string]string{
+			"error": "User not found",
+		})
+	}
+
 	formData, err := h.orm.Form.Query().
-		Where(form.Slug(slug), form.Published(true)).
+		Where(form.UserID(foundUser.ID), form.Slug(slug), form.Published(true)).
 		WithQuestions().
 		Only(ctx.Request().Context())
 
@@ -453,15 +499,37 @@ func (h *Forms) Submit(ctx echo.Context) error {
 		return fail(err, "failed to commit transaction", h.Inertia, ctx)
 	}
 
-	h.Inertia.Location(w, r, fmt.Sprintf("/f/%s/thank-you", slug))
+	h.Inertia.Location(w, r, fmt.Sprintf("/%s/%s/thank-you", identifier, slug))
 	return nil
 }
 
 func (h *Forms) ThankYou(ctx echo.Context) error {
+	identifier := ctx.Param("identifier")
 	slug := ctx.Param("slug")
 
+	users, err := h.orm.User.Query().All(ctx.Request().Context())
+	if err != nil {
+		return ctx.JSON(http.StatusNotFound, map[string]string{
+			"error": "Error finding user",
+		})
+	}
+
+	var foundUser *ent.User
+	for _, u := range users {
+		if getUserIdentifier(u) == identifier {
+			foundUser = u
+			break
+		}
+	}
+
+	if foundUser == nil {
+		return ctx.JSON(http.StatusNotFound, map[string]string{
+			"error": "User not found",
+		})
+	}
+
 	formData, err := h.orm.Form.Query().
-		Where(form.Slug(slug)).
+		Where(form.UserID(foundUser.ID), form.Slug(slug)).
 		Only(ctx.Request().Context())
 
 	if err != nil {
@@ -541,6 +609,20 @@ func parseID(id string) (int, error) {
 	return strconv.Atoi(id)
 }
 
+func getUserIdentifier(user *ent.User) string {
+	if user.CompanyName != "" {
+		return generateSlug(user.CompanyName)
+	}
+	if user.Username != "" {
+		return user.Username
+	}
+	emailParts := strings.Split(user.Email, "@")
+	if len(emailParts) > 0 {
+		return generateSlug(emailParts[0])
+	}
+	return fmt.Sprintf("user-%d", user.ID)
+}
+
 func (h *Forms) Responses(ctx echo.Context) error {
 	user := ctx.Get(context.AuthenticatedUserKey).(*ent.User)
 	id := ctx.Param("id")
@@ -599,6 +681,7 @@ func (h *Forms) Responses(ctx echo.Context) error {
 			"responses":       responses,
 			"totalResponses":  totalResponses,
 			"completionRate":  completionRate,
+			"userIdentifier":  getUserIdentifier(user),
 		},
 	)
 	if err != nil {

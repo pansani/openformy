@@ -21,6 +21,10 @@ const (
 	FieldEmail = "email"
 	// FieldPassword holds the string denoting the password field in the database.
 	FieldPassword = "password"
+	// FieldUsername holds the string denoting the username field in the database.
+	FieldUsername = "username"
+	// FieldCompanyName holds the string denoting the company_name field in the database.
+	FieldCompanyName = "company_name"
 	// FieldVerified holds the string denoting the verified field in the database.
 	FieldVerified = "verified"
 	// FieldAdmin holds the string denoting the admin field in the database.
@@ -73,6 +77,8 @@ var Columns = []string{
 	FieldName,
 	FieldEmail,
 	FieldPassword,
+	FieldUsername,
+	FieldCompanyName,
 	FieldVerified,
 	FieldAdmin,
 	FieldCreatedAt,
@@ -141,6 +147,16 @@ func ByEmail(opts ...sql.OrderTermOption) OrderOption {
 // ByPassword orders the results by the password field.
 func ByPassword(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPassword, opts...).ToFunc()
+}
+
+// ByUsername orders the results by the username field.
+func ByUsername(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUsername, opts...).ToFunc()
+}
+
+// ByCompanyName orders the results by the company_name field.
+func ByCompanyName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCompanyName, opts...).ToFunc()
 }
 
 // ByVerified orders the results by the verified field.

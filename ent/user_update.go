@@ -73,6 +73,46 @@ func (uu *UserUpdate) SetNillablePassword(s *string) *UserUpdate {
 	return uu
 }
 
+// SetUsername sets the "username" field.
+func (uu *UserUpdate) SetUsername(s string) *UserUpdate {
+	uu.mutation.SetUsername(s)
+	return uu
+}
+
+// SetNillableUsername sets the "username" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableUsername(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetUsername(*s)
+	}
+	return uu
+}
+
+// ClearUsername clears the value of the "username" field.
+func (uu *UserUpdate) ClearUsername() *UserUpdate {
+	uu.mutation.ClearUsername()
+	return uu
+}
+
+// SetCompanyName sets the "company_name" field.
+func (uu *UserUpdate) SetCompanyName(s string) *UserUpdate {
+	uu.mutation.SetCompanyName(s)
+	return uu
+}
+
+// SetNillableCompanyName sets the "company_name" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableCompanyName(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetCompanyName(*s)
+	}
+	return uu
+}
+
+// ClearCompanyName clears the value of the "company_name" field.
+func (uu *UserUpdate) ClearCompanyName() *UserUpdate {
+	uu.mutation.ClearCompanyName()
+	return uu
+}
+
 // SetVerified sets the "verified" field.
 func (uu *UserUpdate) SetVerified(b bool) *UserUpdate {
 	uu.mutation.SetVerified(b)
@@ -307,6 +347,18 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.Password(); ok {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
 	}
+	if value, ok := uu.mutation.Username(); ok {
+		_spec.SetField(user.FieldUsername, field.TypeString, value)
+	}
+	if uu.mutation.UsernameCleared() {
+		_spec.ClearField(user.FieldUsername, field.TypeString)
+	}
+	if value, ok := uu.mutation.CompanyName(); ok {
+		_spec.SetField(user.FieldCompanyName, field.TypeString, value)
+	}
+	if uu.mutation.CompanyNameCleared() {
+		_spec.ClearField(user.FieldCompanyName, field.TypeString)
+	}
 	if value, ok := uu.mutation.Verified(); ok {
 		_spec.SetField(user.FieldVerified, field.TypeBool, value)
 	}
@@ -536,6 +588,46 @@ func (uuo *UserUpdateOne) SetNillablePassword(s *string) *UserUpdateOne {
 	if s != nil {
 		uuo.SetPassword(*s)
 	}
+	return uuo
+}
+
+// SetUsername sets the "username" field.
+func (uuo *UserUpdateOne) SetUsername(s string) *UserUpdateOne {
+	uuo.mutation.SetUsername(s)
+	return uuo
+}
+
+// SetNillableUsername sets the "username" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableUsername(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetUsername(*s)
+	}
+	return uuo
+}
+
+// ClearUsername clears the value of the "username" field.
+func (uuo *UserUpdateOne) ClearUsername() *UserUpdateOne {
+	uuo.mutation.ClearUsername()
+	return uuo
+}
+
+// SetCompanyName sets the "company_name" field.
+func (uuo *UserUpdateOne) SetCompanyName(s string) *UserUpdateOne {
+	uuo.mutation.SetCompanyName(s)
+	return uuo
+}
+
+// SetNillableCompanyName sets the "company_name" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableCompanyName(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetCompanyName(*s)
+	}
+	return uuo
+}
+
+// ClearCompanyName clears the value of the "company_name" field.
+func (uuo *UserUpdateOne) ClearCompanyName() *UserUpdateOne {
+	uuo.mutation.ClearCompanyName()
 	return uuo
 }
 
@@ -802,6 +894,18 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.Password(); ok {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
+	}
+	if value, ok := uuo.mutation.Username(); ok {
+		_spec.SetField(user.FieldUsername, field.TypeString, value)
+	}
+	if uuo.mutation.UsernameCleared() {
+		_spec.ClearField(user.FieldUsername, field.TypeString)
+	}
+	if value, ok := uuo.mutation.CompanyName(); ok {
+		_spec.SetField(user.FieldCompanyName, field.TypeString, value)
+	}
+	if uuo.mutation.CompanyNameCleared() {
+		_spec.ClearField(user.FieldCompanyName, field.TypeString)
 	}
 	if value, ok := uuo.mutation.Verified(); ok {
 		_spec.SetField(user.FieldVerified, field.TypeBool, value)

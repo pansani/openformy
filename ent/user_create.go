@@ -42,6 +42,34 @@ func (uc *UserCreate) SetPassword(s string) *UserCreate {
 	return uc
 }
 
+// SetUsername sets the "username" field.
+func (uc *UserCreate) SetUsername(s string) *UserCreate {
+	uc.mutation.SetUsername(s)
+	return uc
+}
+
+// SetNillableUsername sets the "username" field if the given value is not nil.
+func (uc *UserCreate) SetNillableUsername(s *string) *UserCreate {
+	if s != nil {
+		uc.SetUsername(*s)
+	}
+	return uc
+}
+
+// SetCompanyName sets the "company_name" field.
+func (uc *UserCreate) SetCompanyName(s string) *UserCreate {
+	uc.mutation.SetCompanyName(s)
+	return uc
+}
+
+// SetNillableCompanyName sets the "company_name" field if the given value is not nil.
+func (uc *UserCreate) SetNillableCompanyName(s *string) *UserCreate {
+	if s != nil {
+		uc.SetCompanyName(*s)
+	}
+	return uc
+}
+
 // SetVerified sets the "verified" field.
 func (uc *UserCreate) SetVerified(b bool) *UserCreate {
 	uc.mutation.SetVerified(b)
@@ -275,6 +303,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Password(); ok {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
 		_node.Password = value
+	}
+	if value, ok := uc.mutation.Username(); ok {
+		_spec.SetField(user.FieldUsername, field.TypeString, value)
+		_node.Username = value
+	}
+	if value, ok := uc.mutation.CompanyName(); ok {
+		_spec.SetField(user.FieldCompanyName, field.TypeString, value)
+		_node.CompanyName = value
 	}
 	if value, ok := uc.mutation.Verified(); ok {
 		_spec.SetField(user.FieldVerified, field.TypeBool, value)

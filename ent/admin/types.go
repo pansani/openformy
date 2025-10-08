@@ -111,12 +111,14 @@ type Subscription struct {
 }
 
 type User struct {
-	Name      string     `form:"name"`
-	Email     string     `form:"email"`
-	Password  *string    `form:"password"`
-	Verified  bool       `form:"verified"`
-	Admin     bool       `form:"admin"`
-	CreatedAt *time.Time `form:"created_at"`
+	Name        string     `form:"name"`
+	Email       string     `form:"email"`
+	Password    *string    `form:"password"`
+	Username    *string    `form:"username"`
+	CompanyName *string    `form:"company_name"`
+	Verified    bool       `form:"verified"`
+	Admin       bool       `form:"admin"`
+	CreatedAt   *time.Time `form:"created_at"`
 }
 
 type EntityList struct {

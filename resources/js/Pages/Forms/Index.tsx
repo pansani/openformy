@@ -18,9 +18,10 @@ interface Form {
 
 interface Props {
   forms: Form[];
+  userIdentifier: string;
 }
 
-export default function Index({ forms }: Props) {
+export default function Index({ forms, userIdentifier }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredForms = forms?.filter((form) =>
@@ -67,7 +68,7 @@ export default function Index({ forms }: Props) {
           {filteredForms.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredForms.map((form) => (
-                <FormCard key={form.id} form={form} />
+                <FormCard key={form.id} form={form} userIdentifier={userIdentifier} />
               ))}
             </div>
           ) : forms && forms.length > 0 ? (

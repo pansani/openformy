@@ -42,7 +42,7 @@ var (
 		{Name: "title", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString, Nullable: true, Size: 2147483647},
 		{Name: "published", Type: field.TypeBool, Default: false},
-		{Name: "slug", Type: field.TypeString, Unique: true},
+		{Name: "slug", Type: field.TypeString},
 		{Name: "display_mode", Type: field.TypeEnum, Enums: []string{"traditional", "conversational"}, Default: "traditional"},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
@@ -63,9 +63,9 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "form_slug",
+				Name:    "form_user_id_slug",
 				Unique:  true,
-				Columns: []*schema.Column{FormsColumns[4]},
+				Columns: []*schema.Column{FormsColumns[8], FormsColumns[4]},
 			},
 		},
 	}
@@ -281,6 +281,8 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "password", Type: field.TypeString},
+		{Name: "username", Type: field.TypeString, Unique: true, Nullable: true},
+		{Name: "company_name", Type: field.TypeString, Nullable: true},
 		{Name: "verified", Type: field.TypeBool, Default: false},
 		{Name: "admin", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
@@ -294,7 +296,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "users_payment_customers_user",
-				Columns:    []*schema.Column{UsersColumns[7]},
+				Columns:    []*schema.Column{UsersColumns[9]},
 				RefColumns: []*schema.Column{PaymentCustomersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
