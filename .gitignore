@@ -14,3 +14,4 @@ build/
 .aider.tags.cache.v4/
 playwright-report/
 test-results/
+.db
