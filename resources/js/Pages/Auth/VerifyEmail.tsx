@@ -18,7 +18,7 @@ export default function VerifyEmail({ status }: { status?: string }) {
     <AuthLayout
       title="Verify email"
       description="Please verify your email address by clicking on the link we just emailed to you."
-      logo="Pagode"
+      logo="OpenFormy"
     >
       <Head title="Email verification" />
 

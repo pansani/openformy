@@ -37,7 +37,7 @@ export default function Register() {
     <AuthLayout
       title="Create an account"
       description="Crafting seamless digital experiences with InertiaJS, React, and Golang"
-      logo="Pagode"
+      logo="OpenFormy"
     >
       <Head title="Register" />
 

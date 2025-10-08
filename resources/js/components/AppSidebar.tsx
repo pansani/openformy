@@ -18,12 +18,12 @@ import { SharedProps } from "@/types/global";
 const footerNavItems: NavItem[] = [
   {
     title: "Repository",
-    href: "https://github.com/occult/pagode",
+    href: "https://github.com/occult/openformy",
     icon: Folder,
   },
   {
     title: "Documentation",
-    href: "https://github.com/occult/pagode?tab=readme-ov-file#introduction",
+    href: "https://github.com/occult/openformy?tab=readme-ov-file#introduction",
     icon: BookOpen,
   },
 ];

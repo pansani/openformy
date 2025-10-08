@@ -49,7 +49,7 @@ export default function ResetPassword({
     <AuthLayout
       title="Reset password"
       description="Please enter your new password below"
-      logo="Pagode"
+      logo="OpenFormy"
     >
       <Head title="Reset password" />
 

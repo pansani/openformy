@@ -87,7 +87,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
               >
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 <SheetHeader className="flex justify-start text-left">
-                  <span>pagode</span>
+                  <span>openformy</span>
                 </SheetHeader>
                 <div className="flex h-full flex-1 flex-col space-y-4 p-4">
                   <div className="flex h-full flex-col justify-between text-sm">
@@ -133,7 +133,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
             prefetch
             className="flex items-center space-x-2"
           >
-            <span>Pagode</span>
+            <span>OpenFormy</span>
           </Link>
 
           {/* Desktop Navigation */}
