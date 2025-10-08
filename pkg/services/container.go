@@ -130,6 +130,17 @@ func (c *Container) initConfig() {
 	}
 	c.Config = &cfg
 
+	if portEnv := os.Getenv("PORT"); portEnv != "" {
+		var portInt int
+		_, err := fmt.Sscanf(portEnv, "%d", &portInt)
+		if err == nil && portInt > 0 && portInt <= 65535 {
+			c.Config.HTTP.Port = uint16(portInt)
+			fmt.Printf("🔌 Using port from environment: %d\n", portInt)
+		} else {
+			fmt.Printf("⚠️ Invalid PORT env value: %s\n", portEnv)
+		}
+	}
+
 	// Configure logging.
 	switch cfg.App.Environment {
 	case config.EnvProduction:
@@ -213,7 +224,7 @@ func (c *Container) initORM() {
 	if c.Config.App.Environment == config.EnvTest && c.Config.Database.TestConnection != "" {
 		driver = "sqlite3"
 	}
-	
+
 	drv := entsql.OpenDB(driver, c.Database)
 	c.ORM = ent.NewClient(ent.Driver(drv))
 
