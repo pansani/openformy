@@ -1,15 +1,12 @@
 package handlers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/occult/pagode/pkg/pager"
 	"github.com/occult/pagode/pkg/routenames"
 	"github.com/occult/pagode/pkg/services"
-	"github.com/occult/pagode/pkg/ui/models"
 	"github.com/occult/pagode/pkg/ui/pages"
 	inertia "github.com/romsar/gonertia/v2"
 )
@@ -53,20 +50,6 @@ func handleServerErr(w http.ResponseWriter, err error) {
 	log.Printf("http error: %s\n", err)
 	w.WriteHeader(http.StatusInternalServerError)
 	w.Write([]byte("server error"))
-}
-
-// fetchPosts is a mock example of fetching posts to illustrate how paging works.
-func (h *Pages) fetchPosts(pager *pager.Pager) []models.Post {
-	pager.SetItems(20)
-	posts := make([]models.Post, 20)
-
-	for k := range posts {
-		posts[k] = models.Post{
-			Title: fmt.Sprintf("Post example #%d", k+1),
-			Body:  fmt.Sprintf("Lorem ipsum example #%d ddolor sit amet, consectetur adipiscing elit. Nam elementum vulputate tristique.", k+1),
-		}
-	}
-	return posts[pager.GetOffset() : pager.GetOffset()+pager.ItemsPerPage]
 }
 
 func (h *Pages) About(ctx echo.Context) error {
