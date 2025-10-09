@@ -188,10 +188,7 @@ func (c *Container) initDatabase() {
 
 	switch c.Config.App.Environment {
 	case config.EnvTest:
-		connection = c.Config.Database.TestConnection
-		if connection == "" {
-			connection = buildConnectionString(c.Config.Database, true)
-		}
+		connection = buildConnectionString(c.Config.Database, true)
 	default:
 		connection = c.Config.Database.Connection
 		if connection == "" {
@@ -200,10 +197,6 @@ func (c *Container) initDatabase() {
 	}
 
 	driver := c.Config.Database.Driver
-	// Use SQLite for test environment with in-memory database
-	if c.Config.App.Environment == config.EnvTest && c.Config.Database.TestConnection != "" {
-		driver = "sqlite3"
-	}
 
 	c.Database, err = openDB(driver, connection)
 	if err != nil {
@@ -229,10 +222,6 @@ func (c *Container) initFiles() {
 // initORM initializes the ORM.
 func (c *Container) initORM() {
 	driver := c.Config.Database.Driver
-	// Use SQLite for test environment with in-memory database
-	if c.Config.App.Environment == config.EnvTest && c.Config.Database.TestConnection != "" {
-		driver = "sqlite3"
-	}
 
 	drv := entsql.OpenDB(driver, c.Database)
 	c.ORM = ent.NewClient(ent.Driver(drv))
