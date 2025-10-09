@@ -1,11 +1,8 @@
-import { Head } from '@inertiajs/react';
-import { useState } from 'react';
-import { router } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Send } from 'lucide-react';
 import { FormQuestion } from '@/components/Forms/FormQuestion';
 import { ConversationalForm } from '@/components/Forms/ConversationalForm';
-import { validateAnswer } from '@/utils/validation';
 
 interface Question {
   id: number;
@@ -40,52 +37,30 @@ type AnswerValue = string | string[];
 
 export default function View({ form }: Props) {
   const questions = form.edges.questions?.sort((a, b) => a.order - b.order) || [];
-  const [answers, setAnswers] = useState<Record<number, AnswerValue>>({});
-  const [errors, setErrors] = useState<Record<number, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const { data, setData, post, processing, errors: formErrors, transform } = useForm<{
+    answers: Record<number, AnswerValue>;
+  }>({
+    answers: {},
+  });
+
+  transform((data) => ({
+    answers: JSON.stringify(data.answers),
+  }));
 
   const handleAnswerChange = (questionId: number, value: AnswerValue) => {
-    setAnswers({ ...answers, [questionId]: value });
-    if (errors[questionId]) {
-      setErrors({ ...errors, [questionId]: '' });
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors: Record<number, string> = {};
-    
-    questions.forEach((q) => {
-      const answer = answers[q.id];
-      const validation = validateAnswer(q, answer);
-      
-      if (!validation.valid) {
-        newErrors[q.id] = validation.error;
-      }
-    });
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setData('answers', { ...data.answers, [questionId]: value });
   };
 
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) {
       e.preventDefault();
     }
-    
-    if (!validateForm()) {
-      return;
-    }
 
-    setIsSubmitting(true);
     const identifier = form.userIdentifier || window.location.pathname.split('/')[1];
-    router.post(
-      `/${identifier}/${form.slug}`,
-      { answers: JSON.stringify(answers) },
-      {
-        onFinish: () => setIsSubmitting(false),
-        forceFormData: true,
-      }
-    );
+    post(`/${identifier}/${form.slug}`, {
+      forceFormData: true,
+    });
   };
 
   const isConversational = form.display_mode === 'conversational';
@@ -97,11 +72,16 @@ export default function View({ form }: Props) {
       {isConversational ? (
         <ConversationalForm
           questions={questions}
-          answers={answers}
-          errors={errors}
+          answers={data.answers}
+          errors={Object.fromEntries(
+            Object.entries(formErrors).map(([key, value]) => [
+              key.replace('answers.', ''),
+              value,
+            ])
+          )}
           onAnswerChange={handleAnswerChange}
           onSubmit={() => handleSubmit()}
-          isSubmitting={isSubmitting}
+          isSubmitting={processing}
         />
       ) : (
         <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background py-12 px-4">
@@ -118,16 +98,16 @@ export default function View({ form }: Props) {
                 <FormQuestion
                   key={question.id}
                   question={question}
-                  value={answers[question.id] || ''}
-                  error={errors[question.id]}
+                  value={data.answers[question.id] || ''}
+                  error={formErrors[`answers.${question.id}`]}
                   onChange={(value) => handleAnswerChange(question.id, value)}
                 />
               ))}
 
               <div className="flex justify-center pt-4">
-                <Button type="submit" size="lg" disabled={isSubmitting}>
+                <Button type="submit" size="lg" disabled={processing}>
                   <Send className="h-4 w-4 mr-2" />
-                  {isSubmitting ? 'Submitting...' : 'Submit'}
+                  {processing ? 'Submitting...' : 'Submit'}
                 </Button>
               </div>
             </form>

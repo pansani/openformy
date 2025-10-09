@@ -1,6 +1,7 @@
 import { Head, useForm } from "@inertiajs/react";
 import { LoaderCircle } from "lucide-react";
 import { FormEventHandler } from "react";
+import { RegisterFormData } from "@/schemas/auth";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,17 +10,9 @@ import InputError from "@/components/InputError";
 import TextLink from "@/components/TextLink";
 import AuthLayout from "@/Layouts/AuthLayout";
 
-type RegisterForm = {
-  name: string;
-  email: string;
-  password: string;
-  password_confirmation: string;
-};
 
 export default function Register() {
-  const { data, setData, post, processing, errors } = useForm<
-    Required<RegisterForm>
-  >({
+  const { data, setData, post, processing, errors } = useForm<RegisterFormData>({
     name: "",
     email: "",
     password: "",

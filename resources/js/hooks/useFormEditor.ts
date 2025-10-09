@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { router } from '@inertiajs/react';
+import { router, useForm } from '@inertiajs/react';
 import { Question, Form } from '@/types/form';
 
 export function useFormEditor(form: Form) {
@@ -7,14 +7,11 @@ export function useFormEditor(form: Form) {
     form.edges.questions?.sort((a, b) => a.order - b.order) || []
   );
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isPublished, setIsPublished] = useState(form.published);
-  const [displayMode, setDisplayMode] = useState<string>(form.display_mode || 'traditional');
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
   
-  const initialStateRef = useRef({
+  const { data, setData, processing, isDirty, reset } = useForm({
     questions: JSON.stringify(form.edges.questions?.sort((a, b) => a.order - b.order) || []),
-    published: form.published,
+    published: form.published ? '1' : '0',
     display_mode: form.display_mode || 'traditional',
   });
   
@@ -23,12 +20,15 @@ export function useFormEditor(form: Form) {
 
   const hasUnsavedChanges = useMemo(() => {
     const currentQuestionsStr = JSON.stringify(questions);
+    const currentPublished = data.published;
+    const currentDisplayMode = data.display_mode;
+    
     return (
-      currentQuestionsStr !== initialStateRef.current.questions ||
-      isPublished !== initialStateRef.current.published ||
-      displayMode !== initialStateRef.current.display_mode
+      currentQuestionsStr !== data.questions ||
+      currentPublished !== (form.published ? '1' : '0') ||
+      currentDisplayMode !== (form.display_mode || 'traditional')
     );
-  }, [questions, isPublished, displayMode]);
+  }, [questions, data.published, data.display_mode, data.questions, form.published, form.display_mode]);
 
   useEffect(() => {
     const removeInertiaListener = router.on('before', (event) => {
@@ -96,30 +96,25 @@ export function useFormEditor(form: Form) {
   };
 
   const handleSave = () => {
-    setIsSaving(true);
     isSavingRef.current = true;
-    router.put(
-      `/forms/${form.id}`,
-      { 
-        questions: JSON.stringify(questions),
-        published: isPublished ? '1' : '0',
-        display_mode: displayMode,
+    
+    const updatedData = {
+      questions: JSON.stringify(questions),
+      published: data.published,
+      display_mode: data.display_mode,
+    };
+
+    setData(updatedData);
+
+    router.put(`/forms/${form.id}`, updatedData, {
+      forceFormData: true,
+      onSuccess: () => {
+        reset();
       },
-      {
-        forceFormData: true,
-        onFinish: () => {
-          setIsSaving(false);
-          isSavingRef.current = false;
-        },
-        onSuccess: () => {
-          initialStateRef.current = {
-            questions: JSON.stringify(questions),
-            published: isPublished,
-            display_mode: displayMode,
-          };
-        },
-      }
-    );
+      onFinish: () => {
+        isSavingRef.current = false;
+      },
+    });
   };
 
   const handleConfirmLeave = () => {
@@ -136,18 +131,17 @@ export function useFormEditor(form: Form) {
   };
 
   const handlePublishToggle = (checked: boolean) => {
-    setIsPublished(checked);
+    setData('published', checked ? '1' : '0');
   };
 
   const handleDisplayModeChange = (mode: string) => {
-    setDisplayMode(mode);
+    setData('display_mode', mode);
   };
 
   const handleReset = () => {
-    const initialQuestions = JSON.parse(initialStateRef.current.questions);
+    const initialQuestions = JSON.parse(data.questions);
     setQuestions(initialQuestions);
-    setIsPublished(initialStateRef.current.published);
-    setDisplayMode(initialStateRef.current.display_mode);
+    reset();
     setSelectedQuestionId(null);
   };
 
@@ -157,9 +151,9 @@ export function useFormEditor(form: Form) {
     questions,
     selectedQuestionId,
     selectedQuestion,
-    isSaving,
-    isPublished,
-    displayMode,
+    isSaving: processing,
+    isPublished: data.published === '1',
+    displayMode: data.display_mode,
     hasUnsavedChanges,
     showUnsavedDialog,
     setSelectedQuestionId,

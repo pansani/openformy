@@ -15,3 +15,4 @@ build/
 playwright-report/
 test-results/
 .db
+playwright-report/

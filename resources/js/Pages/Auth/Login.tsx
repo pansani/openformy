@@ -1,6 +1,7 @@
 import { Head, useForm } from "@inertiajs/react";
 import { LoaderCircle } from "lucide-react";
 import { FormEventHandler } from "react";
+import { LoginFormData } from "@/schemas/auth";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -10,11 +11,6 @@ import AuthLayout from "@/Layouts/AuthLayout";
 import TextLink from "@/components/TextLink";
 import InputError from "@/components/InputError";
 
-type LoginForm = {
-  email: string;
-  password: string;
-  remember: boolean;
-};
 
 interface LoginProps {
   status?: string;
@@ -22,9 +18,7 @@ interface LoginProps {
 }
 
 export default function Login({ status, canResetPassword }: LoginProps) {
-  const { data, setData, post, processing, errors, reset } = useForm<
-    Required<LoginForm>
-  >({
+  const { data, setData, post, processing, errors, reset } = useForm<LoginFormData>({
     email: "",
     password: "",
     remember: false,

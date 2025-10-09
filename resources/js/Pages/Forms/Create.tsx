@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { ArrowLeft, Lightbulb } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
+import { formCreateSchema, FormCreateData } from '@/schemas/form';
 import {
   FormHeader,
   FormTitleInput,
@@ -18,13 +19,24 @@ import {
 } from '@/components/ui/popover';
 
 export default function Create() {
-  const { data, setData, post, processing, errors } = useForm({
+  const { data, setData, post, processing, errors, setError, clearErrors } = useForm<FormCreateData>({
     title: '',
     description: '',
   });
 
   const submit: FormEventHandler = (e) => {
     e.preventDefault();
+    
+    const result = formCreateSchema.safeParse(data);
+    if (!result.success) {
+      result.error.errors.forEach((err) => {
+        const field = err.path[0] as keyof FormCreateData;
+        setError(field, err.message);
+      });
+      return;
+    }
+    
+    clearErrors();
     post('/forms', {
       forceFormData: true,
     });
