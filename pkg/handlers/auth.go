@@ -250,26 +250,21 @@ func (h *Auth) RegisterSubmit(ctx echo.Context) error {
 	// Try to log the user in
 	err = h.auth.Login(ctx, u.ID)
 	if err != nil {
+		log.Ctx(ctx).Error("❌ Failed to log in user after registration", "error", err, "user_id", u.ID)
 		msg.Info(ctx, "Your account has been created.")
 		h.Inertia.Redirect(w, r, uriLogin)
 		return nil
 	}
 
-	msg.Success(ctx, "Your account has been created. You are now logged in.")
+	log.Ctx(ctx).Info("✅ User logged in successfully after registration", "user_id", u.ID)
 
-	// Send verification email
-	err = h.sendVerificationEmail(ctx, u)
-	if err != nil {
-		log.Ctx(ctx).Error("unable to send email verification",
-			"user_id", u.ID,
-			"error", err,
-		)
-	}
+	msg.Success(ctx, "Your account has been created. You are now logged in.")
 
 	uriDashboard := ctx.Echo().Reverse(routenames.Dashboard)
 
-	ctx.Response().Header().Set("Location", uriDashboard)
-	ctx.Response().WriteHeader(http.StatusSeeOther)
+	log.Ctx(ctx).Info("🔄 Redirecting to dashboard", "uri", uriDashboard)
+
+	h.Inertia.Redirect(w, r, uriDashboard)
 	return nil
 }
 
