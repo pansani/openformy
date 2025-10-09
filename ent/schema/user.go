@@ -44,6 +44,21 @@ func (User) Fields() []ent.Field {
 			Default(false),
 		field.Bool("admin").
 			Default(false),
+		field.String("website_url").
+			Optional(),
+		field.String("brand_primary_color").
+			Optional().
+			Comment("Hex color code extracted from user's website"),
+		field.String("brand_secondary_color").
+			Optional().
+			Comment("Hex color code extracted from user's website"),
+		field.String("brand_accent_color").
+			Optional().
+			Comment("Hex color code extracted from user's website"),
+		field.Enum("brand_colors_status").
+			Values("pending", "processing", "completed", "failed").
+			Optional().
+			Comment("Status of brand color extraction job"),
 		field.Time("created_at").
 			Default(time.Now).
 			Immutable(),

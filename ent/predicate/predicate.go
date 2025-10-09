@@ -12,6 +12,9 @@ type Answer func(*sql.Selector)
 // Form is the predicate function for form builders.
 type Form func(*sql.Selector)
 
+// Job is the predicate function for job builders.
+type Job func(*sql.Selector)
+
 // PasswordToken is the predicate function for passwordtoken builders.
 type PasswordToken func(*sql.Selector)
 

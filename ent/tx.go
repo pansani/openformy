@@ -16,6 +16,8 @@ type Tx struct {
 	Answer *AnswerClient
 	// Form is the client for interacting with the Form builders.
 	Form *FormClient
+	// Job is the client for interacting with the Job builders.
+	Job *JobClient
 	// PasswordToken is the client for interacting with the PasswordToken builders.
 	PasswordToken *PasswordTokenClient
 	// PaymentCustomer is the client for interacting with the PaymentCustomer builders.
@@ -165,6 +167,7 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Answer = NewAnswerClient(tx.config)
 	tx.Form = NewFormClient(tx.config)
+	tx.Job = NewJobClient(tx.config)
 	tx.PasswordToken = NewPasswordTokenClient(tx.config)
 	tx.PaymentCustomer = NewPaymentCustomerClient(tx.config)
 	tx.PaymentIntent = NewPaymentIntentClient(tx.config)

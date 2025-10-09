@@ -3,6 +3,7 @@
 package user
 
 import (
+	"fmt"
 	"time"
 
 	"entgo.io/ent"
@@ -29,6 +30,16 @@ const (
 	FieldVerified = "verified"
 	// FieldAdmin holds the string denoting the admin field in the database.
 	FieldAdmin = "admin"
+	// FieldWebsiteURL holds the string denoting the website_url field in the database.
+	FieldWebsiteURL = "website_url"
+	// FieldBrandPrimaryColor holds the string denoting the brand_primary_color field in the database.
+	FieldBrandPrimaryColor = "brand_primary_color"
+	// FieldBrandSecondaryColor holds the string denoting the brand_secondary_color field in the database.
+	FieldBrandSecondaryColor = "brand_secondary_color"
+	// FieldBrandAccentColor holds the string denoting the brand_accent_color field in the database.
+	FieldBrandAccentColor = "brand_accent_color"
+	// FieldBrandColorsStatus holds the string denoting the brand_colors_status field in the database.
+	FieldBrandColorsStatus = "brand_colors_status"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// EdgeOwner holds the string denoting the owner edge name in mutations.
@@ -81,6 +92,11 @@ var Columns = []string{
 	FieldCompanyName,
 	FieldVerified,
 	FieldAdmin,
+	FieldWebsiteURL,
+	FieldBrandPrimaryColor,
+	FieldBrandSecondaryColor,
+	FieldBrandAccentColor,
+	FieldBrandColorsStatus,
 	FieldCreatedAt,
 }
 
@@ -126,6 +142,31 @@ var (
 	DefaultCreatedAt func() time.Time
 )
 
+// BrandColorsStatus defines the type for the "brand_colors_status" enum field.
+type BrandColorsStatus string
+
+// BrandColorsStatus values.
+const (
+	BrandColorsStatusPending    BrandColorsStatus = "pending"
+	BrandColorsStatusProcessing BrandColorsStatus = "processing"
+	BrandColorsStatusCompleted  BrandColorsStatus = "completed"
+	BrandColorsStatusFailed     BrandColorsStatus = "failed"
+)
+
+func (bcs BrandColorsStatus) String() string {
+	return string(bcs)
+}
+
+// BrandColorsStatusValidator is a validator for the "brand_colors_status" field enum values. It is called by the builders before save.
+func BrandColorsStatusValidator(bcs BrandColorsStatus) error {
+	switch bcs {
+	case BrandColorsStatusPending, BrandColorsStatusProcessing, BrandColorsStatusCompleted, BrandColorsStatusFailed:
+		return nil
+	default:
+		return fmt.Errorf("user: invalid enum value for brand_colors_status field: %q", bcs)
+	}
+}
+
 // OrderOption defines the ordering options for the User queries.
 type OrderOption func(*sql.Selector)
 
@@ -167,6 +208,31 @@ func ByVerified(opts ...sql.OrderTermOption) OrderOption {
 // ByAdmin orders the results by the admin field.
 func ByAdmin(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAdmin, opts...).ToFunc()
+}
+
+// ByWebsiteURL orders the results by the website_url field.
+func ByWebsiteURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldWebsiteURL, opts...).ToFunc()
+}
+
+// ByBrandPrimaryColor orders the results by the brand_primary_color field.
+func ByBrandPrimaryColor(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBrandPrimaryColor, opts...).ToFunc()
+}
+
+// ByBrandSecondaryColor orders the results by the brand_secondary_color field.
+func ByBrandSecondaryColor(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBrandSecondaryColor, opts...).ToFunc()
+}
+
+// ByBrandAccentColor orders the results by the brand_accent_color field.
+func ByBrandAccentColor(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBrandAccentColor, opts...).ToFunc()
+}
+
+// ByBrandColorsStatus orders the results by the brand_colors_status field.
+func ByBrandColorsStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBrandColorsStatus, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

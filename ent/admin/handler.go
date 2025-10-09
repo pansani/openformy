@@ -13,6 +13,7 @@ import (
 	"github.com/occult/pagode/ent"
 	"github.com/occult/pagode/ent/answer"
 	"github.com/occult/pagode/ent/form"
+	"github.com/occult/pagode/ent/job"
 	"github.com/occult/pagode/ent/passwordtoken"
 	"github.com/occult/pagode/ent/paymentcustomer"
 	"github.com/occult/pagode/ent/paymentintent"
@@ -44,6 +45,8 @@ func (h *Handler) Create(ctx echo.Context, entityType string) error {
 		return h.AnswerCreate(ctx)
 	case "Form":
 		return h.FormCreate(ctx)
+	case "Job":
+		return h.JobCreate(ctx)
 	case "PasswordToken":
 		return h.PasswordTokenCreate(ctx)
 	case "PaymentCustomer":
@@ -71,6 +74,8 @@ func (h *Handler) Get(ctx echo.Context, entityType string, id int) (url.Values, 
 		return h.AnswerGet(ctx, id)
 	case "Form":
 		return h.FormGet(ctx, id)
+	case "Job":
+		return h.JobGet(ctx, id)
 	case "PasswordToken":
 		return h.PasswordTokenGet(ctx, id)
 	case "PaymentCustomer":
@@ -98,6 +103,8 @@ func (h *Handler) Delete(ctx echo.Context, entityType string, id int) error {
 		return h.AnswerDelete(ctx, id)
 	case "Form":
 		return h.FormDelete(ctx, id)
+	case "Job":
+		return h.JobDelete(ctx, id)
 	case "PasswordToken":
 		return h.PasswordTokenDelete(ctx, id)
 	case "PaymentCustomer":
@@ -125,6 +132,8 @@ func (h *Handler) Update(ctx echo.Context, entityType string, id int) error {
 		return h.AnswerUpdate(ctx, id)
 	case "Form":
 		return h.FormUpdate(ctx, id)
+	case "Job":
+		return h.JobUpdate(ctx, id)
 	case "PasswordToken":
 		return h.PasswordTokenUpdate(ctx, id)
 	case "PaymentCustomer":
@@ -152,6 +161,8 @@ func (h *Handler) List(ctx echo.Context, entityType string) (*EntityList, error)
 		return h.AnswerList(ctx)
 	case "Form":
 		return h.FormList(ctx)
+	case "Job":
+		return h.JobList(ctx)
 	case "PasswordToken":
 		return h.PasswordTokenList(ctx)
 	case "PaymentCustomer":
@@ -388,6 +399,153 @@ func (h *Handler) FormGet(ctx echo.Context, id int) (url.Values, error) {
 	v.Set("display_mode", fmt.Sprint(entity.DisplayMode))
 	v.Set("user_id", fmt.Sprint(entity.UserID))
 	v.Set("updated_at", entity.UpdatedAt.Format(dateTimeFormat))
+	return v, err
+}
+
+func (h *Handler) JobCreate(ctx echo.Context) error {
+	var payload Job
+	if err := h.bind(ctx, &payload); err != nil {
+		return err
+	}
+
+	op := h.client.Job.Create()
+	op.SetQueue(payload.Queue)
+	op.SetPayload(payload.Payload)
+	if payload.Attempts != nil {
+		op.SetAttempts(*payload.Attempts)
+	}
+	if payload.MaxAttempts != nil {
+		op.SetMaxAttempts(*payload.MaxAttempts)
+	}
+	if payload.Status != nil {
+		op.SetStatus(*payload.Status)
+	}
+	if payload.Error != nil {
+		op.SetError(*payload.Error)
+	}
+	if payload.CreatedAt != nil {
+		op.SetCreatedAt(*payload.CreatedAt)
+	}
+	if payload.ProcessedAt != nil {
+		op.SetProcessedAt(*payload.ProcessedAt)
+	}
+	_, err := op.Save(ctx.Request().Context())
+	return err
+}
+
+func (h *Handler) JobUpdate(ctx echo.Context, id int) error {
+	entity, err := h.client.Job.Get(ctx.Request().Context(), id)
+	if err != nil {
+		return err
+	}
+
+	var payload Job
+	if err = h.bind(ctx, &payload); err != nil {
+		return err
+	}
+
+	op := entity.Update()
+	op.SetQueue(payload.Queue)
+	op.SetPayload(payload.Payload)
+	if payload.Attempts == nil {
+		var empty int
+		op.SetAttempts(empty)
+	} else {
+		op.SetAttempts(*payload.Attempts)
+	}
+	if payload.MaxAttempts == nil {
+		var empty int
+		op.SetMaxAttempts(empty)
+	} else {
+		op.SetMaxAttempts(*payload.MaxAttempts)
+	}
+	if payload.Status == nil {
+		var empty job.Status
+		op.SetStatus(empty)
+	} else {
+		op.SetStatus(*payload.Status)
+	}
+	if payload.Error == nil {
+		op.ClearError()
+	} else {
+		op.SetError(*payload.Error)
+	}
+	if payload.ProcessedAt == nil {
+		op.ClearProcessedAt()
+	} else {
+		op.SetProcessedAt(*payload.ProcessedAt)
+	}
+	_, err = op.Save(ctx.Request().Context())
+	return err
+}
+
+func (h *Handler) JobDelete(ctx echo.Context, id int) error {
+	return h.client.Job.DeleteOneID(id).
+		Exec(ctx.Request().Context())
+}
+
+func (h *Handler) JobList(ctx echo.Context) (*EntityList, error) {
+	page, offset := h.getPageAndOffset(ctx)
+	res, err := h.client.Job.
+		Query().
+		Limit(h.Config.ItemsPerPage + 1).
+		Offset(offset).
+		Order(job.ByID(sql.OrderDesc())).
+		All(ctx.Request().Context())
+
+	if err != nil {
+		return nil, err
+	}
+
+	list := &EntityList{
+		Columns: []string{
+			"Queue",
+			"Payload",
+			"Attempts",
+			"Max attempts",
+			"Status",
+			"Error",
+			"Created at",
+			"Processed at",
+		},
+		Entities:    make([]EntityValues, 0, len(res)),
+		Page:        page,
+		HasNextPage: len(res) > h.Config.ItemsPerPage,
+	}
+
+	for i := 0; i <= len(res)-1; i++ {
+		list.Entities = append(list.Entities, EntityValues{
+			ID: res[i].ID,
+			Values: []string{
+				res[i].Queue,
+				fmt.Sprint(res[i].Payload),
+				fmt.Sprint(res[i].Attempts),
+				fmt.Sprint(res[i].MaxAttempts),
+				fmt.Sprint(res[i].Status),
+				res[i].Error,
+				res[i].CreatedAt.Format(h.Config.TimeFormat),
+				res[i].ProcessedAt.Format(h.Config.TimeFormat),
+			},
+		})
+	}
+
+	return list, err
+}
+
+func (h *Handler) JobGet(ctx echo.Context, id int) (url.Values, error) {
+	entity, err := h.client.Job.Get(ctx.Request().Context(), id)
+	if err != nil {
+		return nil, err
+	}
+
+	v := url.Values{}
+	v.Set("queue", entity.Queue)
+	v.Set("payload", fmt.Sprint(entity.Payload))
+	v.Set("attempts", fmt.Sprint(entity.Attempts))
+	v.Set("max_attempts", fmt.Sprint(entity.MaxAttempts))
+	v.Set("status", fmt.Sprint(entity.Status))
+	v.Set("error", entity.Error)
+	v.Set("processed_at", entity.ProcessedAt.Format(dateTimeFormat))
 	return v, err
 }
 
@@ -1499,6 +1657,21 @@ func (h *Handler) UserCreate(ctx echo.Context) error {
 	}
 	op.SetVerified(payload.Verified)
 	op.SetAdmin(payload.Admin)
+	if payload.WebsiteURL != nil {
+		op.SetWebsiteURL(*payload.WebsiteURL)
+	}
+	if payload.BrandPrimaryColor != nil {
+		op.SetBrandPrimaryColor(*payload.BrandPrimaryColor)
+	}
+	if payload.BrandSecondaryColor != nil {
+		op.SetBrandSecondaryColor(*payload.BrandSecondaryColor)
+	}
+	if payload.BrandAccentColor != nil {
+		op.SetBrandAccentColor(*payload.BrandAccentColor)
+	}
+	if payload.BrandColorsStatus != nil {
+		op.SetBrandColorsStatus(*payload.BrandColorsStatus)
+	}
 	if payload.CreatedAt != nil {
 		op.SetCreatedAt(*payload.CreatedAt)
 	}
@@ -1535,6 +1708,31 @@ func (h *Handler) UserUpdate(ctx echo.Context, id int) error {
 	}
 	op.SetVerified(payload.Verified)
 	op.SetAdmin(payload.Admin)
+	if payload.WebsiteURL == nil {
+		op.ClearWebsiteURL()
+	} else {
+		op.SetWebsiteURL(*payload.WebsiteURL)
+	}
+	if payload.BrandPrimaryColor == nil {
+		op.ClearBrandPrimaryColor()
+	} else {
+		op.SetBrandPrimaryColor(*payload.BrandPrimaryColor)
+	}
+	if payload.BrandSecondaryColor == nil {
+		op.ClearBrandSecondaryColor()
+	} else {
+		op.SetBrandSecondaryColor(*payload.BrandSecondaryColor)
+	}
+	if payload.BrandAccentColor == nil {
+		op.ClearBrandAccentColor()
+	} else {
+		op.SetBrandAccentColor(*payload.BrandAccentColor)
+	}
+	if payload.BrandColorsStatus == nil {
+		op.ClearBrandColorsStatus()
+	} else {
+		op.SetBrandColorsStatus(*payload.BrandColorsStatus)
+	}
 	_, err = op.Save(ctx.Request().Context())
 	return err
 }
@@ -1565,6 +1763,11 @@ func (h *Handler) UserList(ctx echo.Context) (*EntityList, error) {
 			"Company name",
 			"Verified",
 			"Admin",
+			"Website url",
+			"Brand primary color",
+			"Brand secondary color",
+			"Brand accent color",
+			"Brand colors status",
 			"Created at",
 		},
 		Entities:    make([]EntityValues, 0, len(res)),
@@ -1582,6 +1785,11 @@ func (h *Handler) UserList(ctx echo.Context) (*EntityList, error) {
 				res[i].CompanyName,
 				fmt.Sprint(res[i].Verified),
 				fmt.Sprint(res[i].Admin),
+				res[i].WebsiteURL,
+				res[i].BrandPrimaryColor,
+				res[i].BrandSecondaryColor,
+				res[i].BrandAccentColor,
+				fmt.Sprint(res[i].BrandColorsStatus),
 				res[i].CreatedAt.Format(h.Config.TimeFormat),
 			},
 		})
@@ -1603,6 +1811,11 @@ func (h *Handler) UserGet(ctx echo.Context, id int) (url.Values, error) {
 	v.Set("company_name", entity.CompanyName)
 	v.Set("verified", fmt.Sprint(entity.Verified))
 	v.Set("admin", fmt.Sprint(entity.Admin))
+	v.Set("website_url", entity.WebsiteURL)
+	v.Set("brand_primary_color", entity.BrandPrimaryColor)
+	v.Set("brand_secondary_color", entity.BrandSecondaryColor)
+	v.Set("brand_accent_color", entity.BrandAccentColor)
+	v.Set("brand_colors_status", fmt.Sprint(entity.BrandColorsStatus))
 	return v, err
 }
 

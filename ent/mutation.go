@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/occult/pagode/ent/answer"
 	"github.com/occult/pagode/ent/form"
+	"github.com/occult/pagode/ent/job"
 	"github.com/occult/pagode/ent/passwordtoken"
 	"github.com/occult/pagode/ent/paymentcustomer"
 	"github.com/occult/pagode/ent/paymentintent"
@@ -35,6 +36,7 @@ const (
 	// Node types.
 	TypeAnswer          = "Answer"
 	TypeForm            = "Form"
+	TypeJob             = "Job"
 	TypePasswordToken   = "PasswordToken"
 	TypePaymentCustomer = "PaymentCustomer"
 	TypePaymentIntent   = "PaymentIntent"
@@ -1513,6 +1515,820 @@ func (m *FormMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Form edge %s", name)
+}
+
+// JobMutation represents an operation that mutates the Job nodes in the graph.
+type JobMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *int
+	queue           *string
+	payload         *map[string]interface{}
+	attempts        *int
+	addattempts     *int
+	max_attempts    *int
+	addmax_attempts *int
+	status          *job.Status
+	error           *string
+	created_at      *time.Time
+	processed_at    *time.Time
+	clearedFields   map[string]struct{}
+	done            bool
+	oldValue        func(context.Context) (*Job, error)
+	predicates      []predicate.Job
+}
+
+var _ ent.Mutation = (*JobMutation)(nil)
+
+// jobOption allows management of the mutation configuration using functional options.
+type jobOption func(*JobMutation)
+
+// newJobMutation creates new mutation for the Job entity.
+func newJobMutation(c config, op Op, opts ...jobOption) *JobMutation {
+	m := &JobMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeJob,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withJobID sets the ID field of the mutation.
+func withJobID(id int) jobOption {
+	return func(m *JobMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Job
+		)
+		m.oldValue = func(ctx context.Context) (*Job, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Job.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withJob sets the old Job of the mutation.
+func withJob(node *Job) jobOption {
+	return func(m *JobMutation) {
+		m.oldValue = func(context.Context) (*Job, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m JobMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m JobMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *JobMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *JobMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Job.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetQueue sets the "queue" field.
+func (m *JobMutation) SetQueue(s string) {
+	m.queue = &s
+}
+
+// Queue returns the value of the "queue" field in the mutation.
+func (m *JobMutation) Queue() (r string, exists bool) {
+	v := m.queue
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldQueue returns the old "queue" field's value of the Job entity.
+// If the Job object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *JobMutation) OldQueue(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldQueue is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldQueue requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldQueue: %w", err)
+	}
+	return oldValue.Queue, nil
+}
+
+// ResetQueue resets all changes to the "queue" field.
+func (m *JobMutation) ResetQueue() {
+	m.queue = nil
+}
+
+// SetPayload sets the "payload" field.
+func (m *JobMutation) SetPayload(value map[string]interface{}) {
+	m.payload = &value
+}
+
+// Payload returns the value of the "payload" field in the mutation.
+func (m *JobMutation) Payload() (r map[string]interface{}, exists bool) {
+	v := m.payload
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPayload returns the old "payload" field's value of the Job entity.
+// If the Job object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *JobMutation) OldPayload(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPayload is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPayload requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPayload: %w", err)
+	}
+	return oldValue.Payload, nil
+}
+
+// ResetPayload resets all changes to the "payload" field.
+func (m *JobMutation) ResetPayload() {
+	m.payload = nil
+}
+
+// SetAttempts sets the "attempts" field.
+func (m *JobMutation) SetAttempts(i int) {
+	m.attempts = &i
+	m.addattempts = nil
+}
+
+// Attempts returns the value of the "attempts" field in the mutation.
+func (m *JobMutation) Attempts() (r int, exists bool) {
+	v := m.attempts
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAttempts returns the old "attempts" field's value of the Job entity.
+// If the Job object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *JobMutation) OldAttempts(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAttempts is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAttempts requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAttempts: %w", err)
+	}
+	return oldValue.Attempts, nil
+}
+
+// AddAttempts adds i to the "attempts" field.
+func (m *JobMutation) AddAttempts(i int) {
+	if m.addattempts != nil {
+		*m.addattempts += i
+	} else {
+		m.addattempts = &i
+	}
+}
+
+// AddedAttempts returns the value that was added to the "attempts" field in this mutation.
+func (m *JobMutation) AddedAttempts() (r int, exists bool) {
+	v := m.addattempts
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetAttempts resets all changes to the "attempts" field.
+func (m *JobMutation) ResetAttempts() {
+	m.attempts = nil
+	m.addattempts = nil
+}
+
+// SetMaxAttempts sets the "max_attempts" field.
+func (m *JobMutation) SetMaxAttempts(i int) {
+	m.max_attempts = &i
+	m.addmax_attempts = nil
+}
+
+// MaxAttempts returns the value of the "max_attempts" field in the mutation.
+func (m *JobMutation) MaxAttempts() (r int, exists bool) {
+	v := m.max_attempts
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMaxAttempts returns the old "max_attempts" field's value of the Job entity.
+// If the Job object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *JobMutation) OldMaxAttempts(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMaxAttempts is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMaxAttempts requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMaxAttempts: %w", err)
+	}
+	return oldValue.MaxAttempts, nil
+}
+
+// AddMaxAttempts adds i to the "max_attempts" field.
+func (m *JobMutation) AddMaxAttempts(i int) {
+	if m.addmax_attempts != nil {
+		*m.addmax_attempts += i
+	} else {
+		m.addmax_attempts = &i
+	}
+}
+
+// AddedMaxAttempts returns the value that was added to the "max_attempts" field in this mutation.
+func (m *JobMutation) AddedMaxAttempts() (r int, exists bool) {
+	v := m.addmax_attempts
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetMaxAttempts resets all changes to the "max_attempts" field.
+func (m *JobMutation) ResetMaxAttempts() {
+	m.max_attempts = nil
+	m.addmax_attempts = nil
+}
+
+// SetStatus sets the "status" field.
+func (m *JobMutation) SetStatus(j job.Status) {
+	m.status = &j
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *JobMutation) Status() (r job.Status, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the Job entity.
+// If the Job object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *JobMutation) OldStatus(ctx context.Context) (v job.Status, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *JobMutation) ResetStatus() {
+	m.status = nil
+}
+
+// SetError sets the "error" field.
+func (m *JobMutation) SetError(s string) {
+	m.error = &s
+}
+
+// Error returns the value of the "error" field in the mutation.
+func (m *JobMutation) Error() (r string, exists bool) {
+	v := m.error
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldError returns the old "error" field's value of the Job entity.
+// If the Job object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *JobMutation) OldError(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldError is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldError requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldError: %w", err)
+	}
+	return oldValue.Error, nil
+}
+
+// ClearError clears the value of the "error" field.
+func (m *JobMutation) ClearError() {
+	m.error = nil
+	m.clearedFields[job.FieldError] = struct{}{}
+}
+
+// ErrorCleared returns if the "error" field was cleared in this mutation.
+func (m *JobMutation) ErrorCleared() bool {
+	_, ok := m.clearedFields[job.FieldError]
+	return ok
+}
+
+// ResetError resets all changes to the "error" field.
+func (m *JobMutation) ResetError() {
+	m.error = nil
+	delete(m.clearedFields, job.FieldError)
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *JobMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *JobMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Job entity.
+// If the Job object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *JobMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *JobMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetProcessedAt sets the "processed_at" field.
+func (m *JobMutation) SetProcessedAt(t time.Time) {
+	m.processed_at = &t
+}
+
+// ProcessedAt returns the value of the "processed_at" field in the mutation.
+func (m *JobMutation) ProcessedAt() (r time.Time, exists bool) {
+	v := m.processed_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProcessedAt returns the old "processed_at" field's value of the Job entity.
+// If the Job object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *JobMutation) OldProcessedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProcessedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProcessedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProcessedAt: %w", err)
+	}
+	return oldValue.ProcessedAt, nil
+}
+
+// ClearProcessedAt clears the value of the "processed_at" field.
+func (m *JobMutation) ClearProcessedAt() {
+	m.processed_at = nil
+	m.clearedFields[job.FieldProcessedAt] = struct{}{}
+}
+
+// ProcessedAtCleared returns if the "processed_at" field was cleared in this mutation.
+func (m *JobMutation) ProcessedAtCleared() bool {
+	_, ok := m.clearedFields[job.FieldProcessedAt]
+	return ok
+}
+
+// ResetProcessedAt resets all changes to the "processed_at" field.
+func (m *JobMutation) ResetProcessedAt() {
+	m.processed_at = nil
+	delete(m.clearedFields, job.FieldProcessedAt)
+}
+
+// Where appends a list predicates to the JobMutation builder.
+func (m *JobMutation) Where(ps ...predicate.Job) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the JobMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *JobMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Job, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *JobMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *JobMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Job).
+func (m *JobMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *JobMutation) Fields() []string {
+	fields := make([]string, 0, 8)
+	if m.queue != nil {
+		fields = append(fields, job.FieldQueue)
+	}
+	if m.payload != nil {
+		fields = append(fields, job.FieldPayload)
+	}
+	if m.attempts != nil {
+		fields = append(fields, job.FieldAttempts)
+	}
+	if m.max_attempts != nil {
+		fields = append(fields, job.FieldMaxAttempts)
+	}
+	if m.status != nil {
+		fields = append(fields, job.FieldStatus)
+	}
+	if m.error != nil {
+		fields = append(fields, job.FieldError)
+	}
+	if m.created_at != nil {
+		fields = append(fields, job.FieldCreatedAt)
+	}
+	if m.processed_at != nil {
+		fields = append(fields, job.FieldProcessedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *JobMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case job.FieldQueue:
+		return m.Queue()
+	case job.FieldPayload:
+		return m.Payload()
+	case job.FieldAttempts:
+		return m.Attempts()
+	case job.FieldMaxAttempts:
+		return m.MaxAttempts()
+	case job.FieldStatus:
+		return m.Status()
+	case job.FieldError:
+		return m.Error()
+	case job.FieldCreatedAt:
+		return m.CreatedAt()
+	case job.FieldProcessedAt:
+		return m.ProcessedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *JobMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case job.FieldQueue:
+		return m.OldQueue(ctx)
+	case job.FieldPayload:
+		return m.OldPayload(ctx)
+	case job.FieldAttempts:
+		return m.OldAttempts(ctx)
+	case job.FieldMaxAttempts:
+		return m.OldMaxAttempts(ctx)
+	case job.FieldStatus:
+		return m.OldStatus(ctx)
+	case job.FieldError:
+		return m.OldError(ctx)
+	case job.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case job.FieldProcessedAt:
+		return m.OldProcessedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown Job field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *JobMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case job.FieldQueue:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetQueue(v)
+		return nil
+	case job.FieldPayload:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPayload(v)
+		return nil
+	case job.FieldAttempts:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAttempts(v)
+		return nil
+	case job.FieldMaxAttempts:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMaxAttempts(v)
+		return nil
+	case job.FieldStatus:
+		v, ok := value.(job.Status)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case job.FieldError:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetError(v)
+		return nil
+	case job.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case job.FieldProcessedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProcessedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Job field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *JobMutation) AddedFields() []string {
+	var fields []string
+	if m.addattempts != nil {
+		fields = append(fields, job.FieldAttempts)
+	}
+	if m.addmax_attempts != nil {
+		fields = append(fields, job.FieldMaxAttempts)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *JobMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case job.FieldAttempts:
+		return m.AddedAttempts()
+	case job.FieldMaxAttempts:
+		return m.AddedMaxAttempts()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *JobMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case job.FieldAttempts:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddAttempts(v)
+		return nil
+	case job.FieldMaxAttempts:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddMaxAttempts(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Job numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *JobMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(job.FieldError) {
+		fields = append(fields, job.FieldError)
+	}
+	if m.FieldCleared(job.FieldProcessedAt) {
+		fields = append(fields, job.FieldProcessedAt)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *JobMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *JobMutation) ClearField(name string) error {
+	switch name {
+	case job.FieldError:
+		m.ClearError()
+		return nil
+	case job.FieldProcessedAt:
+		m.ClearProcessedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown Job nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *JobMutation) ResetField(name string) error {
+	switch name {
+	case job.FieldQueue:
+		m.ResetQueue()
+		return nil
+	case job.FieldPayload:
+		m.ResetPayload()
+		return nil
+	case job.FieldAttempts:
+		m.ResetAttempts()
+		return nil
+	case job.FieldMaxAttempts:
+		m.ResetMaxAttempts()
+		return nil
+	case job.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case job.FieldError:
+		m.ResetError()
+		return nil
+	case job.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case job.FieldProcessedAt:
+		m.ResetProcessedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown Job field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *JobMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *JobMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *JobMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *JobMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *JobMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *JobMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *JobMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Job unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *JobMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Job edge %s", name)
 }
 
 // PasswordTokenMutation represents an operation that mutates the PasswordToken nodes in the graph.
@@ -8386,6 +9202,11 @@ type UserMutation struct {
 	company_name            *string
 	verified                *bool
 	admin                   *bool
+	website_url             *string
+	brand_primary_color     *string
+	brand_secondary_color   *string
+	brand_accent_color      *string
+	brand_colors_status     *user.BrandColorsStatus
 	created_at              *time.Time
 	clearedFields           map[string]struct{}
 	owner                   map[int]struct{}
@@ -8780,6 +9601,251 @@ func (m *UserMutation) ResetAdmin() {
 	m.admin = nil
 }
 
+// SetWebsiteURL sets the "website_url" field.
+func (m *UserMutation) SetWebsiteURL(s string) {
+	m.website_url = &s
+}
+
+// WebsiteURL returns the value of the "website_url" field in the mutation.
+func (m *UserMutation) WebsiteURL() (r string, exists bool) {
+	v := m.website_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWebsiteURL returns the old "website_url" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldWebsiteURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWebsiteURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWebsiteURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWebsiteURL: %w", err)
+	}
+	return oldValue.WebsiteURL, nil
+}
+
+// ClearWebsiteURL clears the value of the "website_url" field.
+func (m *UserMutation) ClearWebsiteURL() {
+	m.website_url = nil
+	m.clearedFields[user.FieldWebsiteURL] = struct{}{}
+}
+
+// WebsiteURLCleared returns if the "website_url" field was cleared in this mutation.
+func (m *UserMutation) WebsiteURLCleared() bool {
+	_, ok := m.clearedFields[user.FieldWebsiteURL]
+	return ok
+}
+
+// ResetWebsiteURL resets all changes to the "website_url" field.
+func (m *UserMutation) ResetWebsiteURL() {
+	m.website_url = nil
+	delete(m.clearedFields, user.FieldWebsiteURL)
+}
+
+// SetBrandPrimaryColor sets the "brand_primary_color" field.
+func (m *UserMutation) SetBrandPrimaryColor(s string) {
+	m.brand_primary_color = &s
+}
+
+// BrandPrimaryColor returns the value of the "brand_primary_color" field in the mutation.
+func (m *UserMutation) BrandPrimaryColor() (r string, exists bool) {
+	v := m.brand_primary_color
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBrandPrimaryColor returns the old "brand_primary_color" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldBrandPrimaryColor(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBrandPrimaryColor is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBrandPrimaryColor requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBrandPrimaryColor: %w", err)
+	}
+	return oldValue.BrandPrimaryColor, nil
+}
+
+// ClearBrandPrimaryColor clears the value of the "brand_primary_color" field.
+func (m *UserMutation) ClearBrandPrimaryColor() {
+	m.brand_primary_color = nil
+	m.clearedFields[user.FieldBrandPrimaryColor] = struct{}{}
+}
+
+// BrandPrimaryColorCleared returns if the "brand_primary_color" field was cleared in this mutation.
+func (m *UserMutation) BrandPrimaryColorCleared() bool {
+	_, ok := m.clearedFields[user.FieldBrandPrimaryColor]
+	return ok
+}
+
+// ResetBrandPrimaryColor resets all changes to the "brand_primary_color" field.
+func (m *UserMutation) ResetBrandPrimaryColor() {
+	m.brand_primary_color = nil
+	delete(m.clearedFields, user.FieldBrandPrimaryColor)
+}
+
+// SetBrandSecondaryColor sets the "brand_secondary_color" field.
+func (m *UserMutation) SetBrandSecondaryColor(s string) {
+	m.brand_secondary_color = &s
+}
+
+// BrandSecondaryColor returns the value of the "brand_secondary_color" field in the mutation.
+func (m *UserMutation) BrandSecondaryColor() (r string, exists bool) {
+	v := m.brand_secondary_color
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBrandSecondaryColor returns the old "brand_secondary_color" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldBrandSecondaryColor(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBrandSecondaryColor is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBrandSecondaryColor requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBrandSecondaryColor: %w", err)
+	}
+	return oldValue.BrandSecondaryColor, nil
+}
+
+// ClearBrandSecondaryColor clears the value of the "brand_secondary_color" field.
+func (m *UserMutation) ClearBrandSecondaryColor() {
+	m.brand_secondary_color = nil
+	m.clearedFields[user.FieldBrandSecondaryColor] = struct{}{}
+}
+
+// BrandSecondaryColorCleared returns if the "brand_secondary_color" field was cleared in this mutation.
+func (m *UserMutation) BrandSecondaryColorCleared() bool {
+	_, ok := m.clearedFields[user.FieldBrandSecondaryColor]
+	return ok
+}
+
+// ResetBrandSecondaryColor resets all changes to the "brand_secondary_color" field.
+func (m *UserMutation) ResetBrandSecondaryColor() {
+	m.brand_secondary_color = nil
+	delete(m.clearedFields, user.FieldBrandSecondaryColor)
+}
+
+// SetBrandAccentColor sets the "brand_accent_color" field.
+func (m *UserMutation) SetBrandAccentColor(s string) {
+	m.brand_accent_color = &s
+}
+
+// BrandAccentColor returns the value of the "brand_accent_color" field in the mutation.
+func (m *UserMutation) BrandAccentColor() (r string, exists bool) {
+	v := m.brand_accent_color
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBrandAccentColor returns the old "brand_accent_color" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldBrandAccentColor(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBrandAccentColor is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBrandAccentColor requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBrandAccentColor: %w", err)
+	}
+	return oldValue.BrandAccentColor, nil
+}
+
+// ClearBrandAccentColor clears the value of the "brand_accent_color" field.
+func (m *UserMutation) ClearBrandAccentColor() {
+	m.brand_accent_color = nil
+	m.clearedFields[user.FieldBrandAccentColor] = struct{}{}
+}
+
+// BrandAccentColorCleared returns if the "brand_accent_color" field was cleared in this mutation.
+func (m *UserMutation) BrandAccentColorCleared() bool {
+	_, ok := m.clearedFields[user.FieldBrandAccentColor]
+	return ok
+}
+
+// ResetBrandAccentColor resets all changes to the "brand_accent_color" field.
+func (m *UserMutation) ResetBrandAccentColor() {
+	m.brand_accent_color = nil
+	delete(m.clearedFields, user.FieldBrandAccentColor)
+}
+
+// SetBrandColorsStatus sets the "brand_colors_status" field.
+func (m *UserMutation) SetBrandColorsStatus(ucs user.BrandColorsStatus) {
+	m.brand_colors_status = &ucs
+}
+
+// BrandColorsStatus returns the value of the "brand_colors_status" field in the mutation.
+func (m *UserMutation) BrandColorsStatus() (r user.BrandColorsStatus, exists bool) {
+	v := m.brand_colors_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBrandColorsStatus returns the old "brand_colors_status" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldBrandColorsStatus(ctx context.Context) (v user.BrandColorsStatus, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBrandColorsStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBrandColorsStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBrandColorsStatus: %w", err)
+	}
+	return oldValue.BrandColorsStatus, nil
+}
+
+// ClearBrandColorsStatus clears the value of the "brand_colors_status" field.
+func (m *UserMutation) ClearBrandColorsStatus() {
+	m.brand_colors_status = nil
+	m.clearedFields[user.FieldBrandColorsStatus] = struct{}{}
+}
+
+// BrandColorsStatusCleared returns if the "brand_colors_status" field was cleared in this mutation.
+func (m *UserMutation) BrandColorsStatusCleared() bool {
+	_, ok := m.clearedFields[user.FieldBrandColorsStatus]
+	return ok
+}
+
+// ResetBrandColorsStatus resets all changes to the "brand_colors_status" field.
+func (m *UserMutation) ResetBrandColorsStatus() {
+	m.brand_colors_status = nil
+	delete(m.clearedFields, user.FieldBrandColorsStatus)
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *UserMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -9051,7 +10117,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 13)
 	if m.name != nil {
 		fields = append(fields, user.FieldName)
 	}
@@ -9072,6 +10138,21 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.admin != nil {
 		fields = append(fields, user.FieldAdmin)
+	}
+	if m.website_url != nil {
+		fields = append(fields, user.FieldWebsiteURL)
+	}
+	if m.brand_primary_color != nil {
+		fields = append(fields, user.FieldBrandPrimaryColor)
+	}
+	if m.brand_secondary_color != nil {
+		fields = append(fields, user.FieldBrandSecondaryColor)
+	}
+	if m.brand_accent_color != nil {
+		fields = append(fields, user.FieldBrandAccentColor)
+	}
+	if m.brand_colors_status != nil {
+		fields = append(fields, user.FieldBrandColorsStatus)
 	}
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
@@ -9098,6 +10179,16 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Verified()
 	case user.FieldAdmin:
 		return m.Admin()
+	case user.FieldWebsiteURL:
+		return m.WebsiteURL()
+	case user.FieldBrandPrimaryColor:
+		return m.BrandPrimaryColor()
+	case user.FieldBrandSecondaryColor:
+		return m.BrandSecondaryColor()
+	case user.FieldBrandAccentColor:
+		return m.BrandAccentColor()
+	case user.FieldBrandColorsStatus:
+		return m.BrandColorsStatus()
 	case user.FieldCreatedAt:
 		return m.CreatedAt()
 	}
@@ -9123,6 +10214,16 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldVerified(ctx)
 	case user.FieldAdmin:
 		return m.OldAdmin(ctx)
+	case user.FieldWebsiteURL:
+		return m.OldWebsiteURL(ctx)
+	case user.FieldBrandPrimaryColor:
+		return m.OldBrandPrimaryColor(ctx)
+	case user.FieldBrandSecondaryColor:
+		return m.OldBrandSecondaryColor(ctx)
+	case user.FieldBrandAccentColor:
+		return m.OldBrandAccentColor(ctx)
+	case user.FieldBrandColorsStatus:
+		return m.OldBrandColorsStatus(ctx)
 	case user.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	}
@@ -9183,6 +10284,41 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAdmin(v)
 		return nil
+	case user.FieldWebsiteURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWebsiteURL(v)
+		return nil
+	case user.FieldBrandPrimaryColor:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBrandPrimaryColor(v)
+		return nil
+	case user.FieldBrandSecondaryColor:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBrandSecondaryColor(v)
+		return nil
+	case user.FieldBrandAccentColor:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBrandAccentColor(v)
+		return nil
+	case user.FieldBrandColorsStatus:
+		v, ok := value.(user.BrandColorsStatus)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBrandColorsStatus(v)
+		return nil
 	case user.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -9226,6 +10362,21 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldCompanyName) {
 		fields = append(fields, user.FieldCompanyName)
 	}
+	if m.FieldCleared(user.FieldWebsiteURL) {
+		fields = append(fields, user.FieldWebsiteURL)
+	}
+	if m.FieldCleared(user.FieldBrandPrimaryColor) {
+		fields = append(fields, user.FieldBrandPrimaryColor)
+	}
+	if m.FieldCleared(user.FieldBrandSecondaryColor) {
+		fields = append(fields, user.FieldBrandSecondaryColor)
+	}
+	if m.FieldCleared(user.FieldBrandAccentColor) {
+		fields = append(fields, user.FieldBrandAccentColor)
+	}
+	if m.FieldCleared(user.FieldBrandColorsStatus) {
+		fields = append(fields, user.FieldBrandColorsStatus)
+	}
 	return fields
 }
 
@@ -9245,6 +10396,21 @@ func (m *UserMutation) ClearField(name string) error {
 		return nil
 	case user.FieldCompanyName:
 		m.ClearCompanyName()
+		return nil
+	case user.FieldWebsiteURL:
+		m.ClearWebsiteURL()
+		return nil
+	case user.FieldBrandPrimaryColor:
+		m.ClearBrandPrimaryColor()
+		return nil
+	case user.FieldBrandSecondaryColor:
+		m.ClearBrandSecondaryColor()
+		return nil
+	case user.FieldBrandAccentColor:
+		m.ClearBrandAccentColor()
+		return nil
+	case user.FieldBrandColorsStatus:
+		m.ClearBrandColorsStatus()
 		return nil
 	}
 	return fmt.Errorf("unknown User nullable field %s", name)
@@ -9274,6 +10440,21 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldAdmin:
 		m.ResetAdmin()
+		return nil
+	case user.FieldWebsiteURL:
+		m.ResetWebsiteURL()
+		return nil
+	case user.FieldBrandPrimaryColor:
+		m.ResetBrandPrimaryColor()
+		return nil
+	case user.FieldBrandSecondaryColor:
+		m.ResetBrandSecondaryColor()
+		return nil
+	case user.FieldBrandAccentColor:
+		m.ResetBrandAccentColor()
+		return nil
+	case user.FieldBrandColorsStatus:
+		m.ResetBrandColorsStatus()
 		return nil
 	case user.FieldCreatedAt:
 		m.ResetCreatedAt()

@@ -5,10 +5,12 @@ import (
 	"time"
 
 	"github.com/occult/pagode/ent/form"
+	"github.com/occult/pagode/ent/job"
 	"github.com/occult/pagode/ent/paymentintent"
 	"github.com/occult/pagode/ent/paymentmethod"
 	"github.com/occult/pagode/ent/question"
 	"github.com/occult/pagode/ent/subscription"
+	"github.com/occult/pagode/ent/user"
 )
 
 type Answer struct {
@@ -25,6 +27,17 @@ type Form struct {
 	UserID      int               `form:"user_id"`
 	CreatedAt   *time.Time        `form:"created_at"`
 	UpdatedAt   *time.Time        `form:"updated_at"`
+}
+
+type Job struct {
+	Queue       string                 `form:"queue"`
+	Payload     map[string]interface{} `form:"payload"`
+	Attempts    *int                   `form:"attempts"`
+	MaxAttempts *int                   `form:"max_attempts"`
+	Status      *job.Status            `form:"status"`
+	Error       *string                `form:"error"`
+	CreatedAt   *time.Time             `form:"created_at"`
+	ProcessedAt *time.Time             `form:"processed_at"`
 }
 
 type PasswordToken struct {
@@ -111,14 +124,19 @@ type Subscription struct {
 }
 
 type User struct {
-	Name        string     `form:"name"`
-	Email       string     `form:"email"`
-	Password    *string    `form:"password"`
-	Username    *string    `form:"username"`
-	CompanyName *string    `form:"company_name"`
-	Verified    bool       `form:"verified"`
-	Admin       bool       `form:"admin"`
-	CreatedAt   *time.Time `form:"created_at"`
+	Name                string                  `form:"name"`
+	Email               string                  `form:"email"`
+	Password            *string                 `form:"password"`
+	Username            *string                 `form:"username"`
+	CompanyName         *string                 `form:"company_name"`
+	Verified            bool                    `form:"verified"`
+	Admin               bool                    `form:"admin"`
+	WebsiteURL          *string                 `form:"website_url"`
+	BrandPrimaryColor   *string                 `form:"brand_primary_color"`
+	BrandSecondaryColor *string                 `form:"brand_secondary_color"`
+	BrandAccentColor    *string                 `form:"brand_accent_color"`
+	BrandColorsStatus   *user.BrandColorsStatus `form:"brand_colors_status"`
+	CreatedAt           *time.Time              `form:"created_at"`
 }
 
 type EntityList struct {
@@ -143,6 +161,7 @@ func GetEntityTypeNames() []string {
 	return []string{
 		"Answer",
 		"Form",
+		"Job",
 		"PasswordToken",
 		"PaymentCustomer",
 		"PaymentIntent",

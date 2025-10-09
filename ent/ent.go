@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/occult/pagode/ent/answer"
 	"github.com/occult/pagode/ent/form"
+	"github.com/occult/pagode/ent/job"
 	"github.com/occult/pagode/ent/passwordtoken"
 	"github.com/occult/pagode/ent/paymentcustomer"
 	"github.com/occult/pagode/ent/paymentintent"
@@ -84,6 +85,7 @@ func checkColumn(table, column string) error {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			answer.Table:          answer.ValidColumn,
 			form.Table:            form.ValidColumn,
+			job.Table:             job.ValidColumn,
 			passwordtoken.Table:   passwordtoken.ValidColumn,
 			paymentcustomer.Table: paymentcustomer.ValidColumn,
 			paymentintent.Table:   paymentintent.ValidColumn,

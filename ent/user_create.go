@@ -98,6 +98,76 @@ func (uc *UserCreate) SetNillableAdmin(b *bool) *UserCreate {
 	return uc
 }
 
+// SetWebsiteURL sets the "website_url" field.
+func (uc *UserCreate) SetWebsiteURL(s string) *UserCreate {
+	uc.mutation.SetWebsiteURL(s)
+	return uc
+}
+
+// SetNillableWebsiteURL sets the "website_url" field if the given value is not nil.
+func (uc *UserCreate) SetNillableWebsiteURL(s *string) *UserCreate {
+	if s != nil {
+		uc.SetWebsiteURL(*s)
+	}
+	return uc
+}
+
+// SetBrandPrimaryColor sets the "brand_primary_color" field.
+func (uc *UserCreate) SetBrandPrimaryColor(s string) *UserCreate {
+	uc.mutation.SetBrandPrimaryColor(s)
+	return uc
+}
+
+// SetNillableBrandPrimaryColor sets the "brand_primary_color" field if the given value is not nil.
+func (uc *UserCreate) SetNillableBrandPrimaryColor(s *string) *UserCreate {
+	if s != nil {
+		uc.SetBrandPrimaryColor(*s)
+	}
+	return uc
+}
+
+// SetBrandSecondaryColor sets the "brand_secondary_color" field.
+func (uc *UserCreate) SetBrandSecondaryColor(s string) *UserCreate {
+	uc.mutation.SetBrandSecondaryColor(s)
+	return uc
+}
+
+// SetNillableBrandSecondaryColor sets the "brand_secondary_color" field if the given value is not nil.
+func (uc *UserCreate) SetNillableBrandSecondaryColor(s *string) *UserCreate {
+	if s != nil {
+		uc.SetBrandSecondaryColor(*s)
+	}
+	return uc
+}
+
+// SetBrandAccentColor sets the "brand_accent_color" field.
+func (uc *UserCreate) SetBrandAccentColor(s string) *UserCreate {
+	uc.mutation.SetBrandAccentColor(s)
+	return uc
+}
+
+// SetNillableBrandAccentColor sets the "brand_accent_color" field if the given value is not nil.
+func (uc *UserCreate) SetNillableBrandAccentColor(s *string) *UserCreate {
+	if s != nil {
+		uc.SetBrandAccentColor(*s)
+	}
+	return uc
+}
+
+// SetBrandColorsStatus sets the "brand_colors_status" field.
+func (uc *UserCreate) SetBrandColorsStatus(ucs user.BrandColorsStatus) *UserCreate {
+	uc.mutation.SetBrandColorsStatus(ucs)
+	return uc
+}
+
+// SetNillableBrandColorsStatus sets the "brand_colors_status" field if the given value is not nil.
+func (uc *UserCreate) SetNillableBrandColorsStatus(ucs *user.BrandColorsStatus) *UserCreate {
+	if ucs != nil {
+		uc.SetBrandColorsStatus(*ucs)
+	}
+	return uc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (uc *UserCreate) SetCreatedAt(t time.Time) *UserCreate {
 	uc.mutation.SetCreatedAt(t)
@@ -263,6 +333,11 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.Admin(); !ok {
 		return &ValidationError{Name: "admin", err: errors.New(`ent: missing required field "User.admin"`)}
 	}
+	if v, ok := uc.mutation.BrandColorsStatus(); ok {
+		if err := user.BrandColorsStatusValidator(v); err != nil {
+			return &ValidationError{Name: "brand_colors_status", err: fmt.Errorf(`ent: validator failed for field "User.brand_colors_status": %w`, err)}
+		}
+	}
 	if _, ok := uc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "User.created_at"`)}
 	}
@@ -319,6 +394,26 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Admin(); ok {
 		_spec.SetField(user.FieldAdmin, field.TypeBool, value)
 		_node.Admin = value
+	}
+	if value, ok := uc.mutation.WebsiteURL(); ok {
+		_spec.SetField(user.FieldWebsiteURL, field.TypeString, value)
+		_node.WebsiteURL = value
+	}
+	if value, ok := uc.mutation.BrandPrimaryColor(); ok {
+		_spec.SetField(user.FieldBrandPrimaryColor, field.TypeString, value)
+		_node.BrandPrimaryColor = value
+	}
+	if value, ok := uc.mutation.BrandSecondaryColor(); ok {
+		_spec.SetField(user.FieldBrandSecondaryColor, field.TypeString, value)
+		_node.BrandSecondaryColor = value
+	}
+	if value, ok := uc.mutation.BrandAccentColor(); ok {
+		_spec.SetField(user.FieldBrandAccentColor, field.TypeString, value)
+		_node.BrandAccentColor = value
+	}
+	if value, ok := uc.mutation.BrandColorsStatus(); ok {
+		_spec.SetField(user.FieldBrandColorsStatus, field.TypeEnum, value)
+		_node.BrandColorsStatus = value
 	}
 	if value, ok := uc.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)

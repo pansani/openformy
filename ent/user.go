@@ -32,6 +32,16 @@ type User struct {
 	Verified bool `json:"verified,omitempty"`
 	// Admin holds the value of the "admin" field.
 	Admin bool `json:"admin,omitempty"`
+	// WebsiteURL holds the value of the "website_url" field.
+	WebsiteURL string `json:"website_url,omitempty"`
+	// Hex color code extracted from user's website
+	BrandPrimaryColor string `json:"brand_primary_color,omitempty"`
+	// Hex color code extracted from user's website
+	BrandSecondaryColor string `json:"brand_secondary_color,omitempty"`
+	// Hex color code extracted from user's website
+	BrandAccentColor string `json:"brand_accent_color,omitempty"`
+	// Status of brand color extraction job
+	BrandColorsStatus user.BrandColorsStatus `json:"brand_colors_status,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -103,7 +113,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case user.FieldID:
 			values[i] = new(sql.NullInt64)
-		case user.FieldName, user.FieldEmail, user.FieldPassword, user.FieldUsername, user.FieldCompanyName:
+		case user.FieldName, user.FieldEmail, user.FieldPassword, user.FieldUsername, user.FieldCompanyName, user.FieldWebsiteURL, user.FieldBrandPrimaryColor, user.FieldBrandSecondaryColor, user.FieldBrandAccentColor, user.FieldBrandColorsStatus:
 			values[i] = new(sql.NullString)
 		case user.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -171,6 +181,36 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field admin", values[i])
 			} else if value.Valid {
 				u.Admin = value.Bool
+			}
+		case user.FieldWebsiteURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field website_url", values[i])
+			} else if value.Valid {
+				u.WebsiteURL = value.String
+			}
+		case user.FieldBrandPrimaryColor:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field brand_primary_color", values[i])
+			} else if value.Valid {
+				u.BrandPrimaryColor = value.String
+			}
+		case user.FieldBrandSecondaryColor:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field brand_secondary_color", values[i])
+			} else if value.Valid {
+				u.BrandSecondaryColor = value.String
+			}
+		case user.FieldBrandAccentColor:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field brand_accent_color", values[i])
+			} else if value.Valid {
+				u.BrandAccentColor = value.String
+			}
+		case user.FieldBrandColorsStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field brand_colors_status", values[i])
+			} else if value.Valid {
+				u.BrandColorsStatus = user.BrandColorsStatus(value.String)
 			}
 		case user.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -260,6 +300,21 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("admin=")
 	builder.WriteString(fmt.Sprintf("%v", u.Admin))
+	builder.WriteString(", ")
+	builder.WriteString("website_url=")
+	builder.WriteString(u.WebsiteURL)
+	builder.WriteString(", ")
+	builder.WriteString("brand_primary_color=")
+	builder.WriteString(u.BrandPrimaryColor)
+	builder.WriteString(", ")
+	builder.WriteString("brand_secondary_color=")
+	builder.WriteString(u.BrandSecondaryColor)
+	builder.WriteString(", ")
+	builder.WriteString("brand_accent_color=")
+	builder.WriteString(u.BrandAccentColor)
+	builder.WriteString(", ")
+	builder.WriteString("brand_colors_status=")
+	builder.WriteString(fmt.Sprintf("%v", u.BrandColorsStatus))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(u.CreatedAt.Format(time.ANSIC))

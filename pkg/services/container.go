@@ -66,6 +66,9 @@ type Container struct {
 	// Tasks stores the task client.
 	Tasks *backlite.Client
 
+	// Jobs stores the job worker.
+	Jobs *JobWorker
+
 	// Payment stores the payment client.
 	Payment *PaymentClient
 
@@ -86,6 +89,7 @@ func NewContainer() *Container {
 	c.initAuth()
 	c.initMail()
 	c.initTasks()
+	c.initJobs()
 	c.initPayment()
 	c.initInertia()
 	return c
@@ -105,6 +109,11 @@ func (c *Container) Shutdown() error {
 	// taskCtx, taskCancel := context.WithTimeout(context.Background(), c.Config.Tasks.ShutdownTimeout)
 	// defer taskCancel()
 	// c.Tasks.Stop(taskCtx)
+
+	// Shutdown the job worker.
+	if c.Jobs != nil {
+		c.Jobs.Stop()
+	}
 
 	// Shutdown the ORM.
 	if err := c.ORM.Close(); err != nil {
@@ -276,6 +285,12 @@ func (c *Container) initTasks() {
 	// if err = c.Tasks.Install(); err != nil {
 	// 	panic(fmt.Sprintf("failed to install task schema: %v", err))
 	// }
+}
+
+// initJobs initializes the job worker.
+func (c *Container) initJobs() {
+	c.Jobs = NewJobWorker(c.ORM)
+	c.Jobs.Start()
 }
 
 // initPayment initializes the payment client.

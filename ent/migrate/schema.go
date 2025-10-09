@@ -69,6 +69,36 @@ var (
 			},
 		},
 	}
+	// JobsColumns holds the columns for the "jobs" table.
+	JobsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "queue", Type: field.TypeString},
+		{Name: "payload", Type: field.TypeJSON},
+		{Name: "attempts", Type: field.TypeInt, Default: 0},
+		{Name: "max_attempts", Type: field.TypeInt, Default: 3},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"pending", "processing", "completed", "failed"}, Default: "pending"},
+		{Name: "error", Type: field.TypeString, Nullable: true, Size: 2147483647},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "processed_at", Type: field.TypeTime, Nullable: true},
+	}
+	// JobsTable holds the schema information for the "jobs" table.
+	JobsTable = &schema.Table{
+		Name:       "jobs",
+		Columns:    JobsColumns,
+		PrimaryKey: []*schema.Column{JobsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "job_queue_status",
+				Unique:  false,
+				Columns: []*schema.Column{JobsColumns[1], JobsColumns[5]},
+			},
+			{
+				Name:    "job_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{JobsColumns[7]},
+			},
+		},
+	}
 	// PasswordTokensColumns holds the columns for the "password_tokens" table.
 	PasswordTokensColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -285,6 +315,11 @@ var (
 		{Name: "company_name", Type: field.TypeString, Nullable: true},
 		{Name: "verified", Type: field.TypeBool, Default: false},
 		{Name: "admin", Type: field.TypeBool, Default: false},
+		{Name: "website_url", Type: field.TypeString, Nullable: true},
+		{Name: "brand_primary_color", Type: field.TypeString, Nullable: true},
+		{Name: "brand_secondary_color", Type: field.TypeString, Nullable: true},
+		{Name: "brand_accent_color", Type: field.TypeString, Nullable: true},
+		{Name: "brand_colors_status", Type: field.TypeEnum, Nullable: true, Enums: []string{"pending", "processing", "completed", "failed"}},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "payment_customer_user", Type: field.TypeInt, Unique: true, Nullable: true},
 	}
@@ -296,7 +331,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "users_payment_customers_user",
-				Columns:    []*schema.Column{UsersColumns[9]},
+				Columns:    []*schema.Column{UsersColumns[14]},
 				RefColumns: []*schema.Column{PaymentCustomersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -306,6 +341,7 @@ var (
 	Tables = []*schema.Table{
 		AnswersTable,
 		FormsTable,
+		JobsTable,
 		PasswordTokensTable,
 		PaymentCustomersTable,
 		PaymentIntentsTable,

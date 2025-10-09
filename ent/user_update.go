@@ -141,6 +141,106 @@ func (uu *UserUpdate) SetNillableAdmin(b *bool) *UserUpdate {
 	return uu
 }
 
+// SetWebsiteURL sets the "website_url" field.
+func (uu *UserUpdate) SetWebsiteURL(s string) *UserUpdate {
+	uu.mutation.SetWebsiteURL(s)
+	return uu
+}
+
+// SetNillableWebsiteURL sets the "website_url" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableWebsiteURL(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetWebsiteURL(*s)
+	}
+	return uu
+}
+
+// ClearWebsiteURL clears the value of the "website_url" field.
+func (uu *UserUpdate) ClearWebsiteURL() *UserUpdate {
+	uu.mutation.ClearWebsiteURL()
+	return uu
+}
+
+// SetBrandPrimaryColor sets the "brand_primary_color" field.
+func (uu *UserUpdate) SetBrandPrimaryColor(s string) *UserUpdate {
+	uu.mutation.SetBrandPrimaryColor(s)
+	return uu
+}
+
+// SetNillableBrandPrimaryColor sets the "brand_primary_color" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableBrandPrimaryColor(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetBrandPrimaryColor(*s)
+	}
+	return uu
+}
+
+// ClearBrandPrimaryColor clears the value of the "brand_primary_color" field.
+func (uu *UserUpdate) ClearBrandPrimaryColor() *UserUpdate {
+	uu.mutation.ClearBrandPrimaryColor()
+	return uu
+}
+
+// SetBrandSecondaryColor sets the "brand_secondary_color" field.
+func (uu *UserUpdate) SetBrandSecondaryColor(s string) *UserUpdate {
+	uu.mutation.SetBrandSecondaryColor(s)
+	return uu
+}
+
+// SetNillableBrandSecondaryColor sets the "brand_secondary_color" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableBrandSecondaryColor(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetBrandSecondaryColor(*s)
+	}
+	return uu
+}
+
+// ClearBrandSecondaryColor clears the value of the "brand_secondary_color" field.
+func (uu *UserUpdate) ClearBrandSecondaryColor() *UserUpdate {
+	uu.mutation.ClearBrandSecondaryColor()
+	return uu
+}
+
+// SetBrandAccentColor sets the "brand_accent_color" field.
+func (uu *UserUpdate) SetBrandAccentColor(s string) *UserUpdate {
+	uu.mutation.SetBrandAccentColor(s)
+	return uu
+}
+
+// SetNillableBrandAccentColor sets the "brand_accent_color" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableBrandAccentColor(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetBrandAccentColor(*s)
+	}
+	return uu
+}
+
+// ClearBrandAccentColor clears the value of the "brand_accent_color" field.
+func (uu *UserUpdate) ClearBrandAccentColor() *UserUpdate {
+	uu.mutation.ClearBrandAccentColor()
+	return uu
+}
+
+// SetBrandColorsStatus sets the "brand_colors_status" field.
+func (uu *UserUpdate) SetBrandColorsStatus(ucs user.BrandColorsStatus) *UserUpdate {
+	uu.mutation.SetBrandColorsStatus(ucs)
+	return uu
+}
+
+// SetNillableBrandColorsStatus sets the "brand_colors_status" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableBrandColorsStatus(ucs *user.BrandColorsStatus) *UserUpdate {
+	if ucs != nil {
+		uu.SetBrandColorsStatus(*ucs)
+	}
+	return uu
+}
+
+// ClearBrandColorsStatus clears the value of the "brand_colors_status" field.
+func (uu *UserUpdate) ClearBrandColorsStatus() *UserUpdate {
+	uu.mutation.ClearBrandColorsStatus()
+	return uu
+}
+
 // AddOwnerIDs adds the "owner" edge to the PasswordToken entity by IDs.
 func (uu *UserUpdate) AddOwnerIDs(ids ...int) *UserUpdate {
 	uu.mutation.AddOwnerIDs(ids...)
@@ -323,6 +423,11 @@ func (uu *UserUpdate) check() error {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
 		}
 	}
+	if v, ok := uu.mutation.BrandColorsStatus(); ok {
+		if err := user.BrandColorsStatusValidator(v); err != nil {
+			return &ValidationError{Name: "brand_colors_status", err: fmt.Errorf(`ent: validator failed for field "User.brand_colors_status": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -364,6 +469,36 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := uu.mutation.Admin(); ok {
 		_spec.SetField(user.FieldAdmin, field.TypeBool, value)
+	}
+	if value, ok := uu.mutation.WebsiteURL(); ok {
+		_spec.SetField(user.FieldWebsiteURL, field.TypeString, value)
+	}
+	if uu.mutation.WebsiteURLCleared() {
+		_spec.ClearField(user.FieldWebsiteURL, field.TypeString)
+	}
+	if value, ok := uu.mutation.BrandPrimaryColor(); ok {
+		_spec.SetField(user.FieldBrandPrimaryColor, field.TypeString, value)
+	}
+	if uu.mutation.BrandPrimaryColorCleared() {
+		_spec.ClearField(user.FieldBrandPrimaryColor, field.TypeString)
+	}
+	if value, ok := uu.mutation.BrandSecondaryColor(); ok {
+		_spec.SetField(user.FieldBrandSecondaryColor, field.TypeString, value)
+	}
+	if uu.mutation.BrandSecondaryColorCleared() {
+		_spec.ClearField(user.FieldBrandSecondaryColor, field.TypeString)
+	}
+	if value, ok := uu.mutation.BrandAccentColor(); ok {
+		_spec.SetField(user.FieldBrandAccentColor, field.TypeString, value)
+	}
+	if uu.mutation.BrandAccentColorCleared() {
+		_spec.ClearField(user.FieldBrandAccentColor, field.TypeString)
+	}
+	if value, ok := uu.mutation.BrandColorsStatus(); ok {
+		_spec.SetField(user.FieldBrandColorsStatus, field.TypeEnum, value)
+	}
+	if uu.mutation.BrandColorsStatusCleared() {
+		_spec.ClearField(user.FieldBrandColorsStatus, field.TypeEnum)
 	}
 	if uu.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -659,6 +794,106 @@ func (uuo *UserUpdateOne) SetNillableAdmin(b *bool) *UserUpdateOne {
 	return uuo
 }
 
+// SetWebsiteURL sets the "website_url" field.
+func (uuo *UserUpdateOne) SetWebsiteURL(s string) *UserUpdateOne {
+	uuo.mutation.SetWebsiteURL(s)
+	return uuo
+}
+
+// SetNillableWebsiteURL sets the "website_url" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableWebsiteURL(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetWebsiteURL(*s)
+	}
+	return uuo
+}
+
+// ClearWebsiteURL clears the value of the "website_url" field.
+func (uuo *UserUpdateOne) ClearWebsiteURL() *UserUpdateOne {
+	uuo.mutation.ClearWebsiteURL()
+	return uuo
+}
+
+// SetBrandPrimaryColor sets the "brand_primary_color" field.
+func (uuo *UserUpdateOne) SetBrandPrimaryColor(s string) *UserUpdateOne {
+	uuo.mutation.SetBrandPrimaryColor(s)
+	return uuo
+}
+
+// SetNillableBrandPrimaryColor sets the "brand_primary_color" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableBrandPrimaryColor(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetBrandPrimaryColor(*s)
+	}
+	return uuo
+}
+
+// ClearBrandPrimaryColor clears the value of the "brand_primary_color" field.
+func (uuo *UserUpdateOne) ClearBrandPrimaryColor() *UserUpdateOne {
+	uuo.mutation.ClearBrandPrimaryColor()
+	return uuo
+}
+
+// SetBrandSecondaryColor sets the "brand_secondary_color" field.
+func (uuo *UserUpdateOne) SetBrandSecondaryColor(s string) *UserUpdateOne {
+	uuo.mutation.SetBrandSecondaryColor(s)
+	return uuo
+}
+
+// SetNillableBrandSecondaryColor sets the "brand_secondary_color" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableBrandSecondaryColor(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetBrandSecondaryColor(*s)
+	}
+	return uuo
+}
+
+// ClearBrandSecondaryColor clears the value of the "brand_secondary_color" field.
+func (uuo *UserUpdateOne) ClearBrandSecondaryColor() *UserUpdateOne {
+	uuo.mutation.ClearBrandSecondaryColor()
+	return uuo
+}
+
+// SetBrandAccentColor sets the "brand_accent_color" field.
+func (uuo *UserUpdateOne) SetBrandAccentColor(s string) *UserUpdateOne {
+	uuo.mutation.SetBrandAccentColor(s)
+	return uuo
+}
+
+// SetNillableBrandAccentColor sets the "brand_accent_color" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableBrandAccentColor(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetBrandAccentColor(*s)
+	}
+	return uuo
+}
+
+// ClearBrandAccentColor clears the value of the "brand_accent_color" field.
+func (uuo *UserUpdateOne) ClearBrandAccentColor() *UserUpdateOne {
+	uuo.mutation.ClearBrandAccentColor()
+	return uuo
+}
+
+// SetBrandColorsStatus sets the "brand_colors_status" field.
+func (uuo *UserUpdateOne) SetBrandColorsStatus(ucs user.BrandColorsStatus) *UserUpdateOne {
+	uuo.mutation.SetBrandColorsStatus(ucs)
+	return uuo
+}
+
+// SetNillableBrandColorsStatus sets the "brand_colors_status" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableBrandColorsStatus(ucs *user.BrandColorsStatus) *UserUpdateOne {
+	if ucs != nil {
+		uuo.SetBrandColorsStatus(*ucs)
+	}
+	return uuo
+}
+
+// ClearBrandColorsStatus clears the value of the "brand_colors_status" field.
+func (uuo *UserUpdateOne) ClearBrandColorsStatus() *UserUpdateOne {
+	uuo.mutation.ClearBrandColorsStatus()
+	return uuo
+}
+
 // AddOwnerIDs adds the "owner" edge to the PasswordToken entity by IDs.
 func (uuo *UserUpdateOne) AddOwnerIDs(ids ...int) *UserUpdateOne {
 	uuo.mutation.AddOwnerIDs(ids...)
@@ -854,6 +1089,11 @@ func (uuo *UserUpdateOne) check() error {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
 		}
 	}
+	if v, ok := uuo.mutation.BrandColorsStatus(); ok {
+		if err := user.BrandColorsStatusValidator(v); err != nil {
+			return &ValidationError{Name: "brand_colors_status", err: fmt.Errorf(`ent: validator failed for field "User.brand_colors_status": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -912,6 +1152,36 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.Admin(); ok {
 		_spec.SetField(user.FieldAdmin, field.TypeBool, value)
+	}
+	if value, ok := uuo.mutation.WebsiteURL(); ok {
+		_spec.SetField(user.FieldWebsiteURL, field.TypeString, value)
+	}
+	if uuo.mutation.WebsiteURLCleared() {
+		_spec.ClearField(user.FieldWebsiteURL, field.TypeString)
+	}
+	if value, ok := uuo.mutation.BrandPrimaryColor(); ok {
+		_spec.SetField(user.FieldBrandPrimaryColor, field.TypeString, value)
+	}
+	if uuo.mutation.BrandPrimaryColorCleared() {
+		_spec.ClearField(user.FieldBrandPrimaryColor, field.TypeString)
+	}
+	if value, ok := uuo.mutation.BrandSecondaryColor(); ok {
+		_spec.SetField(user.FieldBrandSecondaryColor, field.TypeString, value)
+	}
+	if uuo.mutation.BrandSecondaryColorCleared() {
+		_spec.ClearField(user.FieldBrandSecondaryColor, field.TypeString)
+	}
+	if value, ok := uuo.mutation.BrandAccentColor(); ok {
+		_spec.SetField(user.FieldBrandAccentColor, field.TypeString, value)
+	}
+	if uuo.mutation.BrandAccentColorCleared() {
+		_spec.ClearField(user.FieldBrandAccentColor, field.TypeString)
+	}
+	if value, ok := uuo.mutation.BrandColorsStatus(); ok {
+		_spec.SetField(user.FieldBrandColorsStatus, field.TypeEnum, value)
+	}
+	if uuo.mutation.BrandColorsStatusCleared() {
+		_spec.ClearField(user.FieldBrandColorsStatus, field.TypeEnum)
 	}
 	if uuo.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{

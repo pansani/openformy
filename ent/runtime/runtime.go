@@ -7,6 +7,7 @@ import (
 
 	"github.com/occult/pagode/ent/answer"
 	"github.com/occult/pagode/ent/form"
+	"github.com/occult/pagode/ent/job"
 	"github.com/occult/pagode/ent/passwordtoken"
 	"github.com/occult/pagode/ent/paymentcustomer"
 	"github.com/occult/pagode/ent/paymentintent"
@@ -56,6 +57,24 @@ func init() {
 	form.DefaultUpdatedAt = formDescUpdatedAt.Default.(func() time.Time)
 	// form.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	form.UpdateDefaultUpdatedAt = formDescUpdatedAt.UpdateDefault.(func() time.Time)
+	jobFields := schema.Job{}.Fields()
+	_ = jobFields
+	// jobDescQueue is the schema descriptor for queue field.
+	jobDescQueue := jobFields[0].Descriptor()
+	// job.QueueValidator is a validator for the "queue" field. It is called by the builders before save.
+	job.QueueValidator = jobDescQueue.Validators[0].(func(string) error)
+	// jobDescAttempts is the schema descriptor for attempts field.
+	jobDescAttempts := jobFields[2].Descriptor()
+	// job.DefaultAttempts holds the default value on creation for the attempts field.
+	job.DefaultAttempts = jobDescAttempts.Default.(int)
+	// jobDescMaxAttempts is the schema descriptor for max_attempts field.
+	jobDescMaxAttempts := jobFields[3].Descriptor()
+	// job.DefaultMaxAttempts holds the default value on creation for the max_attempts field.
+	job.DefaultMaxAttempts = jobDescMaxAttempts.Default.(int)
+	// jobDescCreatedAt is the schema descriptor for created_at field.
+	jobDescCreatedAt := jobFields[6].Descriptor()
+	// job.DefaultCreatedAt holds the default value on creation for the created_at field.
+	job.DefaultCreatedAt = jobDescCreatedAt.Default.(func() time.Time)
 	passwordtokenHooks := schema.PasswordToken{}.Hooks()
 	passwordtoken.Hooks[0] = passwordtokenHooks[0]
 	passwordtokenFields := schema.PasswordToken{}.Fields()
@@ -287,7 +306,7 @@ func init() {
 	// user.DefaultAdmin holds the default value on creation for the admin field.
 	user.DefaultAdmin = userDescAdmin.Default.(bool)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[7].Descriptor()
+	userDescCreatedAt := userFields[12].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 }
