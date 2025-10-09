@@ -268,7 +268,8 @@ func (h *Auth) RegisterSubmit(ctx echo.Context) error {
 
 	uriDashboard := ctx.Echo().Reverse(routenames.Dashboard)
 
-	h.Inertia.Redirect(w, r, uriDashboard)
+	ctx.Response().Header().Set("Location", uriDashboard)
+	ctx.Response().WriteHeader(http.StatusSeeOther)
 	return nil
 }
 
