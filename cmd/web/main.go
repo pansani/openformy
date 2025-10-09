@@ -11,6 +11,7 @@ import (
 	"github.com/occult/pagode/pkg/handlers"
 	"github.com/occult/pagode/pkg/log"
 	"github.com/occult/pagode/pkg/services"
+	"github.com/occult/pagode/pkg/tasks"
 )
 
 func main() {
@@ -33,6 +34,9 @@ func main() {
 	// Start the task runner to execute queued tasks.
 	// TODO: Tasks disabled for MySQL
 	// c.Tasks.Start(context.Background())
+
+	// Register all job handlers.
+	tasks.RegisterJobs(c)
 
 	// Start the server.
 	go func() {

@@ -33,15 +33,23 @@ require (
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
+	github.com/cenkalti/dominantcolor v1.0.3 // indirect
+	github.com/chromedp/cdproto v0.0.0-20250724212937-08a3db8b4327 // indirect
+	github.com/chromedp/chromedp v0.14.2 // indirect
+	github.com/chromedp/sysutil v1.1.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dolthub/maphash v0.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
 	github.com/gammazero/deque v0.2.1 // indirect
+	github.com/go-json-experiment/json v0.0.0-20250725192818-e39067aee2d2 // indirect
 	github.com/go-openapi/inflect v0.21.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
+	github.com/gobwas/httphead v0.1.0 // indirect
+	github.com/gobwas/pool v0.2.1 // indirect
+	github.com/gobwas/ws v1.4.0 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
@@ -68,10 +76,11 @@ require (
 	github.com/zclconf/go-cty v1.14.4 // indirect
 	github.com/zclconf/go-cty-yaml v1.1.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
+	golang.org/x/image v0.18.0 // indirect
 	golang.org/x/mod v0.23.0 // indirect
 	golang.org/x/net v0.40.0 // indirect
 	golang.org/x/sync v0.14.0 // indirect
-	golang.org/x/sys v0.33.0 // indirect
+	golang.org/x/sys v0.34.0 // indirect
 	golang.org/x/text v0.25.0 // indirect
 	golang.org/x/time v0.11.0 // indirect
 	golang.org/x/tools v0.30.0 // indirect

@@ -18,6 +18,7 @@ type Profile struct {
 	orm     *ent.Client
 	Inertia *inertia.Inertia
 	auth    *services.AuthClient
+	jobs    *services.JobWorker
 }
 
 type UpdateBasicInfoForm struct {
@@ -46,6 +47,7 @@ func (h *Profile) Init(c *services.Container) error {
 	h.orm = c.ORM
 	h.Inertia = c.Inertia
 	h.auth = c.Auth
+	h.jobs = c.Jobs
 	return nil
 }
 
@@ -59,6 +61,7 @@ func (h *Profile) Routes(g *echo.Group) {
 	profile.GET("/appearance", h.AppearancePage).Name = routenames.ProfileAppearance
 	profile.GET("/password", h.PasswordPage).Name = routenames.ProfilePassword
 	profile.POST("/update-password", h.UpdatePassword).Name = routenames.ProfileUpdatePassword
+	profile.POST("/extract-brand-colors", h.ExtractBrandColors).Name = routenames.ProfileExtractBrandColors
 }
 
 func (h *Profile) EditPage(ctx echo.Context) error {
@@ -197,4 +200,54 @@ func (h *Profile) PasswordPage(ctx echo.Context) error {
 		ctx.Request(),
 		"Settings/Password",
 	)
+}
+
+type ExtractBrandColorsForm struct {
+	WebsiteURL string `form:"website_url" validate:"required,url"`
+	form.Submission
+}
+
+func (h *Profile) ExtractBrandColors(ctx echo.Context) error {
+	var input ExtractBrandColorsForm
+
+	usr, ok := ctx.Get(context.AuthenticatedUserKey).(*ent.User)
+	if !ok {
+		msg.Danger(ctx, "You must be logged in.")
+		h.Inertia.Back(ctx.Response().Writer, ctx.Request())
+		return nil
+	}
+
+	err := form.Submit(ctx, &input)
+	switch err.(type) {
+	case nil:
+	case validator.ValidationErrors:
+		msg.Warning(ctx, "Please provide a valid website URL.")
+		h.Inertia.Back(ctx.Response().Writer, ctx.Request())
+		return nil
+	default:
+		return err
+	}
+
+	_, err = h.orm.User.UpdateOne(usr).
+		SetWebsiteURL(input.WebsiteURL).
+		SetBrandColorsStatus("pending").
+		Save(ctx.Request().Context())
+	if err != nil {
+		msg.Danger(ctx, "Failed to update website URL.")
+		h.Inertia.Back(ctx.Response().Writer, ctx.Request())
+		return nil
+	}
+
+	err = h.jobs.Enqueue(ctx.Request().Context(), "extract_brand_colors", map[string]interface{}{
+		"user_id": usr.ID,
+	})
+	if err != nil {
+		msg.Danger(ctx, "Failed to enqueue brand color extraction.")
+		h.Inertia.Back(ctx.Response().Writer, ctx.Request())
+		return nil
+	}
+
+	msg.Success(ctx, "Brand color extraction started. This may take a few moments.")
+	h.Inertia.Back(ctx.Response().Writer, ctx.Request())
+	return nil
 }
