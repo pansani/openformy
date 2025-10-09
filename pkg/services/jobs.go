@@ -85,9 +85,11 @@ func (w *JobWorker) processJob(ctx context.Context, j *ent.Job) {
 		return
 	}
 	
+	newAttempts := j.Attempts + 1
+	
 	update := j.Update()
 	update.SetStatus(job.StatusProcessing)
-	update.SetAttempts(j.Attempts + 1)
+	update.SetAttempts(newAttempts)
 	
 	if _, err := update.Save(ctx); err != nil {
 		log.Default().Error("Failed to update job status", "job_id", j.ID, "error", err)
@@ -102,7 +104,7 @@ func (w *JobWorker) processJob(ctx context.Context, j *ent.Job) {
 	if err != nil {
 		log.Default().Error("Job failed", "job_id", j.ID, "queue", j.Queue, "error", err)
 		
-		if j.Attempts >= j.MaxAttempts {
+		if newAttempts >= j.MaxAttempts {
 			finalUpdate.SetStatus(job.StatusFailed)
 			finalUpdate.SetError(err.Error())
 		} else {
