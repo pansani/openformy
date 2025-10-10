@@ -178,15 +178,53 @@ openformy/
 ## Testing
 
 ```bash
-# Run all tests
+# Run all Go tests
 make test
 
 # Run E2E tests with Playwright
-npm run test:e2e
+npx playwright test
 
-# Run specific test
+# Run E2E tests in headed mode
+npx playwright test --headed
+
+# Run specific E2E test file
+npx playwright test e2e/forms.spec.ts
+
+# Run specific Go test
 go test ./pkg/handlers -run TestForms
 ```
+
+---
+
+## Deployment
+
+Deploy OpenFormy to production using **Coolify** with automatic Nixpacks builds.
+
+### Quick Deploy to Coolify
+
+1. Connect your Git repository to Coolify
+2. Nixpacks will auto-detect and configure the build
+3. Set required environment variables (see table below)
+4. Deploy!
+
+### Required Environment Variables
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `PAGODA_APP_ENVIRONMENT` | Set to `production` | `production` |
+| `PAGODA_APP_HOST` | Your public URL | `https://forms.yourdomain.com` |
+| `PAGODA_APP_ENCRYPTIONKEY` | 32+ char secret | Generate with `openssl rand -base64 32` |
+
+### Optional Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `PAGODA_DATABASE_CONNECTION` | Database path (SQLite) or connection string (MySQL) |
+| `PAGODA_OPENAI_APIKEY` | For AI features |
+| `PAGODA_PAYMENT_STRIPE_SECRETKEY` | For payment features |
+| `PAGODA_MAIL_*` | For email functionality |
+
+📖 **[Full Deployment Guide](./DEPLOYMENT.md)** - Detailed instructions, database setup, troubleshooting, and more.
 
 ---
 

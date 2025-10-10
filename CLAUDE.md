@@ -158,6 +158,25 @@ Use `middleware.RequirePaidUser(orm)` to protect routes requiring payment:
 - Test environment automatically uses Stripe test mode
 - Payment status visible in admin panel for debugging
 
+## Deployment
+
+OpenFormy deploys to **Coolify** using Nixpacks for automatic builds.
+
+### Build Process (nixpacks.toml)
+1. **Setup phase**: Installs Node.js, Go, GCC, Chromium
+2. **Install phase**: `npm ci`
+3. **Frontend build**: `npm run build` (Vite)
+4. **Backend build**: `go build -o app ./cmd/web`
+5. **Start**: `./app`
+
+### Required for Production
+- `PAGODA_APP_ENVIRONMENT=production`
+- `PAGODA_APP_HOST` - Full public URL
+- `PAGODA_APP_ENCRYPTIONKEY` - 32+ character secret
+- Persistent volume at `/app/data` for SQLite database
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete deployment guide.
+
 ## Important Notes
 
 - Admin panel is dynamically generated - entity constraints must be defined in Ent schemas
@@ -166,3 +185,4 @@ Use `middleware.RequirePaidUser(orm)` to protect routes requiring payment:
 - Email client is skeleton - must implement `MailClient.send()` method
 - Cache is in-memory (otter library) - tags supported but come with performance cost
 - Payment credentials should be stored as environment variables in production
+- Chromium is required for brand color extraction feature (can be removed if not needed)
