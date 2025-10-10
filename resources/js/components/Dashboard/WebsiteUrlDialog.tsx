@@ -35,6 +35,8 @@ export function WebsiteUrlDialog() {
       { website_url: websiteUrl },
       {
         forceFormData: true,
+        preserveScroll: true,
+        preserveState: true,
         onFinish: () => {
           setIsSubmitting(false);
           setShowDialog(false);

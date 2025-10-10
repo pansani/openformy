@@ -43,6 +43,18 @@ function hexToRgb(hex: string): string {
   return `${r} ${g} ${b}`;
 }
 
+function getContrastColor(bgHex: string): string {
+  if (!bgHex || !bgHex.startsWith('#')) return '#000000';
+  
+  const r = parseInt(bgHex.slice(1, 3), 16);
+  const g = parseInt(bgHex.slice(3, 5), 16);
+  const b = parseInt(bgHex.slice(5, 7), 16);
+  
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  
+  return luminance > 0.5 ? '#000000' : '#FFFFFF';
+}
+
 export function ConversationalForm({
   questions,
   answers,
@@ -120,15 +132,21 @@ export function ConversationalForm({
     return null;
   }
 
+  const textColor = brandColors?.background ? getContrastColor(brandColors.background) : '#000000';
+  const textColorRgb = hexToRgb(textColor);
+
   const customStylesCSS = brandColors?.button ? `
     :root {
       --primary: ${hexToRgb(brandColors.button)};
       ${brandColors.background ? `--background: ${hexToRgb(brandColors.background)};` : ''}
-      ${brandColors.text ? `--primary-foreground: ${hexToRgb(brandColors.text)};` : ''}
     }
     .brand-text {
-      color: rgb(${hexToRgb(brandColors.button)});
+      color: ${textColor};
       font-weight: 600;
+    }
+    .secondary-text {
+      color: ${textColor};
+      opacity: 0.7;
     }
     .brand-bg {
       background-color: rgb(${hexToRgb(brandColors.button)});
@@ -147,7 +165,7 @@ export function ConversationalForm({
     }
     .brand-button {
       background-color: rgb(${hexToRgb(brandColors.button)}) !important;
-      color: rgb(${brandColors.text ? hexToRgb(brandColors.text) : '255 255 255'}) !important;
+      color: ${getContrastColor(brandColors.button)} !important;
       font-weight: 600 !important;
       box-shadow: 0 4px 6px -1px rgb(${hexToRgb(brandColors.button)} / 0.3);
     }
@@ -157,14 +175,14 @@ export function ConversationalForm({
       box-shadow: 0 6px 8px -2px rgb(${hexToRgb(brandColors.button)} / 0.4);
     }
     .brand-back-button {
-      border: 2px solid rgb(${hexToRgb(brandColors.button)} / 0.3) !important;
-      color: rgb(${hexToRgb(brandColors.button)}) !important;
+      border: 2px solid rgb(${textColorRgb} / 0.3) !important;
+      color: ${textColor} !important;
       background-color: transparent !important;
       font-weight: 500 !important;
     }
     .brand-back-button:hover:not(:disabled) {
-      border-color: rgb(${hexToRgb(brandColors.button)}) !important;
-      background-color: rgb(${hexToRgb(brandColors.button)} / 0.05) !important;
+      border-color: rgb(${textColorRgb} / 0.6) !important;
+      background-color: rgb(${textColorRgb} / 0.05) !important;
     }
   ` : '';
 
@@ -184,7 +202,7 @@ export function ConversationalForm({
       </div>
 
       {/* Question Counter */}
-      <div className="fixed top-6 right-6 text-sm text-slate-600 dark:text-slate-400 z-40">
+      <div className="fixed top-6 right-6 text-sm secondary-text z-40">
         {currentIndex + 1} / {questions.length}
       </div>
 
@@ -207,7 +225,7 @@ export function ConversationalForm({
               )}
             </h2>
             {currentQuestion.description && (
-              <p className="text-lg text-slate-600 dark:text-slate-400">
+              <p className="text-lg secondary-text">
                 {currentQuestion.description}
               </p>
             )}
@@ -256,8 +274,8 @@ export function ConversationalForm({
           </div>
 
           {/* Keyboard Hint */}
-          <p className="text-sm text-slate-500 dark:text-slate-500 mt-4">
-            Press <kbd className="px-2 py-1 brand-bg text-white rounded text-xs">Enter ↵</kbd> to continue
+          <p className="text-sm secondary-text mt-4">
+            Press <kbd className="px-2 py-1 brand-button rounded text-xs">Enter ↵</kbd> to continue
           </p>
         </div>
       </div>

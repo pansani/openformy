@@ -248,6 +248,7 @@ func (h *Profile) ExtractBrandColors(ctx echo.Context) error {
 	}
 
 	msg.Success(ctx, "Brand color extraction started. This may take a few moments.")
-	h.Inertia.Location(ctx.Response().Writer, ctx.Request(), "/profile/appearance")
+	ctx.Response().Header().Set("X-Inertia-Location", ctx.Request().Header.Get("Referer"))
+	ctx.Response().WriteHeader(http.StatusOK)
 	return nil
 }
