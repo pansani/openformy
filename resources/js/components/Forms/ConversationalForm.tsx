@@ -17,6 +17,12 @@ interface Question {
   };
 }
 
+interface BrandColors {
+  button?: string;
+  background?: string;
+  text?: string;
+}
+
 interface ConversationalFormProps {
   questions: Question[];
   answers: Record<number, string | string[]>;
@@ -24,6 +30,17 @@ interface ConversationalFormProps {
   onAnswerChange: (questionId: number, value: string | string[]) => void;
   onSubmit: () => void;
   isSubmitting: boolean;
+  brandColors?: BrandColors;
+}
+
+function hexToRgb(hex: string): string {
+  if (!hex || !hex.startsWith('#')) return '';
+  
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  
+  return `${r} ${g} ${b}`;
 }
 
 export function ConversationalForm({
@@ -33,7 +50,9 @@ export function ConversationalForm({
   onAnswerChange,
   onSubmit,
   isSubmitting,
+  brandColors,
 }: ConversationalFormProps) {
+  console.log('ConversationalForm brand colors:', brandColors);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
   const [isAnimating, setIsAnimating] = useState(false);
@@ -101,12 +120,62 @@ export function ConversationalForm({
     return null;
   }
 
+  const customStylesCSS = brandColors?.button ? `
+    :root {
+      --primary: ${hexToRgb(brandColors.button)};
+      ${brandColors.background ? `--background: ${hexToRgb(brandColors.background)};` : ''}
+      ${brandColors.text ? `--primary-foreground: ${hexToRgb(brandColors.text)};` : ''}
+    }
+    .brand-text {
+      color: rgb(${hexToRgb(brandColors.button)});
+      font-weight: 600;
+    }
+    .brand-bg {
+      background-color: rgb(${hexToRgb(brandColors.button)});
+    }
+    .brand-card-bg {
+      background-color: rgb(${hexToRgb(brandColors.button)} / 0.1);
+      border: 2px solid rgb(${hexToRgb(brandColors.button)} / 0.2);
+      color: rgb(${hexToRgb(brandColors.button)});
+    }
+    .brand-card-bg .text-slate-600,
+    .brand-card-bg .text-slate-400,
+    .brand-card-bg .dark\\:text-slate-400,
+    .brand-card-bg .text-muted-foreground {
+      color: rgb(${hexToRgb(brandColors.button)}) !important;
+      opacity: 0.7;
+    }
+    .brand-button {
+      background-color: rgb(${hexToRgb(brandColors.button)}) !important;
+      color: rgb(${brandColors.text ? hexToRgb(brandColors.text) : '255 255 255'}) !important;
+      font-weight: 600 !important;
+      box-shadow: 0 4px 6px -1px rgb(${hexToRgb(brandColors.button)} / 0.3);
+    }
+    .brand-button:hover:not(:disabled) {
+      background-color: rgb(${hexToRgb(brandColors.button)} / 0.9) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 8px -2px rgb(${hexToRgb(brandColors.button)} / 0.4);
+    }
+    .brand-back-button {
+      border: 2px solid rgb(${hexToRgb(brandColors.button)} / 0.3) !important;
+      color: rgb(${hexToRgb(brandColors.button)}) !important;
+      background-color: transparent !important;
+      font-weight: 500 !important;
+    }
+    .brand-back-button:hover:not(:disabled) {
+      border-color: rgb(${hexToRgb(brandColors.button)}) !important;
+      background-color: rgb(${hexToRgb(brandColors.button)} / 0.05) !important;
+    }
+  ` : '';
+
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+    <>
+      {customStylesCSS && <style>{customStylesCSS}</style>}
+      <div className="min-h-screen flex flex-col bg-background">
       {/* Progress Bar */}
       <div className="fixed top-0 left-0 right-0 h-1 bg-slate-200 dark:bg-slate-800 z-50">
         <div
-          className="h-full bg-blue-600 transition-all duration-300 ease-out"
+          className="h-full bg-primary transition-all duration-300 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -128,7 +197,7 @@ export function ConversationalForm({
         >
           {/* Question */}
           <div className="mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+            <h2 className="text-3xl md:text-4xl font-bold brand-text mb-3">
               {currentQuestion.title}
               {currentQuestion.required && (
                 <span className="text-red-500 ml-1">*</span>
@@ -159,7 +228,7 @@ export function ConversationalForm({
                 variant="outline"
                 onClick={handlePrevious}
                 disabled={isAnimating}
-                className="gap-2 transition-all hover:scale-105"
+                className="gap-2 transition-all hover:scale-105 brand-back-button"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Back
@@ -170,7 +239,7 @@ export function ConversationalForm({
               type="button"
               onClick={handleNext}
               disabled={!canAdvance() || isSubmitting || isAnimating}
-              className="gap-2 ml-auto transition-all hover:scale-105"
+              className="gap-2 ml-auto transition-all hover:scale-105 brand-button"
             >
               {isLastQuestion ? (
                 isSubmitting ? 'Submitting...' : 'Submit'
@@ -185,10 +254,11 @@ export function ConversationalForm({
 
           {/* Keyboard Hint */}
           <p className="text-sm text-slate-500 dark:text-slate-500 mt-4">
-            Press <kbd className="px-2 py-1 bg-slate-200 dark:bg-slate-800 rounded text-xs">Enter ↵</kbd> to continue
+            Press <kbd className="px-2 py-1 brand-bg text-white rounded text-xs">Enter ↵</kbd> to continue
           </p>
         </div>
       </div>
     </div>
+    </>
   );
 }

@@ -112,44 +112,44 @@ func (uc *UserCreate) SetNillableWebsiteURL(s *string) *UserCreate {
 	return uc
 }
 
-// SetBrandPrimaryColor sets the "brand_primary_color" field.
-func (uc *UserCreate) SetBrandPrimaryColor(s string) *UserCreate {
-	uc.mutation.SetBrandPrimaryColor(s)
+// SetBrandButtonColor sets the "brand_button_color" field.
+func (uc *UserCreate) SetBrandButtonColor(s string) *UserCreate {
+	uc.mutation.SetBrandButtonColor(s)
 	return uc
 }
 
-// SetNillableBrandPrimaryColor sets the "brand_primary_color" field if the given value is not nil.
-func (uc *UserCreate) SetNillableBrandPrimaryColor(s *string) *UserCreate {
+// SetNillableBrandButtonColor sets the "brand_button_color" field if the given value is not nil.
+func (uc *UserCreate) SetNillableBrandButtonColor(s *string) *UserCreate {
 	if s != nil {
-		uc.SetBrandPrimaryColor(*s)
+		uc.SetBrandButtonColor(*s)
 	}
 	return uc
 }
 
-// SetBrandSecondaryColor sets the "brand_secondary_color" field.
-func (uc *UserCreate) SetBrandSecondaryColor(s string) *UserCreate {
-	uc.mutation.SetBrandSecondaryColor(s)
+// SetBrandBackgroundColor sets the "brand_background_color" field.
+func (uc *UserCreate) SetBrandBackgroundColor(s string) *UserCreate {
+	uc.mutation.SetBrandBackgroundColor(s)
 	return uc
 }
 
-// SetNillableBrandSecondaryColor sets the "brand_secondary_color" field if the given value is not nil.
-func (uc *UserCreate) SetNillableBrandSecondaryColor(s *string) *UserCreate {
+// SetNillableBrandBackgroundColor sets the "brand_background_color" field if the given value is not nil.
+func (uc *UserCreate) SetNillableBrandBackgroundColor(s *string) *UserCreate {
 	if s != nil {
-		uc.SetBrandSecondaryColor(*s)
+		uc.SetBrandBackgroundColor(*s)
 	}
 	return uc
 }
 
-// SetBrandAccentColor sets the "brand_accent_color" field.
-func (uc *UserCreate) SetBrandAccentColor(s string) *UserCreate {
-	uc.mutation.SetBrandAccentColor(s)
+// SetBrandTextColor sets the "brand_text_color" field.
+func (uc *UserCreate) SetBrandTextColor(s string) *UserCreate {
+	uc.mutation.SetBrandTextColor(s)
 	return uc
 }
 
-// SetNillableBrandAccentColor sets the "brand_accent_color" field if the given value is not nil.
-func (uc *UserCreate) SetNillableBrandAccentColor(s *string) *UserCreate {
+// SetNillableBrandTextColor sets the "brand_text_color" field if the given value is not nil.
+func (uc *UserCreate) SetNillableBrandTextColor(s *string) *UserCreate {
 	if s != nil {
-		uc.SetBrandAccentColor(*s)
+		uc.SetBrandTextColor(*s)
 	}
 	return uc
 }
@@ -399,17 +399,17 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldWebsiteURL, field.TypeString, value)
 		_node.WebsiteURL = value
 	}
-	if value, ok := uc.mutation.BrandPrimaryColor(); ok {
-		_spec.SetField(user.FieldBrandPrimaryColor, field.TypeString, value)
-		_node.BrandPrimaryColor = value
+	if value, ok := uc.mutation.BrandButtonColor(); ok {
+		_spec.SetField(user.FieldBrandButtonColor, field.TypeString, value)
+		_node.BrandButtonColor = value
 	}
-	if value, ok := uc.mutation.BrandSecondaryColor(); ok {
-		_spec.SetField(user.FieldBrandSecondaryColor, field.TypeString, value)
-		_node.BrandSecondaryColor = value
+	if value, ok := uc.mutation.BrandBackgroundColor(); ok {
+		_spec.SetField(user.FieldBrandBackgroundColor, field.TypeString, value)
+		_node.BrandBackgroundColor = value
 	}
-	if value, ok := uc.mutation.BrandAccentColor(); ok {
-		_spec.SetField(user.FieldBrandAccentColor, field.TypeString, value)
-		_node.BrandAccentColor = value
+	if value, ok := uc.mutation.BrandTextColor(); ok {
+		_spec.SetField(user.FieldBrandTextColor, field.TypeString, value)
+		_node.BrandTextColor = value
 	}
 	if value, ok := uc.mutation.BrandColorsStatus(); ok {
 		_spec.SetField(user.FieldBrandColorsStatus, field.TypeEnum, value)

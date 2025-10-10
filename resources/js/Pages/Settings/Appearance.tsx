@@ -115,31 +115,34 @@ export default function Appearance() {
 
                   {user.brand_colors_status === "completed" && (
                     <div className="mt-4 flex gap-3">
-                      {user.brand_primary_color && (
+                      {user.brand_button_color && (
                         <div className="flex flex-col gap-2">
                           <div
                             className="size-16 rounded border"
-                            style={{ backgroundColor: user.brand_primary_color }}
+                            style={{ backgroundColor: user.brand_button_color }}
                           />
-                          <p className="text-xs text-center">{user.brand_primary_color}</p>
+                          <p className="text-xs text-center font-medium">Button</p>
+                          <p className="text-xs text-center text-muted-foreground">{user.brand_button_color}</p>
                         </div>
                       )}
-                      {user.brand_secondary_color && (
+                      {user.brand_background_color && (
                         <div className="flex flex-col gap-2">
                           <div
                             className="size-16 rounded border"
-                            style={{ backgroundColor: user.brand_secondary_color }}
+                            style={{ backgroundColor: user.brand_background_color }}
                           />
-                          <p className="text-xs text-center">{user.brand_secondary_color}</p>
+                          <p className="text-xs text-center font-medium">Background</p>
+                          <p className="text-xs text-center text-muted-foreground">{user.brand_background_color}</p>
                         </div>
                       )}
-                      {user.brand_accent_color && (
+                      {user.brand_text_color && (
                         <div className="flex flex-col gap-2">
                           <div
                             className="size-16 rounded border"
-                            style={{ backgroundColor: user.brand_accent_color }}
+                            style={{ backgroundColor: user.brand_text_color }}
                           />
-                          <p className="text-xs text-center">{user.brand_accent_color}</p>
+                          <p className="text-xs text-center font-medium">Text</p>
+                          <p className="text-xs text-center text-muted-foreground">{user.brand_text_color}</p>
                         </div>
                       )}
                     </div>

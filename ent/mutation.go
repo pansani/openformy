@@ -9203,9 +9203,9 @@ type UserMutation struct {
 	verified                *bool
 	admin                   *bool
 	website_url             *string
-	brand_primary_color     *string
-	brand_secondary_color   *string
-	brand_accent_color      *string
+	brand_button_color      *string
+	brand_background_color  *string
+	brand_text_color        *string
 	brand_colors_status     *user.BrandColorsStatus
 	created_at              *time.Time
 	clearedFields           map[string]struct{}
@@ -9650,151 +9650,151 @@ func (m *UserMutation) ResetWebsiteURL() {
 	delete(m.clearedFields, user.FieldWebsiteURL)
 }
 
-// SetBrandPrimaryColor sets the "brand_primary_color" field.
-func (m *UserMutation) SetBrandPrimaryColor(s string) {
-	m.brand_primary_color = &s
+// SetBrandButtonColor sets the "brand_button_color" field.
+func (m *UserMutation) SetBrandButtonColor(s string) {
+	m.brand_button_color = &s
 }
 
-// BrandPrimaryColor returns the value of the "brand_primary_color" field in the mutation.
-func (m *UserMutation) BrandPrimaryColor() (r string, exists bool) {
-	v := m.brand_primary_color
+// BrandButtonColor returns the value of the "brand_button_color" field in the mutation.
+func (m *UserMutation) BrandButtonColor() (r string, exists bool) {
+	v := m.brand_button_color
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldBrandPrimaryColor returns the old "brand_primary_color" field's value of the User entity.
+// OldBrandButtonColor returns the old "brand_button_color" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldBrandPrimaryColor(ctx context.Context) (v string, err error) {
+func (m *UserMutation) OldBrandButtonColor(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBrandPrimaryColor is only allowed on UpdateOne operations")
+		return v, errors.New("OldBrandButtonColor is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBrandPrimaryColor requires an ID field in the mutation")
+		return v, errors.New("OldBrandButtonColor requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBrandPrimaryColor: %w", err)
+		return v, fmt.Errorf("querying old value for OldBrandButtonColor: %w", err)
 	}
-	return oldValue.BrandPrimaryColor, nil
+	return oldValue.BrandButtonColor, nil
 }
 
-// ClearBrandPrimaryColor clears the value of the "brand_primary_color" field.
-func (m *UserMutation) ClearBrandPrimaryColor() {
-	m.brand_primary_color = nil
-	m.clearedFields[user.FieldBrandPrimaryColor] = struct{}{}
+// ClearBrandButtonColor clears the value of the "brand_button_color" field.
+func (m *UserMutation) ClearBrandButtonColor() {
+	m.brand_button_color = nil
+	m.clearedFields[user.FieldBrandButtonColor] = struct{}{}
 }
 
-// BrandPrimaryColorCleared returns if the "brand_primary_color" field was cleared in this mutation.
-func (m *UserMutation) BrandPrimaryColorCleared() bool {
-	_, ok := m.clearedFields[user.FieldBrandPrimaryColor]
+// BrandButtonColorCleared returns if the "brand_button_color" field was cleared in this mutation.
+func (m *UserMutation) BrandButtonColorCleared() bool {
+	_, ok := m.clearedFields[user.FieldBrandButtonColor]
 	return ok
 }
 
-// ResetBrandPrimaryColor resets all changes to the "brand_primary_color" field.
-func (m *UserMutation) ResetBrandPrimaryColor() {
-	m.brand_primary_color = nil
-	delete(m.clearedFields, user.FieldBrandPrimaryColor)
+// ResetBrandButtonColor resets all changes to the "brand_button_color" field.
+func (m *UserMutation) ResetBrandButtonColor() {
+	m.brand_button_color = nil
+	delete(m.clearedFields, user.FieldBrandButtonColor)
 }
 
-// SetBrandSecondaryColor sets the "brand_secondary_color" field.
-func (m *UserMutation) SetBrandSecondaryColor(s string) {
-	m.brand_secondary_color = &s
+// SetBrandBackgroundColor sets the "brand_background_color" field.
+func (m *UserMutation) SetBrandBackgroundColor(s string) {
+	m.brand_background_color = &s
 }
 
-// BrandSecondaryColor returns the value of the "brand_secondary_color" field in the mutation.
-func (m *UserMutation) BrandSecondaryColor() (r string, exists bool) {
-	v := m.brand_secondary_color
+// BrandBackgroundColor returns the value of the "brand_background_color" field in the mutation.
+func (m *UserMutation) BrandBackgroundColor() (r string, exists bool) {
+	v := m.brand_background_color
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldBrandSecondaryColor returns the old "brand_secondary_color" field's value of the User entity.
+// OldBrandBackgroundColor returns the old "brand_background_color" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldBrandSecondaryColor(ctx context.Context) (v string, err error) {
+func (m *UserMutation) OldBrandBackgroundColor(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBrandSecondaryColor is only allowed on UpdateOne operations")
+		return v, errors.New("OldBrandBackgroundColor is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBrandSecondaryColor requires an ID field in the mutation")
+		return v, errors.New("OldBrandBackgroundColor requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBrandSecondaryColor: %w", err)
+		return v, fmt.Errorf("querying old value for OldBrandBackgroundColor: %w", err)
 	}
-	return oldValue.BrandSecondaryColor, nil
+	return oldValue.BrandBackgroundColor, nil
 }
 
-// ClearBrandSecondaryColor clears the value of the "brand_secondary_color" field.
-func (m *UserMutation) ClearBrandSecondaryColor() {
-	m.brand_secondary_color = nil
-	m.clearedFields[user.FieldBrandSecondaryColor] = struct{}{}
+// ClearBrandBackgroundColor clears the value of the "brand_background_color" field.
+func (m *UserMutation) ClearBrandBackgroundColor() {
+	m.brand_background_color = nil
+	m.clearedFields[user.FieldBrandBackgroundColor] = struct{}{}
 }
 
-// BrandSecondaryColorCleared returns if the "brand_secondary_color" field was cleared in this mutation.
-func (m *UserMutation) BrandSecondaryColorCleared() bool {
-	_, ok := m.clearedFields[user.FieldBrandSecondaryColor]
+// BrandBackgroundColorCleared returns if the "brand_background_color" field was cleared in this mutation.
+func (m *UserMutation) BrandBackgroundColorCleared() bool {
+	_, ok := m.clearedFields[user.FieldBrandBackgroundColor]
 	return ok
 }
 
-// ResetBrandSecondaryColor resets all changes to the "brand_secondary_color" field.
-func (m *UserMutation) ResetBrandSecondaryColor() {
-	m.brand_secondary_color = nil
-	delete(m.clearedFields, user.FieldBrandSecondaryColor)
+// ResetBrandBackgroundColor resets all changes to the "brand_background_color" field.
+func (m *UserMutation) ResetBrandBackgroundColor() {
+	m.brand_background_color = nil
+	delete(m.clearedFields, user.FieldBrandBackgroundColor)
 }
 
-// SetBrandAccentColor sets the "brand_accent_color" field.
-func (m *UserMutation) SetBrandAccentColor(s string) {
-	m.brand_accent_color = &s
+// SetBrandTextColor sets the "brand_text_color" field.
+func (m *UserMutation) SetBrandTextColor(s string) {
+	m.brand_text_color = &s
 }
 
-// BrandAccentColor returns the value of the "brand_accent_color" field in the mutation.
-func (m *UserMutation) BrandAccentColor() (r string, exists bool) {
-	v := m.brand_accent_color
+// BrandTextColor returns the value of the "brand_text_color" field in the mutation.
+func (m *UserMutation) BrandTextColor() (r string, exists bool) {
+	v := m.brand_text_color
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldBrandAccentColor returns the old "brand_accent_color" field's value of the User entity.
+// OldBrandTextColor returns the old "brand_text_color" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldBrandAccentColor(ctx context.Context) (v string, err error) {
+func (m *UserMutation) OldBrandTextColor(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBrandAccentColor is only allowed on UpdateOne operations")
+		return v, errors.New("OldBrandTextColor is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBrandAccentColor requires an ID field in the mutation")
+		return v, errors.New("OldBrandTextColor requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBrandAccentColor: %w", err)
+		return v, fmt.Errorf("querying old value for OldBrandTextColor: %w", err)
 	}
-	return oldValue.BrandAccentColor, nil
+	return oldValue.BrandTextColor, nil
 }
 
-// ClearBrandAccentColor clears the value of the "brand_accent_color" field.
-func (m *UserMutation) ClearBrandAccentColor() {
-	m.brand_accent_color = nil
-	m.clearedFields[user.FieldBrandAccentColor] = struct{}{}
+// ClearBrandTextColor clears the value of the "brand_text_color" field.
+func (m *UserMutation) ClearBrandTextColor() {
+	m.brand_text_color = nil
+	m.clearedFields[user.FieldBrandTextColor] = struct{}{}
 }
 
-// BrandAccentColorCleared returns if the "brand_accent_color" field was cleared in this mutation.
-func (m *UserMutation) BrandAccentColorCleared() bool {
-	_, ok := m.clearedFields[user.FieldBrandAccentColor]
+// BrandTextColorCleared returns if the "brand_text_color" field was cleared in this mutation.
+func (m *UserMutation) BrandTextColorCleared() bool {
+	_, ok := m.clearedFields[user.FieldBrandTextColor]
 	return ok
 }
 
-// ResetBrandAccentColor resets all changes to the "brand_accent_color" field.
-func (m *UserMutation) ResetBrandAccentColor() {
-	m.brand_accent_color = nil
-	delete(m.clearedFields, user.FieldBrandAccentColor)
+// ResetBrandTextColor resets all changes to the "brand_text_color" field.
+func (m *UserMutation) ResetBrandTextColor() {
+	m.brand_text_color = nil
+	delete(m.clearedFields, user.FieldBrandTextColor)
 }
 
 // SetBrandColorsStatus sets the "brand_colors_status" field.
@@ -10142,14 +10142,14 @@ func (m *UserMutation) Fields() []string {
 	if m.website_url != nil {
 		fields = append(fields, user.FieldWebsiteURL)
 	}
-	if m.brand_primary_color != nil {
-		fields = append(fields, user.FieldBrandPrimaryColor)
+	if m.brand_button_color != nil {
+		fields = append(fields, user.FieldBrandButtonColor)
 	}
-	if m.brand_secondary_color != nil {
-		fields = append(fields, user.FieldBrandSecondaryColor)
+	if m.brand_background_color != nil {
+		fields = append(fields, user.FieldBrandBackgroundColor)
 	}
-	if m.brand_accent_color != nil {
-		fields = append(fields, user.FieldBrandAccentColor)
+	if m.brand_text_color != nil {
+		fields = append(fields, user.FieldBrandTextColor)
 	}
 	if m.brand_colors_status != nil {
 		fields = append(fields, user.FieldBrandColorsStatus)
@@ -10181,12 +10181,12 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Admin()
 	case user.FieldWebsiteURL:
 		return m.WebsiteURL()
-	case user.FieldBrandPrimaryColor:
-		return m.BrandPrimaryColor()
-	case user.FieldBrandSecondaryColor:
-		return m.BrandSecondaryColor()
-	case user.FieldBrandAccentColor:
-		return m.BrandAccentColor()
+	case user.FieldBrandButtonColor:
+		return m.BrandButtonColor()
+	case user.FieldBrandBackgroundColor:
+		return m.BrandBackgroundColor()
+	case user.FieldBrandTextColor:
+		return m.BrandTextColor()
 	case user.FieldBrandColorsStatus:
 		return m.BrandColorsStatus()
 	case user.FieldCreatedAt:
@@ -10216,12 +10216,12 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldAdmin(ctx)
 	case user.FieldWebsiteURL:
 		return m.OldWebsiteURL(ctx)
-	case user.FieldBrandPrimaryColor:
-		return m.OldBrandPrimaryColor(ctx)
-	case user.FieldBrandSecondaryColor:
-		return m.OldBrandSecondaryColor(ctx)
-	case user.FieldBrandAccentColor:
-		return m.OldBrandAccentColor(ctx)
+	case user.FieldBrandButtonColor:
+		return m.OldBrandButtonColor(ctx)
+	case user.FieldBrandBackgroundColor:
+		return m.OldBrandBackgroundColor(ctx)
+	case user.FieldBrandTextColor:
+		return m.OldBrandTextColor(ctx)
 	case user.FieldBrandColorsStatus:
 		return m.OldBrandColorsStatus(ctx)
 	case user.FieldCreatedAt:
@@ -10291,26 +10291,26 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetWebsiteURL(v)
 		return nil
-	case user.FieldBrandPrimaryColor:
+	case user.FieldBrandButtonColor:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetBrandPrimaryColor(v)
+		m.SetBrandButtonColor(v)
 		return nil
-	case user.FieldBrandSecondaryColor:
+	case user.FieldBrandBackgroundColor:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetBrandSecondaryColor(v)
+		m.SetBrandBackgroundColor(v)
 		return nil
-	case user.FieldBrandAccentColor:
+	case user.FieldBrandTextColor:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetBrandAccentColor(v)
+		m.SetBrandTextColor(v)
 		return nil
 	case user.FieldBrandColorsStatus:
 		v, ok := value.(user.BrandColorsStatus)
@@ -10365,14 +10365,14 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldWebsiteURL) {
 		fields = append(fields, user.FieldWebsiteURL)
 	}
-	if m.FieldCleared(user.FieldBrandPrimaryColor) {
-		fields = append(fields, user.FieldBrandPrimaryColor)
+	if m.FieldCleared(user.FieldBrandButtonColor) {
+		fields = append(fields, user.FieldBrandButtonColor)
 	}
-	if m.FieldCleared(user.FieldBrandSecondaryColor) {
-		fields = append(fields, user.FieldBrandSecondaryColor)
+	if m.FieldCleared(user.FieldBrandBackgroundColor) {
+		fields = append(fields, user.FieldBrandBackgroundColor)
 	}
-	if m.FieldCleared(user.FieldBrandAccentColor) {
-		fields = append(fields, user.FieldBrandAccentColor)
+	if m.FieldCleared(user.FieldBrandTextColor) {
+		fields = append(fields, user.FieldBrandTextColor)
 	}
 	if m.FieldCleared(user.FieldBrandColorsStatus) {
 		fields = append(fields, user.FieldBrandColorsStatus)
@@ -10400,14 +10400,14 @@ func (m *UserMutation) ClearField(name string) error {
 	case user.FieldWebsiteURL:
 		m.ClearWebsiteURL()
 		return nil
-	case user.FieldBrandPrimaryColor:
-		m.ClearBrandPrimaryColor()
+	case user.FieldBrandButtonColor:
+		m.ClearBrandButtonColor()
 		return nil
-	case user.FieldBrandSecondaryColor:
-		m.ClearBrandSecondaryColor()
+	case user.FieldBrandBackgroundColor:
+		m.ClearBrandBackgroundColor()
 		return nil
-	case user.FieldBrandAccentColor:
-		m.ClearBrandAccentColor()
+	case user.FieldBrandTextColor:
+		m.ClearBrandTextColor()
 		return nil
 	case user.FieldBrandColorsStatus:
 		m.ClearBrandColorsStatus()
@@ -10444,14 +10444,14 @@ func (m *UserMutation) ResetField(name string) error {
 	case user.FieldWebsiteURL:
 		m.ResetWebsiteURL()
 		return nil
-	case user.FieldBrandPrimaryColor:
-		m.ResetBrandPrimaryColor()
+	case user.FieldBrandButtonColor:
+		m.ResetBrandButtonColor()
 		return nil
-	case user.FieldBrandSecondaryColor:
-		m.ResetBrandSecondaryColor()
+	case user.FieldBrandBackgroundColor:
+		m.ResetBrandBackgroundColor()
 		return nil
-	case user.FieldBrandAccentColor:
-		m.ResetBrandAccentColor()
+	case user.FieldBrandTextColor:
+		m.ResetBrandTextColor()
 		return nil
 	case user.FieldBrandColorsStatus:
 		m.ResetBrandColorsStatus()

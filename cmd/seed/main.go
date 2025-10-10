@@ -22,9 +22,9 @@ func main() {
 
 	fmt.Println("🌱 Seeding database...")
 
-	user, err := c.ORM.User.
+	u, err := c.ORM.User.
 		Create().
-		SetEmail("demo@example.com").
+		SetEmail(fmt.Sprintf("demo-%d@example.com", time.Now().Unix())).
 		SetName("Demo User").
 		SetPassword("password123").
 		SetVerified(true).
@@ -33,21 +33,21 @@ func main() {
 		fmt.Printf("❌ Failed to create user: %v\n", err)
 		return
 	}
-	fmt.Printf("✅ Created user: %s\n", user.Email)
+	fmt.Printf("✅ Created user: %s (ID: %d)\n", u.Email, u.ID)
 
 	contactForm, err := c.ORM.Form.
 		Create().
 		SetTitle("Contact Us").
 		SetDescription("Get in touch with our team").
-		SetSlug("contact-us").
+		SetSlug(fmt.Sprintf("contact-us-%d", time.Now().Unix())).
 		SetPublished(true).
-		SetOwner(user).
+		SetOwner(u).
 		Save(ctx)
 	if err != nil {
 		fmt.Printf("❌ Failed to create contact form: %v\n", err)
 		return
 	}
-	fmt.Printf("✅ Created form: %s (published)\n", contactForm.Title)
+	fmt.Printf("✅ Created form: %s (published) - slug: %s\n", contactForm.Title, contactForm.Slug)
 
 	questions := []struct {
 		Type        question.Type
@@ -128,15 +128,15 @@ func main() {
 		Create().
 		SetTitle("Customer Satisfaction Survey").
 		SetDescription("Help us improve our service").
-		SetSlug("customer-satisfaction").
+		SetSlug(fmt.Sprintf("customer-satisfaction-%d", time.Now().Unix())).
 		SetPublished(true).
-		SetOwner(user).
+		SetOwner(u).
 		Save(ctx)
 	if err != nil {
 		fmt.Printf("❌ Failed to create survey form: %v\n", err)
 		return
 	}
-	fmt.Printf("✅ Created form: %s (published)\n", surveyForm.Title)
+	fmt.Printf("✅ Created form: %s (published) - slug: %s\n", surveyForm.Title, surveyForm.Slug)
 
 	surveyQuestions := []struct {
 		Type        question.Type
@@ -209,7 +209,7 @@ func main() {
 		SetDescription("Register for our upcoming event").
 		SetSlug(fmt.Sprintf("event-registration-%d", time.Now().Unix())).
 		SetPublished(false).
-		SetOwner(user).
+		SetOwner(u).
 		Save(ctx)
 	if err != nil {
 		fmt.Printf("❌ Failed to create draft form: %v\n", err)
@@ -219,11 +219,11 @@ func main() {
 
 	fmt.Println("\n🎉 Database seeded successfully!")
 	fmt.Println("\n📋 Forms created:")
-	fmt.Printf("   • Contact Us: /f/contact-us\n")
-	fmt.Printf("   • Customer Satisfaction: /f/customer-satisfaction\n")
+	fmt.Printf("   • Contact Us: /%s\n", contactForm.Slug)
+	fmt.Printf("   • Customer Satisfaction: /%s\n", surveyForm.Slug)
 	fmt.Printf("   • Event Registration: (draft, not publicly accessible)\n")
-	fmt.Println("\n👤 Demo user credentials:")
-	fmt.Printf("   Email: demo@example.com\n")
+	fmt.Println("\n👤 Login credentials:")
+	fmt.Printf("   Email: %s\n", u.Email)
 	fmt.Printf("   Password: password123\n")
 	fmt.Println("")
 }

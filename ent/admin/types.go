@@ -124,19 +124,19 @@ type Subscription struct {
 }
 
 type User struct {
-	Name                string                  `form:"name"`
-	Email               string                  `form:"email"`
-	Password            *string                 `form:"password"`
-	Username            *string                 `form:"username"`
-	CompanyName         *string                 `form:"company_name"`
-	Verified            bool                    `form:"verified"`
-	Admin               bool                    `form:"admin"`
-	WebsiteURL          *string                 `form:"website_url"`
-	BrandPrimaryColor   *string                 `form:"brand_primary_color"`
-	BrandSecondaryColor *string                 `form:"brand_secondary_color"`
-	BrandAccentColor    *string                 `form:"brand_accent_color"`
-	BrandColorsStatus   *user.BrandColorsStatus `form:"brand_colors_status"`
-	CreatedAt           *time.Time              `form:"created_at"`
+	Name                 string                  `form:"name"`
+	Email                string                  `form:"email"`
+	Password             *string                 `form:"password"`
+	Username             *string                 `form:"username"`
+	CompanyName          *string                 `form:"company_name"`
+	Verified             bool                    `form:"verified"`
+	Admin                bool                    `form:"admin"`
+	WebsiteURL           *string                 `form:"website_url"`
+	BrandButtonColor     *string                 `form:"brand_button_color"`
+	BrandBackgroundColor *string                 `form:"brand_background_color"`
+	BrandTextColor       *string                 `form:"brand_text_color"`
+	BrandColorsStatus    *user.BrandColorsStatus `form:"brand_colors_status"`
+	CreatedAt            *time.Time              `form:"created_at"`
 }
 
 type EntityList struct {

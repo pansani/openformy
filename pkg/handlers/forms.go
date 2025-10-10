@@ -365,12 +365,23 @@ func (h *Forms) View(ctx echo.Context) error {
 		})
 	}
 
+	fmt.Printf("=== FORM VIEW HANDLER ===\n")
+	fmt.Printf("User ID: %d\n", foundUser.ID)
+	fmt.Printf("Button Color: %s\n", foundUser.BrandButtonColor)
+	fmt.Printf("Background Color: %s\n", foundUser.BrandBackgroundColor)
+	fmt.Printf("Text Color: %s\n", foundUser.BrandTextColor)
+
 	err = h.Inertia.Render(
 		ctx.Response().Writer,
 		ctx.Request(),
 		"Forms/View",
 		inertia.Props{
 			"form": formData,
+			"brandColors": map[string]string{
+				"button":     foundUser.BrandButtonColor,
+				"background": foundUser.BrandBackgroundColor,
+				"text":       foundUser.BrandTextColor,
+			},
 		},
 	)
 	if err != nil {

@@ -161,63 +161,63 @@ func (uu *UserUpdate) ClearWebsiteURL() *UserUpdate {
 	return uu
 }
 
-// SetBrandPrimaryColor sets the "brand_primary_color" field.
-func (uu *UserUpdate) SetBrandPrimaryColor(s string) *UserUpdate {
-	uu.mutation.SetBrandPrimaryColor(s)
+// SetBrandButtonColor sets the "brand_button_color" field.
+func (uu *UserUpdate) SetBrandButtonColor(s string) *UserUpdate {
+	uu.mutation.SetBrandButtonColor(s)
 	return uu
 }
 
-// SetNillableBrandPrimaryColor sets the "brand_primary_color" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableBrandPrimaryColor(s *string) *UserUpdate {
+// SetNillableBrandButtonColor sets the "brand_button_color" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableBrandButtonColor(s *string) *UserUpdate {
 	if s != nil {
-		uu.SetBrandPrimaryColor(*s)
+		uu.SetBrandButtonColor(*s)
 	}
 	return uu
 }
 
-// ClearBrandPrimaryColor clears the value of the "brand_primary_color" field.
-func (uu *UserUpdate) ClearBrandPrimaryColor() *UserUpdate {
-	uu.mutation.ClearBrandPrimaryColor()
+// ClearBrandButtonColor clears the value of the "brand_button_color" field.
+func (uu *UserUpdate) ClearBrandButtonColor() *UserUpdate {
+	uu.mutation.ClearBrandButtonColor()
 	return uu
 }
 
-// SetBrandSecondaryColor sets the "brand_secondary_color" field.
-func (uu *UserUpdate) SetBrandSecondaryColor(s string) *UserUpdate {
-	uu.mutation.SetBrandSecondaryColor(s)
+// SetBrandBackgroundColor sets the "brand_background_color" field.
+func (uu *UserUpdate) SetBrandBackgroundColor(s string) *UserUpdate {
+	uu.mutation.SetBrandBackgroundColor(s)
 	return uu
 }
 
-// SetNillableBrandSecondaryColor sets the "brand_secondary_color" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableBrandSecondaryColor(s *string) *UserUpdate {
+// SetNillableBrandBackgroundColor sets the "brand_background_color" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableBrandBackgroundColor(s *string) *UserUpdate {
 	if s != nil {
-		uu.SetBrandSecondaryColor(*s)
+		uu.SetBrandBackgroundColor(*s)
 	}
 	return uu
 }
 
-// ClearBrandSecondaryColor clears the value of the "brand_secondary_color" field.
-func (uu *UserUpdate) ClearBrandSecondaryColor() *UserUpdate {
-	uu.mutation.ClearBrandSecondaryColor()
+// ClearBrandBackgroundColor clears the value of the "brand_background_color" field.
+func (uu *UserUpdate) ClearBrandBackgroundColor() *UserUpdate {
+	uu.mutation.ClearBrandBackgroundColor()
 	return uu
 }
 
-// SetBrandAccentColor sets the "brand_accent_color" field.
-func (uu *UserUpdate) SetBrandAccentColor(s string) *UserUpdate {
-	uu.mutation.SetBrandAccentColor(s)
+// SetBrandTextColor sets the "brand_text_color" field.
+func (uu *UserUpdate) SetBrandTextColor(s string) *UserUpdate {
+	uu.mutation.SetBrandTextColor(s)
 	return uu
 }
 
-// SetNillableBrandAccentColor sets the "brand_accent_color" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableBrandAccentColor(s *string) *UserUpdate {
+// SetNillableBrandTextColor sets the "brand_text_color" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableBrandTextColor(s *string) *UserUpdate {
 	if s != nil {
-		uu.SetBrandAccentColor(*s)
+		uu.SetBrandTextColor(*s)
 	}
 	return uu
 }
 
-// ClearBrandAccentColor clears the value of the "brand_accent_color" field.
-func (uu *UserUpdate) ClearBrandAccentColor() *UserUpdate {
-	uu.mutation.ClearBrandAccentColor()
+// ClearBrandTextColor clears the value of the "brand_text_color" field.
+func (uu *UserUpdate) ClearBrandTextColor() *UserUpdate {
+	uu.mutation.ClearBrandTextColor()
 	return uu
 }
 
@@ -476,23 +476,23 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if uu.mutation.WebsiteURLCleared() {
 		_spec.ClearField(user.FieldWebsiteURL, field.TypeString)
 	}
-	if value, ok := uu.mutation.BrandPrimaryColor(); ok {
-		_spec.SetField(user.FieldBrandPrimaryColor, field.TypeString, value)
+	if value, ok := uu.mutation.BrandButtonColor(); ok {
+		_spec.SetField(user.FieldBrandButtonColor, field.TypeString, value)
 	}
-	if uu.mutation.BrandPrimaryColorCleared() {
-		_spec.ClearField(user.FieldBrandPrimaryColor, field.TypeString)
+	if uu.mutation.BrandButtonColorCleared() {
+		_spec.ClearField(user.FieldBrandButtonColor, field.TypeString)
 	}
-	if value, ok := uu.mutation.BrandSecondaryColor(); ok {
-		_spec.SetField(user.FieldBrandSecondaryColor, field.TypeString, value)
+	if value, ok := uu.mutation.BrandBackgroundColor(); ok {
+		_spec.SetField(user.FieldBrandBackgroundColor, field.TypeString, value)
 	}
-	if uu.mutation.BrandSecondaryColorCleared() {
-		_spec.ClearField(user.FieldBrandSecondaryColor, field.TypeString)
+	if uu.mutation.BrandBackgroundColorCleared() {
+		_spec.ClearField(user.FieldBrandBackgroundColor, field.TypeString)
 	}
-	if value, ok := uu.mutation.BrandAccentColor(); ok {
-		_spec.SetField(user.FieldBrandAccentColor, field.TypeString, value)
+	if value, ok := uu.mutation.BrandTextColor(); ok {
+		_spec.SetField(user.FieldBrandTextColor, field.TypeString, value)
 	}
-	if uu.mutation.BrandAccentColorCleared() {
-		_spec.ClearField(user.FieldBrandAccentColor, field.TypeString)
+	if uu.mutation.BrandTextColorCleared() {
+		_spec.ClearField(user.FieldBrandTextColor, field.TypeString)
 	}
 	if value, ok := uu.mutation.BrandColorsStatus(); ok {
 		_spec.SetField(user.FieldBrandColorsStatus, field.TypeEnum, value)
@@ -814,63 +814,63 @@ func (uuo *UserUpdateOne) ClearWebsiteURL() *UserUpdateOne {
 	return uuo
 }
 
-// SetBrandPrimaryColor sets the "brand_primary_color" field.
-func (uuo *UserUpdateOne) SetBrandPrimaryColor(s string) *UserUpdateOne {
-	uuo.mutation.SetBrandPrimaryColor(s)
+// SetBrandButtonColor sets the "brand_button_color" field.
+func (uuo *UserUpdateOne) SetBrandButtonColor(s string) *UserUpdateOne {
+	uuo.mutation.SetBrandButtonColor(s)
 	return uuo
 }
 
-// SetNillableBrandPrimaryColor sets the "brand_primary_color" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableBrandPrimaryColor(s *string) *UserUpdateOne {
+// SetNillableBrandButtonColor sets the "brand_button_color" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableBrandButtonColor(s *string) *UserUpdateOne {
 	if s != nil {
-		uuo.SetBrandPrimaryColor(*s)
+		uuo.SetBrandButtonColor(*s)
 	}
 	return uuo
 }
 
-// ClearBrandPrimaryColor clears the value of the "brand_primary_color" field.
-func (uuo *UserUpdateOne) ClearBrandPrimaryColor() *UserUpdateOne {
-	uuo.mutation.ClearBrandPrimaryColor()
+// ClearBrandButtonColor clears the value of the "brand_button_color" field.
+func (uuo *UserUpdateOne) ClearBrandButtonColor() *UserUpdateOne {
+	uuo.mutation.ClearBrandButtonColor()
 	return uuo
 }
 
-// SetBrandSecondaryColor sets the "brand_secondary_color" field.
-func (uuo *UserUpdateOne) SetBrandSecondaryColor(s string) *UserUpdateOne {
-	uuo.mutation.SetBrandSecondaryColor(s)
+// SetBrandBackgroundColor sets the "brand_background_color" field.
+func (uuo *UserUpdateOne) SetBrandBackgroundColor(s string) *UserUpdateOne {
+	uuo.mutation.SetBrandBackgroundColor(s)
 	return uuo
 }
 
-// SetNillableBrandSecondaryColor sets the "brand_secondary_color" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableBrandSecondaryColor(s *string) *UserUpdateOne {
+// SetNillableBrandBackgroundColor sets the "brand_background_color" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableBrandBackgroundColor(s *string) *UserUpdateOne {
 	if s != nil {
-		uuo.SetBrandSecondaryColor(*s)
+		uuo.SetBrandBackgroundColor(*s)
 	}
 	return uuo
 }
 
-// ClearBrandSecondaryColor clears the value of the "brand_secondary_color" field.
-func (uuo *UserUpdateOne) ClearBrandSecondaryColor() *UserUpdateOne {
-	uuo.mutation.ClearBrandSecondaryColor()
+// ClearBrandBackgroundColor clears the value of the "brand_background_color" field.
+func (uuo *UserUpdateOne) ClearBrandBackgroundColor() *UserUpdateOne {
+	uuo.mutation.ClearBrandBackgroundColor()
 	return uuo
 }
 
-// SetBrandAccentColor sets the "brand_accent_color" field.
-func (uuo *UserUpdateOne) SetBrandAccentColor(s string) *UserUpdateOne {
-	uuo.mutation.SetBrandAccentColor(s)
+// SetBrandTextColor sets the "brand_text_color" field.
+func (uuo *UserUpdateOne) SetBrandTextColor(s string) *UserUpdateOne {
+	uuo.mutation.SetBrandTextColor(s)
 	return uuo
 }
 
-// SetNillableBrandAccentColor sets the "brand_accent_color" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableBrandAccentColor(s *string) *UserUpdateOne {
+// SetNillableBrandTextColor sets the "brand_text_color" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableBrandTextColor(s *string) *UserUpdateOne {
 	if s != nil {
-		uuo.SetBrandAccentColor(*s)
+		uuo.SetBrandTextColor(*s)
 	}
 	return uuo
 }
 
-// ClearBrandAccentColor clears the value of the "brand_accent_color" field.
-func (uuo *UserUpdateOne) ClearBrandAccentColor() *UserUpdateOne {
-	uuo.mutation.ClearBrandAccentColor()
+// ClearBrandTextColor clears the value of the "brand_text_color" field.
+func (uuo *UserUpdateOne) ClearBrandTextColor() *UserUpdateOne {
+	uuo.mutation.ClearBrandTextColor()
 	return uuo
 }
 
@@ -1159,23 +1159,23 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if uuo.mutation.WebsiteURLCleared() {
 		_spec.ClearField(user.FieldWebsiteURL, field.TypeString)
 	}
-	if value, ok := uuo.mutation.BrandPrimaryColor(); ok {
-		_spec.SetField(user.FieldBrandPrimaryColor, field.TypeString, value)
+	if value, ok := uuo.mutation.BrandButtonColor(); ok {
+		_spec.SetField(user.FieldBrandButtonColor, field.TypeString, value)
 	}
-	if uuo.mutation.BrandPrimaryColorCleared() {
-		_spec.ClearField(user.FieldBrandPrimaryColor, field.TypeString)
+	if uuo.mutation.BrandButtonColorCleared() {
+		_spec.ClearField(user.FieldBrandButtonColor, field.TypeString)
 	}
-	if value, ok := uuo.mutation.BrandSecondaryColor(); ok {
-		_spec.SetField(user.FieldBrandSecondaryColor, field.TypeString, value)
+	if value, ok := uuo.mutation.BrandBackgroundColor(); ok {
+		_spec.SetField(user.FieldBrandBackgroundColor, field.TypeString, value)
 	}
-	if uuo.mutation.BrandSecondaryColorCleared() {
-		_spec.ClearField(user.FieldBrandSecondaryColor, field.TypeString)
+	if uuo.mutation.BrandBackgroundColorCleared() {
+		_spec.ClearField(user.FieldBrandBackgroundColor, field.TypeString)
 	}
-	if value, ok := uuo.mutation.BrandAccentColor(); ok {
-		_spec.SetField(user.FieldBrandAccentColor, field.TypeString, value)
+	if value, ok := uuo.mutation.BrandTextColor(); ok {
+		_spec.SetField(user.FieldBrandTextColor, field.TypeString, value)
 	}
-	if uuo.mutation.BrandAccentColorCleared() {
-		_spec.ClearField(user.FieldBrandAccentColor, field.TypeString)
+	if uuo.mutation.BrandTextColorCleared() {
+		_spec.ClearField(user.FieldBrandTextColor, field.TypeString)
 	}
 	if value, ok := uuo.mutation.BrandColorsStatus(); ok {
 		_spec.SetField(user.FieldBrandColorsStatus, field.TypeEnum, value)

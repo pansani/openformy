@@ -32,12 +32,12 @@ const (
 	FieldAdmin = "admin"
 	// FieldWebsiteURL holds the string denoting the website_url field in the database.
 	FieldWebsiteURL = "website_url"
-	// FieldBrandPrimaryColor holds the string denoting the brand_primary_color field in the database.
-	FieldBrandPrimaryColor = "brand_primary_color"
-	// FieldBrandSecondaryColor holds the string denoting the brand_secondary_color field in the database.
-	FieldBrandSecondaryColor = "brand_secondary_color"
-	// FieldBrandAccentColor holds the string denoting the brand_accent_color field in the database.
-	FieldBrandAccentColor = "brand_accent_color"
+	// FieldBrandButtonColor holds the string denoting the brand_button_color field in the database.
+	FieldBrandButtonColor = "brand_button_color"
+	// FieldBrandBackgroundColor holds the string denoting the brand_background_color field in the database.
+	FieldBrandBackgroundColor = "brand_background_color"
+	// FieldBrandTextColor holds the string denoting the brand_text_color field in the database.
+	FieldBrandTextColor = "brand_text_color"
 	// FieldBrandColorsStatus holds the string denoting the brand_colors_status field in the database.
 	FieldBrandColorsStatus = "brand_colors_status"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -93,9 +93,9 @@ var Columns = []string{
 	FieldVerified,
 	FieldAdmin,
 	FieldWebsiteURL,
-	FieldBrandPrimaryColor,
-	FieldBrandSecondaryColor,
-	FieldBrandAccentColor,
+	FieldBrandButtonColor,
+	FieldBrandBackgroundColor,
+	FieldBrandTextColor,
 	FieldBrandColorsStatus,
 	FieldCreatedAt,
 }
@@ -215,19 +215,19 @@ func ByWebsiteURL(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldWebsiteURL, opts...).ToFunc()
 }
 
-// ByBrandPrimaryColor orders the results by the brand_primary_color field.
-func ByBrandPrimaryColor(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBrandPrimaryColor, opts...).ToFunc()
+// ByBrandButtonColor orders the results by the brand_button_color field.
+func ByBrandButtonColor(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBrandButtonColor, opts...).ToFunc()
 }
 
-// ByBrandSecondaryColor orders the results by the brand_secondary_color field.
-func ByBrandSecondaryColor(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBrandSecondaryColor, opts...).ToFunc()
+// ByBrandBackgroundColor orders the results by the brand_background_color field.
+func ByBrandBackgroundColor(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBrandBackgroundColor, opts...).ToFunc()
 }
 
-// ByBrandAccentColor orders the results by the brand_accent_color field.
-func ByBrandAccentColor(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBrandAccentColor, opts...).ToFunc()
+// ByBrandTextColor orders the results by the brand_text_color field.
+func ByBrandTextColor(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBrandTextColor, opts...).ToFunc()
 }
 
 // ByBrandColorsStatus orders the results by the brand_colors_status field.

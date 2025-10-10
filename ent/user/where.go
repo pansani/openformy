@@ -95,19 +95,19 @@ func WebsiteURL(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldWebsiteURL, v))
 }
 
-// BrandPrimaryColor applies equality check predicate on the "brand_primary_color" field. It's identical to BrandPrimaryColorEQ.
-func BrandPrimaryColor(v string) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldBrandPrimaryColor, v))
+// BrandButtonColor applies equality check predicate on the "brand_button_color" field. It's identical to BrandButtonColorEQ.
+func BrandButtonColor(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldBrandButtonColor, v))
 }
 
-// BrandSecondaryColor applies equality check predicate on the "brand_secondary_color" field. It's identical to BrandSecondaryColorEQ.
-func BrandSecondaryColor(v string) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldBrandSecondaryColor, v))
+// BrandBackgroundColor applies equality check predicate on the "brand_background_color" field. It's identical to BrandBackgroundColorEQ.
+func BrandBackgroundColor(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldBrandBackgroundColor, v))
 }
 
-// BrandAccentColor applies equality check predicate on the "brand_accent_color" field. It's identical to BrandAccentColorEQ.
-func BrandAccentColor(v string) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldBrandAccentColor, v))
+// BrandTextColor applies equality check predicate on the "brand_text_color" field. It's identical to BrandTextColorEQ.
+func BrandTextColor(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldBrandTextColor, v))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
@@ -555,229 +555,229 @@ func WebsiteURLContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldWebsiteURL, v))
 }
 
-// BrandPrimaryColorEQ applies the EQ predicate on the "brand_primary_color" field.
-func BrandPrimaryColorEQ(v string) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldBrandPrimaryColor, v))
+// BrandButtonColorEQ applies the EQ predicate on the "brand_button_color" field.
+func BrandButtonColorEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldBrandButtonColor, v))
 }
 
-// BrandPrimaryColorNEQ applies the NEQ predicate on the "brand_primary_color" field.
-func BrandPrimaryColorNEQ(v string) predicate.User {
-	return predicate.User(sql.FieldNEQ(FieldBrandPrimaryColor, v))
+// BrandButtonColorNEQ applies the NEQ predicate on the "brand_button_color" field.
+func BrandButtonColorNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldBrandButtonColor, v))
 }
 
-// BrandPrimaryColorIn applies the In predicate on the "brand_primary_color" field.
-func BrandPrimaryColorIn(vs ...string) predicate.User {
-	return predicate.User(sql.FieldIn(FieldBrandPrimaryColor, vs...))
+// BrandButtonColorIn applies the In predicate on the "brand_button_color" field.
+func BrandButtonColorIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldBrandButtonColor, vs...))
 }
 
-// BrandPrimaryColorNotIn applies the NotIn predicate on the "brand_primary_color" field.
-func BrandPrimaryColorNotIn(vs ...string) predicate.User {
-	return predicate.User(sql.FieldNotIn(FieldBrandPrimaryColor, vs...))
+// BrandButtonColorNotIn applies the NotIn predicate on the "brand_button_color" field.
+func BrandButtonColorNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldBrandButtonColor, vs...))
 }
 
-// BrandPrimaryColorGT applies the GT predicate on the "brand_primary_color" field.
-func BrandPrimaryColorGT(v string) predicate.User {
-	return predicate.User(sql.FieldGT(FieldBrandPrimaryColor, v))
+// BrandButtonColorGT applies the GT predicate on the "brand_button_color" field.
+func BrandButtonColorGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldBrandButtonColor, v))
 }
 
-// BrandPrimaryColorGTE applies the GTE predicate on the "brand_primary_color" field.
-func BrandPrimaryColorGTE(v string) predicate.User {
-	return predicate.User(sql.FieldGTE(FieldBrandPrimaryColor, v))
+// BrandButtonColorGTE applies the GTE predicate on the "brand_button_color" field.
+func BrandButtonColorGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldBrandButtonColor, v))
 }
 
-// BrandPrimaryColorLT applies the LT predicate on the "brand_primary_color" field.
-func BrandPrimaryColorLT(v string) predicate.User {
-	return predicate.User(sql.FieldLT(FieldBrandPrimaryColor, v))
+// BrandButtonColorLT applies the LT predicate on the "brand_button_color" field.
+func BrandButtonColorLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldBrandButtonColor, v))
 }
 
-// BrandPrimaryColorLTE applies the LTE predicate on the "brand_primary_color" field.
-func BrandPrimaryColorLTE(v string) predicate.User {
-	return predicate.User(sql.FieldLTE(FieldBrandPrimaryColor, v))
+// BrandButtonColorLTE applies the LTE predicate on the "brand_button_color" field.
+func BrandButtonColorLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldBrandButtonColor, v))
 }
 
-// BrandPrimaryColorContains applies the Contains predicate on the "brand_primary_color" field.
-func BrandPrimaryColorContains(v string) predicate.User {
-	return predicate.User(sql.FieldContains(FieldBrandPrimaryColor, v))
+// BrandButtonColorContains applies the Contains predicate on the "brand_button_color" field.
+func BrandButtonColorContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldBrandButtonColor, v))
 }
 
-// BrandPrimaryColorHasPrefix applies the HasPrefix predicate on the "brand_primary_color" field.
-func BrandPrimaryColorHasPrefix(v string) predicate.User {
-	return predicate.User(sql.FieldHasPrefix(FieldBrandPrimaryColor, v))
+// BrandButtonColorHasPrefix applies the HasPrefix predicate on the "brand_button_color" field.
+func BrandButtonColorHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldBrandButtonColor, v))
 }
 
-// BrandPrimaryColorHasSuffix applies the HasSuffix predicate on the "brand_primary_color" field.
-func BrandPrimaryColorHasSuffix(v string) predicate.User {
-	return predicate.User(sql.FieldHasSuffix(FieldBrandPrimaryColor, v))
+// BrandButtonColorHasSuffix applies the HasSuffix predicate on the "brand_button_color" field.
+func BrandButtonColorHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldBrandButtonColor, v))
 }
 
-// BrandPrimaryColorIsNil applies the IsNil predicate on the "brand_primary_color" field.
-func BrandPrimaryColorIsNil() predicate.User {
-	return predicate.User(sql.FieldIsNull(FieldBrandPrimaryColor))
+// BrandButtonColorIsNil applies the IsNil predicate on the "brand_button_color" field.
+func BrandButtonColorIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldBrandButtonColor))
 }
 
-// BrandPrimaryColorNotNil applies the NotNil predicate on the "brand_primary_color" field.
-func BrandPrimaryColorNotNil() predicate.User {
-	return predicate.User(sql.FieldNotNull(FieldBrandPrimaryColor))
+// BrandButtonColorNotNil applies the NotNil predicate on the "brand_button_color" field.
+func BrandButtonColorNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldBrandButtonColor))
 }
 
-// BrandPrimaryColorEqualFold applies the EqualFold predicate on the "brand_primary_color" field.
-func BrandPrimaryColorEqualFold(v string) predicate.User {
-	return predicate.User(sql.FieldEqualFold(FieldBrandPrimaryColor, v))
+// BrandButtonColorEqualFold applies the EqualFold predicate on the "brand_button_color" field.
+func BrandButtonColorEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldBrandButtonColor, v))
 }
 
-// BrandPrimaryColorContainsFold applies the ContainsFold predicate on the "brand_primary_color" field.
-func BrandPrimaryColorContainsFold(v string) predicate.User {
-	return predicate.User(sql.FieldContainsFold(FieldBrandPrimaryColor, v))
+// BrandButtonColorContainsFold applies the ContainsFold predicate on the "brand_button_color" field.
+func BrandButtonColorContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldBrandButtonColor, v))
 }
 
-// BrandSecondaryColorEQ applies the EQ predicate on the "brand_secondary_color" field.
-func BrandSecondaryColorEQ(v string) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldBrandSecondaryColor, v))
+// BrandBackgroundColorEQ applies the EQ predicate on the "brand_background_color" field.
+func BrandBackgroundColorEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldBrandBackgroundColor, v))
 }
 
-// BrandSecondaryColorNEQ applies the NEQ predicate on the "brand_secondary_color" field.
-func BrandSecondaryColorNEQ(v string) predicate.User {
-	return predicate.User(sql.FieldNEQ(FieldBrandSecondaryColor, v))
+// BrandBackgroundColorNEQ applies the NEQ predicate on the "brand_background_color" field.
+func BrandBackgroundColorNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldBrandBackgroundColor, v))
 }
 
-// BrandSecondaryColorIn applies the In predicate on the "brand_secondary_color" field.
-func BrandSecondaryColorIn(vs ...string) predicate.User {
-	return predicate.User(sql.FieldIn(FieldBrandSecondaryColor, vs...))
+// BrandBackgroundColorIn applies the In predicate on the "brand_background_color" field.
+func BrandBackgroundColorIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldBrandBackgroundColor, vs...))
 }
 
-// BrandSecondaryColorNotIn applies the NotIn predicate on the "brand_secondary_color" field.
-func BrandSecondaryColorNotIn(vs ...string) predicate.User {
-	return predicate.User(sql.FieldNotIn(FieldBrandSecondaryColor, vs...))
+// BrandBackgroundColorNotIn applies the NotIn predicate on the "brand_background_color" field.
+func BrandBackgroundColorNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldBrandBackgroundColor, vs...))
 }
 
-// BrandSecondaryColorGT applies the GT predicate on the "brand_secondary_color" field.
-func BrandSecondaryColorGT(v string) predicate.User {
-	return predicate.User(sql.FieldGT(FieldBrandSecondaryColor, v))
+// BrandBackgroundColorGT applies the GT predicate on the "brand_background_color" field.
+func BrandBackgroundColorGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldBrandBackgroundColor, v))
 }
 
-// BrandSecondaryColorGTE applies the GTE predicate on the "brand_secondary_color" field.
-func BrandSecondaryColorGTE(v string) predicate.User {
-	return predicate.User(sql.FieldGTE(FieldBrandSecondaryColor, v))
+// BrandBackgroundColorGTE applies the GTE predicate on the "brand_background_color" field.
+func BrandBackgroundColorGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldBrandBackgroundColor, v))
 }
 
-// BrandSecondaryColorLT applies the LT predicate on the "brand_secondary_color" field.
-func BrandSecondaryColorLT(v string) predicate.User {
-	return predicate.User(sql.FieldLT(FieldBrandSecondaryColor, v))
+// BrandBackgroundColorLT applies the LT predicate on the "brand_background_color" field.
+func BrandBackgroundColorLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldBrandBackgroundColor, v))
 }
 
-// BrandSecondaryColorLTE applies the LTE predicate on the "brand_secondary_color" field.
-func BrandSecondaryColorLTE(v string) predicate.User {
-	return predicate.User(sql.FieldLTE(FieldBrandSecondaryColor, v))
+// BrandBackgroundColorLTE applies the LTE predicate on the "brand_background_color" field.
+func BrandBackgroundColorLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldBrandBackgroundColor, v))
 }
 
-// BrandSecondaryColorContains applies the Contains predicate on the "brand_secondary_color" field.
-func BrandSecondaryColorContains(v string) predicate.User {
-	return predicate.User(sql.FieldContains(FieldBrandSecondaryColor, v))
+// BrandBackgroundColorContains applies the Contains predicate on the "brand_background_color" field.
+func BrandBackgroundColorContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldBrandBackgroundColor, v))
 }
 
-// BrandSecondaryColorHasPrefix applies the HasPrefix predicate on the "brand_secondary_color" field.
-func BrandSecondaryColorHasPrefix(v string) predicate.User {
-	return predicate.User(sql.FieldHasPrefix(FieldBrandSecondaryColor, v))
+// BrandBackgroundColorHasPrefix applies the HasPrefix predicate on the "brand_background_color" field.
+func BrandBackgroundColorHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldBrandBackgroundColor, v))
 }
 
-// BrandSecondaryColorHasSuffix applies the HasSuffix predicate on the "brand_secondary_color" field.
-func BrandSecondaryColorHasSuffix(v string) predicate.User {
-	return predicate.User(sql.FieldHasSuffix(FieldBrandSecondaryColor, v))
+// BrandBackgroundColorHasSuffix applies the HasSuffix predicate on the "brand_background_color" field.
+func BrandBackgroundColorHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldBrandBackgroundColor, v))
 }
 
-// BrandSecondaryColorIsNil applies the IsNil predicate on the "brand_secondary_color" field.
-func BrandSecondaryColorIsNil() predicate.User {
-	return predicate.User(sql.FieldIsNull(FieldBrandSecondaryColor))
+// BrandBackgroundColorIsNil applies the IsNil predicate on the "brand_background_color" field.
+func BrandBackgroundColorIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldBrandBackgroundColor))
 }
 
-// BrandSecondaryColorNotNil applies the NotNil predicate on the "brand_secondary_color" field.
-func BrandSecondaryColorNotNil() predicate.User {
-	return predicate.User(sql.FieldNotNull(FieldBrandSecondaryColor))
+// BrandBackgroundColorNotNil applies the NotNil predicate on the "brand_background_color" field.
+func BrandBackgroundColorNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldBrandBackgroundColor))
 }
 
-// BrandSecondaryColorEqualFold applies the EqualFold predicate on the "brand_secondary_color" field.
-func BrandSecondaryColorEqualFold(v string) predicate.User {
-	return predicate.User(sql.FieldEqualFold(FieldBrandSecondaryColor, v))
+// BrandBackgroundColorEqualFold applies the EqualFold predicate on the "brand_background_color" field.
+func BrandBackgroundColorEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldBrandBackgroundColor, v))
 }
 
-// BrandSecondaryColorContainsFold applies the ContainsFold predicate on the "brand_secondary_color" field.
-func BrandSecondaryColorContainsFold(v string) predicate.User {
-	return predicate.User(sql.FieldContainsFold(FieldBrandSecondaryColor, v))
+// BrandBackgroundColorContainsFold applies the ContainsFold predicate on the "brand_background_color" field.
+func BrandBackgroundColorContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldBrandBackgroundColor, v))
 }
 
-// BrandAccentColorEQ applies the EQ predicate on the "brand_accent_color" field.
-func BrandAccentColorEQ(v string) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldBrandAccentColor, v))
+// BrandTextColorEQ applies the EQ predicate on the "brand_text_color" field.
+func BrandTextColorEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldBrandTextColor, v))
 }
 
-// BrandAccentColorNEQ applies the NEQ predicate on the "brand_accent_color" field.
-func BrandAccentColorNEQ(v string) predicate.User {
-	return predicate.User(sql.FieldNEQ(FieldBrandAccentColor, v))
+// BrandTextColorNEQ applies the NEQ predicate on the "brand_text_color" field.
+func BrandTextColorNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldBrandTextColor, v))
 }
 
-// BrandAccentColorIn applies the In predicate on the "brand_accent_color" field.
-func BrandAccentColorIn(vs ...string) predicate.User {
-	return predicate.User(sql.FieldIn(FieldBrandAccentColor, vs...))
+// BrandTextColorIn applies the In predicate on the "brand_text_color" field.
+func BrandTextColorIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldBrandTextColor, vs...))
 }
 
-// BrandAccentColorNotIn applies the NotIn predicate on the "brand_accent_color" field.
-func BrandAccentColorNotIn(vs ...string) predicate.User {
-	return predicate.User(sql.FieldNotIn(FieldBrandAccentColor, vs...))
+// BrandTextColorNotIn applies the NotIn predicate on the "brand_text_color" field.
+func BrandTextColorNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldBrandTextColor, vs...))
 }
 
-// BrandAccentColorGT applies the GT predicate on the "brand_accent_color" field.
-func BrandAccentColorGT(v string) predicate.User {
-	return predicate.User(sql.FieldGT(FieldBrandAccentColor, v))
+// BrandTextColorGT applies the GT predicate on the "brand_text_color" field.
+func BrandTextColorGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldBrandTextColor, v))
 }
 
-// BrandAccentColorGTE applies the GTE predicate on the "brand_accent_color" field.
-func BrandAccentColorGTE(v string) predicate.User {
-	return predicate.User(sql.FieldGTE(FieldBrandAccentColor, v))
+// BrandTextColorGTE applies the GTE predicate on the "brand_text_color" field.
+func BrandTextColorGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldBrandTextColor, v))
 }
 
-// BrandAccentColorLT applies the LT predicate on the "brand_accent_color" field.
-func BrandAccentColorLT(v string) predicate.User {
-	return predicate.User(sql.FieldLT(FieldBrandAccentColor, v))
+// BrandTextColorLT applies the LT predicate on the "brand_text_color" field.
+func BrandTextColorLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldBrandTextColor, v))
 }
 
-// BrandAccentColorLTE applies the LTE predicate on the "brand_accent_color" field.
-func BrandAccentColorLTE(v string) predicate.User {
-	return predicate.User(sql.FieldLTE(FieldBrandAccentColor, v))
+// BrandTextColorLTE applies the LTE predicate on the "brand_text_color" field.
+func BrandTextColorLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldBrandTextColor, v))
 }
 
-// BrandAccentColorContains applies the Contains predicate on the "brand_accent_color" field.
-func BrandAccentColorContains(v string) predicate.User {
-	return predicate.User(sql.FieldContains(FieldBrandAccentColor, v))
+// BrandTextColorContains applies the Contains predicate on the "brand_text_color" field.
+func BrandTextColorContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldBrandTextColor, v))
 }
 
-// BrandAccentColorHasPrefix applies the HasPrefix predicate on the "brand_accent_color" field.
-func BrandAccentColorHasPrefix(v string) predicate.User {
-	return predicate.User(sql.FieldHasPrefix(FieldBrandAccentColor, v))
+// BrandTextColorHasPrefix applies the HasPrefix predicate on the "brand_text_color" field.
+func BrandTextColorHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldBrandTextColor, v))
 }
 
-// BrandAccentColorHasSuffix applies the HasSuffix predicate on the "brand_accent_color" field.
-func BrandAccentColorHasSuffix(v string) predicate.User {
-	return predicate.User(sql.FieldHasSuffix(FieldBrandAccentColor, v))
+// BrandTextColorHasSuffix applies the HasSuffix predicate on the "brand_text_color" field.
+func BrandTextColorHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldBrandTextColor, v))
 }
 
-// BrandAccentColorIsNil applies the IsNil predicate on the "brand_accent_color" field.
-func BrandAccentColorIsNil() predicate.User {
-	return predicate.User(sql.FieldIsNull(FieldBrandAccentColor))
+// BrandTextColorIsNil applies the IsNil predicate on the "brand_text_color" field.
+func BrandTextColorIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldBrandTextColor))
 }
 
-// BrandAccentColorNotNil applies the NotNil predicate on the "brand_accent_color" field.
-func BrandAccentColorNotNil() predicate.User {
-	return predicate.User(sql.FieldNotNull(FieldBrandAccentColor))
+// BrandTextColorNotNil applies the NotNil predicate on the "brand_text_color" field.
+func BrandTextColorNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldBrandTextColor))
 }
 
-// BrandAccentColorEqualFold applies the EqualFold predicate on the "brand_accent_color" field.
-func BrandAccentColorEqualFold(v string) predicate.User {
-	return predicate.User(sql.FieldEqualFold(FieldBrandAccentColor, v))
+// BrandTextColorEqualFold applies the EqualFold predicate on the "brand_text_color" field.
+func BrandTextColorEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldBrandTextColor, v))
 }
 
-// BrandAccentColorContainsFold applies the ContainsFold predicate on the "brand_accent_color" field.
-func BrandAccentColorContainsFold(v string) predicate.User {
-	return predicate.User(sql.FieldContainsFold(FieldBrandAccentColor, v))
+// BrandTextColorContainsFold applies the ContainsFold predicate on the "brand_text_color" field.
+func BrandTextColorContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldBrandTextColor, v))
 }
 
 // BrandColorsStatusEQ applies the EQ predicate on the "brand_colors_status" field.

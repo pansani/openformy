@@ -15,6 +15,9 @@ func TestJobWorker__Enqueue(t *testing.T) {
 	worker := NewJobWorker(c.ORM)
 	ctx := context.Background()
 
+	// Clean up jobs table before test
+	c.ORM.Job.Delete().ExecX(ctx)
+
 	payload := map[string]interface{}{
 		"user_id": 123,
 		"url":     "https://example.com",
@@ -37,6 +40,9 @@ func TestJobWorker__Enqueue(t *testing.T) {
 func TestJobWorker__EnqueueJSON(t *testing.T) {
 	worker := NewJobWorker(c.ORM)
 	ctx := context.Background()
+
+	// Clean up jobs table before test
+	c.ORM.Job.Delete().ExecX(ctx)
 
 	type TestPayload struct {
 		UserID int    `json:"user_id"`
@@ -78,6 +84,8 @@ func TestJobWorker__Register(t *testing.T) {
 }
 
 func TestJobWorker__ProcessJob_Success(t *testing.T) {
+	// Clean up jobs table before test
+	c.ORM.Job.Delete().ExecX(context.Background())
 	worker := NewJobWorker(c.ORM)
 	ctx := context.Background()
 
@@ -116,6 +124,8 @@ func TestJobWorker__ProcessJob_Success(t *testing.T) {
 }
 
 func TestJobWorker__ProcessJob_Failure(t *testing.T) {
+	// Clean up jobs table before test
+	c.ORM.Job.Delete().ExecX(context.Background())
 	worker := NewJobWorker(c.ORM)
 	ctx := context.Background()
 
@@ -184,6 +194,8 @@ func TestJobWorker__ProcessJob_NoHandler(t *testing.T) {
 }
 
 func TestJobWorker__ProcessJobs(t *testing.T) {
+	// Clean up jobs table before test
+	c.ORM.Job.Delete().ExecX(context.Background())
 	worker := NewJobWorker(c.ORM)
 	ctx := context.Background()
 

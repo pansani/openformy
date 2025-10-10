@@ -46,15 +46,15 @@ func (User) Fields() []ent.Field {
 			Default(false),
 		field.String("website_url").
 			Optional(),
-		field.String("brand_primary_color").
+		field.String("brand_button_color").
 			Optional().
-			Comment("Hex color code extracted from user's website"),
-		field.String("brand_secondary_color").
+			Comment("Button/CTA color extracted from user's website"),
+		field.String("brand_background_color").
 			Optional().
-			Comment("Hex color code extracted from user's website"),
-		field.String("brand_accent_color").
+			Comment("Main background/surface color extracted from user's website"),
+		field.String("brand_text_color").
 			Optional().
-			Comment("Hex color code extracted from user's website"),
+			Comment("Text color on buttons extracted from user's website"),
 		field.Enum("brand_colors_status").
 			Values("pending", "processing", "completed", "failed").
 			Optional().

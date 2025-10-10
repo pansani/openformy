@@ -17,6 +17,7 @@ import (
 	entsql "entgo.io/ent/dialect/sql"
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
+	"github.com/occult/pagode/ent/migrate"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo/v4"
 	_ "github.com/mattn/go-sqlite3"
@@ -227,7 +228,7 @@ func (c *Container) initORM() {
 	c.ORM = ent.NewClient(ent.Driver(drv))
 
 	// Run the auto migration tool.
-	if err := c.ORM.Schema.Create(context.Background()); err != nil {
+	if err := c.ORM.Schema.Create(context.Background(), migrate.WithDropColumn(true)); err != nil {
 		panic(err)
 	}
 

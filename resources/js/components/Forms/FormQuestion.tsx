@@ -291,7 +291,7 @@ export function FormQuestion({
   }
 
   return (
-    <div className="p-6 border rounded-lg bg-card">
+    <div className="p-6 rounded-lg brand-card-bg">
       <div className="space-y-4">
         <div>
           <Label

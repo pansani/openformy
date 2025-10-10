@@ -1660,14 +1660,14 @@ func (h *Handler) UserCreate(ctx echo.Context) error {
 	if payload.WebsiteURL != nil {
 		op.SetWebsiteURL(*payload.WebsiteURL)
 	}
-	if payload.BrandPrimaryColor != nil {
-		op.SetBrandPrimaryColor(*payload.BrandPrimaryColor)
+	if payload.BrandButtonColor != nil {
+		op.SetBrandButtonColor(*payload.BrandButtonColor)
 	}
-	if payload.BrandSecondaryColor != nil {
-		op.SetBrandSecondaryColor(*payload.BrandSecondaryColor)
+	if payload.BrandBackgroundColor != nil {
+		op.SetBrandBackgroundColor(*payload.BrandBackgroundColor)
 	}
-	if payload.BrandAccentColor != nil {
-		op.SetBrandAccentColor(*payload.BrandAccentColor)
+	if payload.BrandTextColor != nil {
+		op.SetBrandTextColor(*payload.BrandTextColor)
 	}
 	if payload.BrandColorsStatus != nil {
 		op.SetBrandColorsStatus(*payload.BrandColorsStatus)
@@ -1713,20 +1713,20 @@ func (h *Handler) UserUpdate(ctx echo.Context, id int) error {
 	} else {
 		op.SetWebsiteURL(*payload.WebsiteURL)
 	}
-	if payload.BrandPrimaryColor == nil {
-		op.ClearBrandPrimaryColor()
+	if payload.BrandButtonColor == nil {
+		op.ClearBrandButtonColor()
 	} else {
-		op.SetBrandPrimaryColor(*payload.BrandPrimaryColor)
+		op.SetBrandButtonColor(*payload.BrandButtonColor)
 	}
-	if payload.BrandSecondaryColor == nil {
-		op.ClearBrandSecondaryColor()
+	if payload.BrandBackgroundColor == nil {
+		op.ClearBrandBackgroundColor()
 	} else {
-		op.SetBrandSecondaryColor(*payload.BrandSecondaryColor)
+		op.SetBrandBackgroundColor(*payload.BrandBackgroundColor)
 	}
-	if payload.BrandAccentColor == nil {
-		op.ClearBrandAccentColor()
+	if payload.BrandTextColor == nil {
+		op.ClearBrandTextColor()
 	} else {
-		op.SetBrandAccentColor(*payload.BrandAccentColor)
+		op.SetBrandTextColor(*payload.BrandTextColor)
 	}
 	if payload.BrandColorsStatus == nil {
 		op.ClearBrandColorsStatus()
@@ -1764,9 +1764,9 @@ func (h *Handler) UserList(ctx echo.Context) (*EntityList, error) {
 			"Verified",
 			"Admin",
 			"Website url",
-			"Brand primary color",
-			"Brand secondary color",
-			"Brand accent color",
+			"Brand button color",
+			"Brand background color",
+			"Brand text color",
 			"Brand colors status",
 			"Created at",
 		},
@@ -1786,9 +1786,9 @@ func (h *Handler) UserList(ctx echo.Context) (*EntityList, error) {
 				fmt.Sprint(res[i].Verified),
 				fmt.Sprint(res[i].Admin),
 				res[i].WebsiteURL,
-				res[i].BrandPrimaryColor,
-				res[i].BrandSecondaryColor,
-				res[i].BrandAccentColor,
+				res[i].BrandButtonColor,
+				res[i].BrandBackgroundColor,
+				res[i].BrandTextColor,
 				fmt.Sprint(res[i].BrandColorsStatus),
 				res[i].CreatedAt.Format(h.Config.TimeFormat),
 			},
@@ -1812,9 +1812,9 @@ func (h *Handler) UserGet(ctx echo.Context, id int) (url.Values, error) {
 	v.Set("verified", fmt.Sprint(entity.Verified))
 	v.Set("admin", fmt.Sprint(entity.Admin))
 	v.Set("website_url", entity.WebsiteURL)
-	v.Set("brand_primary_color", entity.BrandPrimaryColor)
-	v.Set("brand_secondary_color", entity.BrandSecondaryColor)
-	v.Set("brand_accent_color", entity.BrandAccentColor)
+	v.Set("brand_button_color", entity.BrandButtonColor)
+	v.Set("brand_background_color", entity.BrandBackgroundColor)
+	v.Set("brand_text_color", entity.BrandTextColor)
 	v.Set("brand_colors_status", fmt.Sprint(entity.BrandColorsStatus))
 	return v, err
 }

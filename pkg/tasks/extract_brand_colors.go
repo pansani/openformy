@@ -19,6 +19,12 @@ type ExtractBrandColorsPayload struct {
 	UserID int `json:"user_id"`
 }
 
+type brandColorResponse struct {
+	ButtonColor     string `json:"button_color"`
+	BackgroundColor string `json:"background_color"`
+	TextColor       string `json:"text_color"`
+}
+
 func ExtractBrandColors(orm *ent.Client, apiKey string) func(ctx context.Context, payload map[string]interface{}) error {
 	return func(ctx context.Context, payload map[string]interface{}) error {
 		userID, ok := payload["user_id"].(float64)
@@ -56,13 +62,13 @@ func ExtractBrandColors(orm *ent.Client, apiKey string) func(ctx context.Context
 			SetBrandColorsStatus(user.BrandColorsStatusCompleted)
 
 		if len(colors) > 0 {
-			update.SetBrandPrimaryColor(colors[0])
+			update.SetBrandButtonColor(colors[0])
 		}
 		if len(colors) > 1 {
-			update.SetBrandSecondaryColor(colors[1])
+			update.SetBrandBackgroundColor(colors[1])
 		}
 		if len(colors) > 2 {
-			update.SetBrandAccentColor(colors[2])
+			update.SetBrandTextColor(colors[2])
 		}
 
 		err = update.Exec(ctx)
@@ -107,7 +113,33 @@ func extractColorsFromWebsite(ctx context.Context, url string, apiKey string) ([
 					MultiContent: []openai.ChatMessagePart{
 						{
 							Type: openai.ChatMessagePartTypeText,
-							Text: "Analyze this website screenshot and identify the brand colors. Return ONLY a JSON object with: primary (main brand color), secondary (supporting color), accent (highlight color). Use hex format like #RRGGBB.",
+							Text: `Extract the brand colors from this website screenshot for SPECIFIC UI purposes:
+
+Identify these FUNCTIONAL colors:
+
+1. BUTTON_COLOR (button_color):
+   - What color are the main CTA/action buttons? (e.g., "Sign Up", "Get Started", "Submit")
+   - The most prominent clickable color
+   - Example: Teal buttons → #78C5C4
+
+2. BACKGROUND_COLOR (background_color):
+   - What is the main brand background/surface color?
+   - Can be white, black, or any color used as the primary backdrop
+   - Example: White background → #FFFFFF
+
+3. TEXT_COLOR (text_color):
+   - What color is the text ON the buttons?
+   - Needs to contrast with button_color
+   - Example: White text on teal buttons → #FFFFFF
+
+EXAMPLES:
+- Teal buttons + white backgrounds + white text on buttons:
+  {"button_color": "#78C5C4", "background_color": "#FFFFFF", "text_color": "#FFFFFF"}
+
+- Blue buttons + black backgrounds + white text:
+  {"button_color": "#0066FF", "background_color": "#000000", "text_color": "#FFFFFF"}
+
+Return ONLY valid JSON: {"button_color": "#RRGGBB", "background_color": "#RRGGBB", "text_color": "#RRGGBB"}`,
 						},
 						{
 							Type: openai.ChatMessagePartTypeImageURL,
@@ -124,11 +156,7 @@ func extractColorsFromWebsite(ctx context.Context, url string, apiKey string) ([
 		return nil, fmt.Errorf("failed to call OpenAI API: %w", err)
 	}
 
-	var colorResponse struct {
-		Primary   string `json:"primary"`
-		Secondary string `json:"secondary"`
-		Accent    string `json:"accent"`
-	}
+	var colorResponse brandColorResponse
 
 	content := resp.Choices[0].Message.Content
 	content = strings.TrimPrefix(content, "```json\n")
@@ -141,6 +169,7 @@ func extractColorsFromWebsite(ctx context.Context, url string, apiKey string) ([
 		return nil, fmt.Errorf("failed to parse OpenAI response: %w", err)
 	}
 
-	colors := []string{colorResponse.Primary, colorResponse.Secondary, colorResponse.Accent}
+	colors := []string{colorResponse.ButtonColor, colorResponse.BackgroundColor, colorResponse.TextColor}
 	return colors, nil
 }
+

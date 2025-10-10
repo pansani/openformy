@@ -34,12 +34,12 @@ type User struct {
 	Admin bool `json:"admin,omitempty"`
 	// WebsiteURL holds the value of the "website_url" field.
 	WebsiteURL string `json:"website_url,omitempty"`
-	// Hex color code extracted from user's website
-	BrandPrimaryColor string `json:"brand_primary_color,omitempty"`
-	// Hex color code extracted from user's website
-	BrandSecondaryColor string `json:"brand_secondary_color,omitempty"`
-	// Hex color code extracted from user's website
-	BrandAccentColor string `json:"brand_accent_color,omitempty"`
+	// Button/CTA color extracted from user's website
+	BrandButtonColor string `json:"brand_button_color,omitempty"`
+	// Main background/surface color extracted from user's website
+	BrandBackgroundColor string `json:"brand_background_color,omitempty"`
+	// Text color on buttons extracted from user's website
+	BrandTextColor string `json:"brand_text_color,omitempty"`
 	// Status of brand color extraction job
 	BrandColorsStatus user.BrandColorsStatus `json:"brand_colors_status,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -113,7 +113,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case user.FieldID:
 			values[i] = new(sql.NullInt64)
-		case user.FieldName, user.FieldEmail, user.FieldPassword, user.FieldUsername, user.FieldCompanyName, user.FieldWebsiteURL, user.FieldBrandPrimaryColor, user.FieldBrandSecondaryColor, user.FieldBrandAccentColor, user.FieldBrandColorsStatus:
+		case user.FieldName, user.FieldEmail, user.FieldPassword, user.FieldUsername, user.FieldCompanyName, user.FieldWebsiteURL, user.FieldBrandButtonColor, user.FieldBrandBackgroundColor, user.FieldBrandTextColor, user.FieldBrandColorsStatus:
 			values[i] = new(sql.NullString)
 		case user.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -188,23 +188,23 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.WebsiteURL = value.String
 			}
-		case user.FieldBrandPrimaryColor:
+		case user.FieldBrandButtonColor:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field brand_primary_color", values[i])
+				return fmt.Errorf("unexpected type %T for field brand_button_color", values[i])
 			} else if value.Valid {
-				u.BrandPrimaryColor = value.String
+				u.BrandButtonColor = value.String
 			}
-		case user.FieldBrandSecondaryColor:
+		case user.FieldBrandBackgroundColor:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field brand_secondary_color", values[i])
+				return fmt.Errorf("unexpected type %T for field brand_background_color", values[i])
 			} else if value.Valid {
-				u.BrandSecondaryColor = value.String
+				u.BrandBackgroundColor = value.String
 			}
-		case user.FieldBrandAccentColor:
+		case user.FieldBrandTextColor:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field brand_accent_color", values[i])
+				return fmt.Errorf("unexpected type %T for field brand_text_color", values[i])
 			} else if value.Valid {
-				u.BrandAccentColor = value.String
+				u.BrandTextColor = value.String
 			}
 		case user.FieldBrandColorsStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -304,14 +304,14 @@ func (u *User) String() string {
 	builder.WriteString("website_url=")
 	builder.WriteString(u.WebsiteURL)
 	builder.WriteString(", ")
-	builder.WriteString("brand_primary_color=")
-	builder.WriteString(u.BrandPrimaryColor)
+	builder.WriteString("brand_button_color=")
+	builder.WriteString(u.BrandButtonColor)
 	builder.WriteString(", ")
-	builder.WriteString("brand_secondary_color=")
-	builder.WriteString(u.BrandSecondaryColor)
+	builder.WriteString("brand_background_color=")
+	builder.WriteString(u.BrandBackgroundColor)
 	builder.WriteString(", ")
-	builder.WriteString("brand_accent_color=")
-	builder.WriteString(u.BrandAccentColor)
+	builder.WriteString("brand_text_color=")
+	builder.WriteString(u.BrandTextColor)
 	builder.WriteString(", ")
 	builder.WriteString("brand_colors_status=")
 	builder.WriteString(fmt.Sprintf("%v", u.BrandColorsStatus))
