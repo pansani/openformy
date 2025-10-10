@@ -114,7 +114,11 @@ export function FieldSettings({ question, onUpdate, onClose }: FieldSettingsProp
               Options <span className="text-red-500">*</span>
             </Label>
             <OptionsEditor
-              options={question.options || ['Option 1', 'Option 2']}
+              options={
+                Array.isArray(question.options) 
+                  ? question.options 
+                  : question.options?.items || ['Option 1', 'Option 2']
+              }
               onChange={(options) => onUpdate({ ...question, options })}
             />
           </div>
