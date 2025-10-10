@@ -1,3 +1,4 @@
+import { dismissDialogs } from "./helpers";
 import { test, expect } from '@playwright/test';
 
 test.describe('Legal and Content Field Types', () => {
@@ -21,6 +22,8 @@ test.describe('Legal and Content Field Types', () => {
       await page.getByRole('button', { name: 'Log in' }).click();
       await page.waitForURL('/dashboard', { timeout: 10000 });
     }
+    
+    await dismissDialogs(page);
     
     await page.goto('/forms/create');
     const formTitle = `Legal Fields Test ${Date.now()}`;

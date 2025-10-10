@@ -1,3 +1,4 @@
+import { dismissDialogs } from "./helpers";
 import { test, expect } from '@playwright/test';
 
 test.describe('Forms Management', () => {
@@ -14,6 +15,8 @@ test.describe('Forms Management', () => {
     await page.getByRole('button', { name: 'Create Account' }).click();
     
     await page.waitForURL('/dashboard', { timeout: 10000 });
+    
+    await dismissDialogs(page);
   });
 
   test('should create a new form', async ({ page }) => {
@@ -129,7 +132,7 @@ test.describe('Forms Management', () => {
     await expect(page.getByText(formTitle)).toBeVisible();
     
     const formCard = page.locator(`text=${formTitle}`).locator('..').locator('..').locator('..');
-    await expect(formCard.locator('button').first()).toBeVisible(); // Settings button
+    await expect(formCard.locator('button').first()).toBeVisible();
   });
 
   test('should disable preview button when form has no questions', async ({ page }) => {

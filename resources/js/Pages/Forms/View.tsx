@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import { FormQuestion } from "@/components/Forms/FormQuestion";
 import { ConversationalForm } from "@/components/Forms/ConversationalForm";
+import { validateAnswer } from "@/utils/validation";
+import { useMemo } from "react";
 
 interface Question {
   id: number;
@@ -91,6 +93,20 @@ export default function View({ form, brandColors }: Props) {
 
   const isConversational = form.display_mode === "conversational";
 
+
+  const isFormValid = useMemo(() => {
+    if (isConversational) {
+      return true;
+    }
+    for (const question of questions) {
+      const validation = validateAnswer(question, data.answers[question.id]);
+      if (!validation.valid) {
+        return false;
+      }
+    }
+    return true;
+  }, [isConversational, questions, data.answers]);
+
   const customStyles = brandColors?.button
     ? `
     :root {
@@ -146,7 +162,7 @@ export default function View({ form, brandColors }: Props) {
               ))}
 
               <div className="flex justify-center pt-4">
-                <Button type="submit" size="lg" disabled={processing}>
+                <Button type="submit" size="lg" disabled={!isFormValid || processing}>
                   <Send className="h-4 w-4 mr-2" />
                   {processing ? "Submitting..." : "Submit"}
                 </Button>

@@ -52,31 +52,6 @@ export function AppSidebar() {
       href: "/forms",
       icon: FileText,
     },
-    // {
-    //   title: "Plans",
-    //   href: "/plans",
-    //   icon: CreditCard,
-    // },
-    // {
-    //   title: "Products",
-    //   href: "/products",
-    //   icon: ShoppingBag,
-    // },
-    // {
-    //   title: "Premium",
-    //   href: "/premium",
-    //   icon: Crown,
-    // },
-    // {
-    //   title: "Upload Files",
-    //   href: "/files",
-    //   icon: UploadCloud,
-    // },
-    // {
-    //   title: "Billing",
-    //   href: "/billing",
-    //   icon: Receipt,
-    // },
   ];
 
   if (auth.user?.admin) {

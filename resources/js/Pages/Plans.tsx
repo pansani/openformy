@@ -80,7 +80,7 @@ export default function Plans({ title, hasActiveSubscription, plans, form, strip
       },
       onError: (errors) => {
         console.error('Subscription failed:', errors);
-        // Form errors are now handled by the backend and redisplayed
+
       },
       onFinish: () => {
         setIsProcessing(false);

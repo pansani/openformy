@@ -9,7 +9,7 @@ export function useFormEditor(form: Form) {
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
   
-  const { data, setData, processing, isDirty, reset } = useForm({
+  const { data, setData, processing, isDirty, reset, post } = useForm({
     questions: JSON.stringify(form.edges.questions?.sort((a, b) => a.order - b.order) || []),
     published: form.published ? '1' : '0',
     display_mode: form.display_mode || 'traditional',
@@ -70,7 +70,7 @@ export function useFormEditor(form: Form) {
       title: '',
       description: '',
       placeholder: '',
-      required: false,
+      required: true,
       order: questions.length,
       options: ['dropdown', 'radio', 'checkbox'].includes(type) ? ['Option 1', 'Option 2'] : undefined,
     };
@@ -98,18 +98,18 @@ export function useFormEditor(form: Form) {
   const handleSave = () => {
     isSavingRef.current = true;
     
-    const updatedData = {
+
+    const updatedFormData = {
+      ...data,
       questions: JSON.stringify(questions),
-      published: data.published,
-      display_mode: data.display_mode,
     };
+    
 
-    setData(updatedData);
-
-    router.put(`/forms/${form.id}`, updatedData, {
+    router.post(`/forms/${form.id}`, updatedFormData, {
       forceFormData: true,
       onSuccess: () => {
-        reset();
+
+        setData('questions', JSON.stringify(questions));
       },
       onFinish: () => {
         isSavingRef.current = false;

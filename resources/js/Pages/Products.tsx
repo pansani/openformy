@@ -72,7 +72,7 @@ export default function Products({ title, product, stripePublishableKey, success
     });
   };
 
-  // Check for success prop
+
   useEffect(() => {
     if (success) {
       setShowSuccess(true);

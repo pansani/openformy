@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import { FormQuestion } from "./FormQuestion";
@@ -51,12 +51,12 @@ export function ConversationalForm({
   const isFirstQuestion = currentIndex === 0;
   const progress = ((currentIndex + 1) / questions.length) * 100;
 
-  const canAdvance = () => {
+  const canAdvance = useMemo(() => {
     if (!currentQuestion) return false;
     const answer = answers[currentQuestion.id];
     const validation = validateAnswer(currentQuestion, answer);
     return validation.valid;
-  };
+  }, [currentQuestion, answers]);
 
   const handleNext = () => {
     if (isAnimating) {
@@ -96,7 +96,7 @@ export function ConversationalForm({
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === "Enter" && !e.shiftKey && canAdvance()) {
+      if (e.key === "Enter" && !e.shiftKey && canAdvance) {
         e.preventDefault();
         handleNext();
       }
@@ -104,7 +104,7 @@ export function ConversationalForm({
 
     window.addEventListener("keypress", handleKeyPress);
     return () => window.removeEventListener("keypress", handleKeyPress);
-  }, [currentIndex, answers]);
+  }, [currentIndex, answers, canAdvance]);
 
   if (!currentQuestion) {
     return null;
@@ -183,7 +183,7 @@ export function ConversationalForm({
               <Button
                 type="button"
                 onClick={handleNext}
-                disabled={!canAdvance() || isSubmitting || isAnimating}
+                disabled={!canAdvance || isSubmitting || isAnimating}
                 className="gap-2 ml-auto transition-all hover:scale-105 brand-button"
               >
                 {isLastQuestion ? (

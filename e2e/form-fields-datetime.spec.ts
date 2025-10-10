@@ -1,3 +1,4 @@
+import { dismissDialogs } from "./helpers";
 import { test, expect } from '@playwright/test';
 
 test.describe('Date and Time Field Types', () => {
@@ -22,6 +23,8 @@ test.describe('Date and Time Field Types', () => {
       await page.waitForURL('/dashboard', { timeout: 10000 });
     }
     
+    await dismissDialogs(page);
+    
     await page.goto('/forms/create');
     const formTitle = `DateTime Fields Test ${Date.now()}`;
     await page.getByRole('textbox', { name: 'Form Title *' }).fill(formTitle);
@@ -44,7 +47,7 @@ test.describe('Date and Time Field Types', () => {
     await page.waitForTimeout(500);
     
     await expect(page.getByText('What is your date of birth?')).toBeVisible();
-    await expect(page.getByText('Please select your birthdate')).toBeVisible();
+    await expect(page.locator('p.text-sm.text-muted-foreground', { hasText: 'Please select your birthdate' })).toBeVisible();
   });
 
   test('should add and configure time picker field', async ({ page }) => {

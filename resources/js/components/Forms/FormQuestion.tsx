@@ -47,6 +47,10 @@ export function FormQuestion({
 }: FormQuestionProps) {
   const stringValue = typeof value === "string" ? value : "";
   const arrayValue = Array.isArray(value) ? value : [];
+  
+  const handleChange = (newValue: string | string[]) => {
+    onChange(newValue);
+  };
 
   const renderField = () => {
     switch (question.type) {
@@ -80,7 +84,7 @@ export function FormQuestion({
             type="email"
             placeholder={question.placeholder}
             value={stringValue}
-            onChange={onChange}
+            onChange={handleChange}
             disabled={false}
             error={error}
           />

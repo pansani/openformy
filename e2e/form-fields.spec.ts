@@ -1,3 +1,4 @@
+import { dismissDialogs } from "./helpers";
 import { test, expect } from '@playwright/test';
 
 test.describe('Form Field Types', () => {
@@ -21,6 +22,8 @@ test.describe('Form Field Types', () => {
       await page.getByRole('button', { name: 'Log in' }).click();
       await page.waitForURL('/dashboard', { timeout: 10000 });
     }
+    
+    await dismissDialogs(page);
     
     await page.goto('/forms/create');
     const formTitle = `Field Test Form ${Date.now()}`;
@@ -184,6 +187,8 @@ test.describe('Form Field Operations', () => {
       await page.waitForURL('/dashboard', { timeout: 10000 });
     }
     
+    await dismissDialogs(page);
+    
     await page.goto('/forms/create');
     const formTitle = `Operations Test ${Date.now()}`;
     await page.getByRole('textbox', { name: 'Form Title *' }).fill(formTitle);
@@ -236,7 +241,6 @@ test.describe('Form Field Operations', () => {
     
     const initialState = await requiredSwitch.getAttribute('aria-checked') === 'true';
     await requiredSwitch.click();
-    await page.waitForTimeout(300);
     const newState = await requiredSwitch.getAttribute('aria-checked') === 'true';
     
     expect(newState).not.toBe(initialState);

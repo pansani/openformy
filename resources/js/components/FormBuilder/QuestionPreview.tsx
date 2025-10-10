@@ -24,6 +24,7 @@ import {
 interface Question {
   type: string;
   placeholder?: string;
+  options?: string[];
 }
 
 interface QuestionPreviewProps {
@@ -60,13 +61,13 @@ export function QuestionPreview({ question }: QuestionPreviewProps) {
         return <FileUploadField />;
       
       case 'dropdown':
-        return <SelectField />;
+        return <SelectField options={question.options} />;
       
       case 'radio':
-        return <RadioField />;
+        return <RadioField options={question.options} />;
       
       case 'checkbox':
-        return <CheckboxField />;
+        return <CheckboxField options={question.options} />;
       
       case 'yesno':
         return <YesNoField />;

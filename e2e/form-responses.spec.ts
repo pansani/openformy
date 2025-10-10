@@ -1,3 +1,4 @@
+import { dismissDialogs } from "./helpers";
 import { test, expect } from '@playwright/test';
 
 test.describe.configure({ mode: 'serial' });
@@ -22,6 +23,8 @@ test.describe('Form Responses Dashboard', () => {
       await page.getByRole('button', { name: 'Log in' }).click();
       await page.waitForURL('/dashboard', { timeout: 10000 });
     }
+    
+    await dismissDialogs(page);
     
     await page.goto('/forms/create');
     const formTitle = `Customer Survey ${timestamp}`;
@@ -118,6 +121,8 @@ test.describe('Form Responses Dashboard', () => {
       await page.waitForURL('/dashboard', { timeout: 10000 });
     }
     
+    await dismissDialogs(page);
+    
     await page.goto('/forms/create');
     const formTitle = `Multi Response Survey ${timestamp}`;
     await page.getByRole('textbox', { name: 'Form Title *' }).fill(formTitle);
@@ -186,6 +191,8 @@ test.describe('Form Responses Dashboard', () => {
       await page.getByRole('button', { name: 'Log in' }).click();
       await page.waitForURL('/dashboard', { timeout: 10000 });
     }
+    
+    await dismissDialogs(page);
     
     await page.goto('/forms/create');
     await page.getByRole('textbox', { name: 'Form Title *' }).fill(`Search Test ${timestamp}`);
@@ -256,6 +263,8 @@ test.describe('Form Responses Dashboard', () => {
       await page.getByRole('button', { name: 'Log in' }).click();
       await page.waitForURL('/dashboard', { timeout: 10000 });
     }
+    
+    await dismissDialogs(page);
     
     await page.goto('/forms/create');
     await page.getByRole('textbox', { name: 'Form Title *' }).fill(`Card Test ${timestamp}`);

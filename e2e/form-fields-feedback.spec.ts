@@ -1,3 +1,4 @@
+import { dismissDialogs } from "./helpers";
 import { test, expect } from '@playwright/test';
 
 test.describe('Feedback Field Types', () => {
@@ -22,6 +23,8 @@ test.describe('Feedback Field Types', () => {
       await page.waitForURL('/dashboard', { timeout: 10000 });
     }
     
+    await dismissDialogs(page);
+    
     await page.goto('/forms/create');
     const formTitle = `Feedback Fields Test ${Date.now()}`;
     await page.getByRole('textbox', { name: 'Form Title *' }).fill(formTitle);
@@ -44,7 +47,7 @@ test.describe('Feedback Field Types', () => {
     await page.waitForTimeout(500);
     
     await expect(page.getByText('How would you rate our service?')).toBeVisible();
-    await expect(page.getByText('1 star = poor, 5 stars = excellent')).toBeVisible();
+    await expect(page.locator('p.text-sm.text-muted-foreground', { hasText: '1 star = poor, 5 stars = excellent' })).toBeVisible();
   });
 
   test('should add and configure opinion scale field', async ({ page }) => {

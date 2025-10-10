@@ -22,7 +22,9 @@ export function TextInputField({
       type: type === 'short-text' ? 'text' : type,
       placeholder: placeholder || `Enter ${type}...`,
       value,
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange?.(e.target.value),
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+        onChange?.(e.target.value);
+      },
       disabled,
       className: error ? 'border-red-500' : '',
     };

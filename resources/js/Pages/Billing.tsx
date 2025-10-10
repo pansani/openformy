@@ -103,7 +103,7 @@ export default function Billing({ title, subscriptions, paymentMethods, user }: 
       subscriptionId: subscriptionId,
     }, {
       onSuccess: () => {
-        // The backend redirects, so we don't need to handle success here
+
       },
       onError: (errors) => {
         console.error('Cancellation failed:', errors);

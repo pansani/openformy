@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { dismissDialogs } from './helpers';
 
 test.describe('Dashboard Analytics', () => {
   test.beforeEach(async ({ page }) => {
@@ -13,7 +14,16 @@ test.describe('Dashboard Analytics', () => {
     await page.getByRole('textbox', { name: 'Confirm Password' }).fill('password123');
     await page.getByRole('button', { name: 'Create Account' }).click();
     
-    await page.waitForURL('/dashboard', { timeout: 10000 });
+    await page.waitForURL((url) => url.pathname === '/dashboard' || url.pathname === '/user/login', { timeout: 10000 });
+    
+    if (page.url().includes('/user/login')) {
+      await page.getByRole('textbox', { name: 'Email address' }).fill(email);
+      await page.getByRole('textbox', { name: 'Password' }).fill('password123');
+      await page.getByRole('button', { name: 'Log in' }).click();
+      await page.waitForURL('/dashboard', { timeout: 10000 });
+    }
+    
+    await dismissDialogs(page);
   });
 
   test('should display dashboard for new user with empty state', async ({ page }) => {
@@ -89,6 +99,7 @@ test.describe('Dashboard Analytics', () => {
     await page.waitForURL(/\/forms\/\d+\/edit/);
     
     await page.goto('/dashboard');
+    await dismissDialogs(page);
     
     await expect(page.getByText(formTitle)).toBeVisible();
     const formLink = page.locator('a').filter({ hasText: formTitle }).first();

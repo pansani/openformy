@@ -13,7 +13,7 @@ interface PaymentFormProps {
   onSubmit: (paymentMethodId: string) => void;
   isProcessing: boolean;
   stripePublishableKey: string;
-  mode?: 'subscription' | 'payment'; // Add mode prop
+  mode?: 'subscription' | 'payment';
 }
 
 export function PaymentForm({ plan, onSubmit, isProcessing, stripePublishableKey, mode = 'subscription' }: PaymentFormProps) {
@@ -31,7 +31,7 @@ export function PaymentForm({ plan, onSubmit, isProcessing, stripePublishableKey
   };
 
   useEffect(() => {
-    // Initialize Stripe
+
     const initializeStripe = async () => {
       if (window.Stripe) {
         const stripeInstance = window.Stripe(stripePublishableKey);
@@ -61,7 +61,7 @@ export function PaymentForm({ plan, onSubmit, isProcessing, stripePublishableKey
       }
     };
 
-    // Load Stripe script if not already loaded
+
     if (!window.Stripe) {
       const script = document.createElement('script');
       script.src = 'https://js.stripe.com/v3/';
@@ -81,7 +81,7 @@ export function PaymentForm({ plan, onSubmit, isProcessing, stripePublishableKey
 
     setError('');
 
-    // Create payment method
+
     const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
       type: 'card',
       card: cardElement,
@@ -95,7 +95,7 @@ export function PaymentForm({ plan, onSubmit, isProcessing, stripePublishableKey
       return;
     }
 
-    // Pass the payment method ID to the parent component
+
     onSubmit(paymentMethod.id);
   };
 

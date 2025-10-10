@@ -53,7 +53,7 @@ func (h *Forms) Routes(g *echo.Group) {
 	formsGroup.GET("/create", h.Create).Name = routenames.FormsCreate
 	formsGroup.POST("", h.Store).Name = routenames.FormsStore
 	formsGroup.GET("/:id/edit", h.Edit).Name = routenames.FormsEdit
-	formsGroup.PUT("/:id", h.Update).Name = routenames.FormsUpdate
+	formsGroup.POST("/:id", h.Update).Name = routenames.FormsUpdate
 	formsGroup.DELETE("/:id", h.Delete).Name = routenames.FormsDelete
 	formsGroup.GET("/:id", h.Show).Name = routenames.FormsShow
 	formsGroup.GET("/:id/responses", h.Responses).Name = routenames.FormsResponses
@@ -183,12 +183,46 @@ func (h *Forms) Edit(ctx echo.Context) error {
 		return nil
 	}
 
+	formWithQuestions := map[string]interface{}{
+		"id":           formData.ID,
+		"title":        formData.Title,
+		"description":  formData.Description,
+		"slug":         formData.Slug,
+		"published":    formData.Published,
+		"display_mode": formData.DisplayMode,
+		"user_id":      formData.UserID,
+		"created_at":   formData.CreatedAt,
+		"updated_at":   formData.UpdatedAt,
+		"edges": map[string]interface{}{
+			"questions": func() []map[string]interface{} {
+				questions := []map[string]interface{}{}
+				if qs, err := formData.Edges.QuestionsOrErr(); err == nil {
+					for _, q := range qs {
+						questions = append(questions, map[string]interface{}{
+							"id":          q.ID,
+							"type":        q.Type,
+							"title":       q.Title,
+							"description": q.Description,
+							"placeholder": q.Placeholder,
+							"required":    q.Required,
+							"order":       q.Order,
+							"options":     q.Options,
+							"created_at":  q.CreatedAt,
+							"updated_at":  q.UpdatedAt,
+						})
+					}
+				}
+				return questions
+			}(),
+		},
+	}
+
 	err = h.Inertia.Render(
 		ctx.Response().Writer,
 		ctx.Request(),
 		"Forms/Edit",
 		inertia.Props{
-			"form":           formData,
+			"form":           formWithQuestions,
 			"userIdentifier": getUserIdentifier(user),
 		},
 	)
@@ -326,7 +360,7 @@ func (h *Forms) Update(ctx echo.Context) error {
 	}
 
 	msg.Success(ctx, "Form updated successfully!")
-	h.Inertia.Location(w, r, fmt.Sprintf("/forms/%d/edit", formID))
+	h.Inertia.Redirect(w, r, fmt.Sprintf("/forms/%d/edit", formID))
 	return nil
 }
 
@@ -364,12 +398,6 @@ func (h *Forms) View(ctx echo.Context) error {
 			"error": "Form not found",
 		})
 	}
-
-	fmt.Printf("=== FORM VIEW HANDLER ===\n")
-	fmt.Printf("User ID: %d\n", foundUser.ID)
-	fmt.Printf("Button Color: %s\n", foundUser.BrandButtonColor)
-	fmt.Printf("Background Color: %s\n", foundUser.BrandBackgroundColor)
-	fmt.Printf("Text Color: %s\n", foundUser.BrandTextColor)
 
 	err = h.Inertia.Render(
 		ctx.Response().Writer,

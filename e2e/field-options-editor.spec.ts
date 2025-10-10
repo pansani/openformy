@@ -1,3 +1,4 @@
+import { dismissDialogs } from "./helpers";
 import { test, expect } from '@playwright/test';
 
 test.describe('Field Options Editor', () => {
@@ -21,6 +22,8 @@ test.describe('Field Options Editor', () => {
       await page.getByRole('button', { name: 'Log in' }).click();
       await page.waitForURL('/dashboard', { timeout: 10000 });
     }
+    
+    await dismissDialogs(page);
     
     await page.goto('/forms/create');
     const formTitle = `Options Editor Test ${Date.now()}`;
@@ -54,7 +57,6 @@ test.describe('Field Options Editor', () => {
     await expect(page.getByRole('heading', { name: 'Field Settings' })).toBeVisible();
     
     await page.getByRole('button', { name: 'Add Option' }).click();
-    await page.waitForTimeout(300);
     
     const optionsSection = page.locator('label:has-text("Options")').locator('..');
     const deleteButtons = optionsSection.locator('button').filter({ has: page.locator('svg.lucide-x') });
@@ -62,7 +64,6 @@ test.describe('Field Options Editor', () => {
     const initialCount = await optionsSection.locator('input[type="text"]').count();
     
     await deleteButtons.last().click();
-    await page.waitForTimeout(300);
     
     const updatedCount = await optionsSection.locator('input[type="text"]').count();
     expect(updatedCount).toBe(initialCount - 1);
@@ -80,14 +81,12 @@ test.describe('Field Options Editor', () => {
     const initialCount = await optionsSection.locator('input[type="text"]').count();
     
     await getDeleteButtons().first().click();
-    await page.waitForTimeout(300);
     
     const afterFirstDelete = await optionsSection.locator('input[type="text"]').count();
     expect(afterFirstDelete).toBe(initialCount - 1);
     
     if (afterFirstDelete > 1) {
       await getDeleteButtons().first().click();
-      await page.waitForTimeout(300);
     }
     
     const finalCount = await optionsSection.locator('input[type="text"]').count();

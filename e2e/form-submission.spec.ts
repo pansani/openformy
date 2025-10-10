@@ -1,3 +1,4 @@
+import { dismissDialogs } from "./helpers";
 import { test, expect } from '@playwright/test';
 
 test.describe('Form Submission Flow', () => {
@@ -33,7 +34,6 @@ test.describe('Form Submission Flow', () => {
     await page.waitForTimeout(500);
     await page.getByRole('textbox', { name: 'Question Title *' }).fill('Your name');
     await page.getByRole('switch', { name: 'Required Field' }).click();
-    await page.waitForTimeout(300);
     
     await page.getByRole('button', { name: 'Save' }).click();
     await page.waitForTimeout(1500);
@@ -71,6 +71,8 @@ test.describe('Form Builder Save Functionality', () => {
       await page.getByRole('button', { name: 'Log in' }).click();
       await page.waitForURL('/dashboard', { timeout: 10000 });
     }
+    
+    await dismissDialogs(page);
     
     await page.goto('/forms/create');
     const formTitle = `Test Form ${Date.now()}`;
