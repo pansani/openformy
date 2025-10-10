@@ -57,7 +57,7 @@ export function ResponsesChart({ data }: ResponsesChartProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+        <ChartContainer config={chartConfig} className="aspect-[16/5] w-full">
           <AreaChart data={formattedData} accessibilityLayer>
             <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-muted" />
             <XAxis

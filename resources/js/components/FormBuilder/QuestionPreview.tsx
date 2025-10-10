@@ -24,7 +24,9 @@ import {
 interface Question {
   type: string;
   placeholder?: string;
-  options?: string[];
+  options?: string[] | {
+    items?: string[];
+  };
 }
 
 interface QuestionPreviewProps {
@@ -32,6 +34,13 @@ interface QuestionPreviewProps {
 }
 
 export function QuestionPreview({ question }: QuestionPreviewProps) {
+  const getOptions = () => {
+    if (Array.isArray(question.options)) {
+      return question.options;
+    }
+    return question.options?.items;
+  };
+  
   const renderInput = () => {
     switch (question.type) {
       case 'text':
@@ -61,13 +70,13 @@ export function QuestionPreview({ question }: QuestionPreviewProps) {
         return <FileUploadField />;
       
       case 'dropdown':
-        return <SelectField options={question.options} />;
+        return <SelectField options={getOptions()} />;
       
       case 'radio':
-        return <RadioField options={question.options} />;
+        return <RadioField options={getOptions()} />;
       
       case 'checkbox':
-        return <CheckboxField options={question.options} />;
+        return <CheckboxField options={getOptions()} />;
       
       case 'yesno':
         return <YesNoField />;
@@ -82,16 +91,16 @@ export function QuestionPreview({ question }: QuestionPreviewProps) {
         return <OpinionScaleField />;
       
       case 'ranking':
-        return <RankingField />;
+        return <RankingField options={getOptions()} />;
       
       case 'picture-choice':
-        return <PictureChoiceField />;
+        return <PictureChoiceField options={getOptions()} />;
       
       case 'matrix':
         return <MatrixField />;
       
       case 'multi-select':
-        return <MultiSelectField />;
+        return <MultiSelectField options={getOptions()} />;
       
       case 'signature':
         return <SignatureField />;

@@ -15,6 +15,7 @@ OpenFormy is a modern, open-source alternative to Typeform and Google Forms. Bui
 ### Key Features
 
 - 🎨 **Conversational & Traditional Modes** - Choose between one-question-at-a-time (Typeform-style) or traditional multi-field forms
+- 🎨 **Auto Brand Color Extraction** - Automatically extract and apply your brand colors from any website URL
 - ⚡ **Lightning Fast** - Built on Go + Echo for blazing-fast performance
 - 🔐 **Secure by Default** - Session-based authentication, CSRF protection, rate limiting
 - 📊 **Response Analytics** - View, filter, and analyze form submissions with ease
@@ -120,8 +121,8 @@ OpenFormy is built on **Pagode**, a full-stack Go + React starter kit. For detai
 
 ### Project-Specific Documentation
 
-- [ROADMAP.md](./ROADMAP.md) - Feature roadmap and development phases
 - [CLAUDE.md](./CLAUDE.md) - Development guide and architecture notes
+- [DEPLOYMENT.md](./DEPLOYMENT.md) - Production deployment guide for Coolify
 
 ---
 

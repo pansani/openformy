@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/occult/pagode/ent/form"
 	"github.com/occult/pagode/ent/question"
 	"github.com/occult/pagode/pkg/log"
 	"github.com/occult/pagode/pkg/services"
@@ -202,6 +203,119 @@ func main() {
 		}
 	}
 	fmt.Printf("✅ Added %d questions to survey form\n", len(surveyQuestions))
+
+	contactQuestions, err := c.ORM.Question.Query().Where(question.HasFormWith(form.IDEQ(contactForm.ID))).Order(question.ByOrder()).All(ctx)
+	if err != nil {
+		fmt.Printf("❌ Failed to get contact questions: %v\n", err)
+		return
+	}
+
+	contactResponseData := []map[int]string{
+		{
+			contactQuestions[0].ID: "Alice Johnson",
+			contactQuestions[1].ID: "alice@example.com",
+			contactQuestions[2].ID: "(555) 234-5678",
+			contactQuestions[3].ID: "Support",
+			contactQuestions[4].ID: "Having trouble uploading files larger than 10MB",
+		},
+		{
+			contactQuestions[0].ID: "Bob Smith",
+			contactQuestions[1].ID: "bob@company.com",
+			contactQuestions[2].ID: "",
+			contactQuestions[3].ID: "Sales",
+			contactQuestions[4].ID: "Interested in enterprise pricing for 50+ users",
+		},
+		{
+			contactQuestions[0].ID: "Carol Williams",
+			contactQuestions[1].ID: "carol.w@startup.io",
+			contactQuestions[2].ID: "(555) 876-5432",
+			contactQuestions[3].ID: "Partnership",
+			contactQuestions[4].ID: "Would love to discuss integration opportunities",
+		},
+	}
+
+	for _, respData := range contactResponseData {
+		resp, err := c.ORM.Response.
+			Create().
+			SetFormID(contactForm.ID).
+			SetCompleted(true).
+			SetIPAddress("192.168.1.1").
+			SetUserAgent("Mozilla/5.0").
+			Save(ctx)
+		if err != nil {
+			fmt.Printf("❌ Failed to create response: %v\n", err)
+			return
+		}
+
+		for qID, answerValue := range respData {
+			if answerValue == "" {
+				continue
+			}
+			_, err := c.ORM.Answer.
+				Create().
+				SetResponseID(resp.ID).
+				SetQuestionID(qID).
+				SetValue(answerValue).
+				Save(ctx)
+			if err != nil {
+				fmt.Printf("❌ Failed to create answer: %v\n", err)
+				return
+			}
+		}
+	}
+	fmt.Printf("✅ Added %d responses to contact form\n", len(contactResponseData))
+
+	surveyQs, err := c.ORM.Question.Query().Where(question.HasFormWith(form.IDEQ(surveyForm.ID))).Order(question.ByOrder()).All(ctx)
+	if err != nil {
+		fmt.Printf("❌ Failed to get survey questions: %v\n", err)
+		return
+	}
+
+	surveyResponseData := []map[int]string{
+		{
+			surveyQs[0].ID: "Very Satisfied",
+			surveyQs[1].ID: "Form Builder, Analytics, Custom Branding",
+			surveyQs[2].ID: "9",
+			surveyQs[3].ID: "Love the new conversational mode feature!",
+		},
+		{
+			surveyQs[0].ID: "Satisfied",
+			surveyQs[1].ID: "Form Builder, Export Data",
+			surveyQs[2].ID: "8",
+			surveyQs[3].ID: "Great product, could use more templates",
+		},
+	}
+
+	for _, respData := range surveyResponseData {
+		resp, err := c.ORM.Response.
+			Create().
+			SetFormID(surveyForm.ID).
+			SetCompleted(true).
+			SetIPAddress("192.168.1.1").
+			SetUserAgent("Mozilla/5.0").
+			Save(ctx)
+		if err != nil {
+			fmt.Printf("❌ Failed to create survey response: %v\n", err)
+			return
+		}
+
+		for qID, answerValue := range respData {
+			if answerValue == "" {
+				continue
+			}
+			_, err := c.ORM.Answer.
+				Create().
+				SetResponseID(resp.ID).
+				SetQuestionID(qID).
+				SetValue(answerValue).
+				Save(ctx)
+			if err != nil {
+				fmt.Printf("❌ Failed to create survey answer: %v\n", err)
+				return
+			}
+		}
+	}
+	fmt.Printf("✅ Added %d responses to survey form\n", len(surveyResponseData))
 
 	draftForm, err := c.ORM.Form.
 		Create().

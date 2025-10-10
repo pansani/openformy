@@ -11,6 +11,9 @@ interface Question {
   placeholder?: string;
   required: boolean;
   order: number;
+  options?: {
+    items?: string[];
+  };
 }
 
 interface FormPreviewProps {
