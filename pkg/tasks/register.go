@@ -11,5 +11,5 @@ func Register(c *services.Container) {
 
 // RegisterJobs registers all job handlers with the job worker.
 func RegisterJobs(c *services.Container) {
-	c.Jobs.Register("extract_brand_colors", ExtractBrandColors(c.ORM))
+	c.Jobs.Register("extract_brand_colors", ExtractBrandColors(c.ORM, c.Config.OpenAI.ApiKey))
 }

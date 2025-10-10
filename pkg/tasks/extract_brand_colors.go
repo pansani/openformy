@@ -1,26 +1,25 @@
 package tasks
 
 import (
-	"bytes"
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
-	"image"
-	_ "image/jpeg"
-	_ "image/png"
+	"strings"
 	"time"
 
-	"github.com/cenkalti/dominantcolor"
 	"github.com/chromedp/chromedp"
 	"github.com/occult/pagode/ent"
 	"github.com/occult/pagode/ent/user"
 	"github.com/occult/pagode/pkg/log"
+	"github.com/sashabaranov/go-openai"
 )
 
 type ExtractBrandColorsPayload struct {
 	UserID int `json:"user_id"`
 }
 
-func ExtractBrandColors(orm *ent.Client) func(ctx context.Context, payload map[string]interface{}) error {
+func ExtractBrandColors(orm *ent.Client, apiKey string) func(ctx context.Context, payload map[string]interface{}) error {
 	return func(ctx context.Context, payload map[string]interface{}) error {
 		userID, ok := payload["user_id"].(float64)
 		if !ok {
@@ -45,7 +44,7 @@ func ExtractBrandColors(orm *ent.Client) func(ctx context.Context, payload map[s
 			return fmt.Errorf("failed to update status: %w", err)
 		}
 
-		colors, err := extractColorsFromWebsite(ctx, u.WebsiteURL)
+		colors, err := extractColorsFromWebsite(ctx, u.WebsiteURL, apiKey)
 		if err != nil {
 			orm.User.UpdateOne(u).
 				SetBrandColorsStatus(user.BrandColorsStatusFailed).
@@ -76,7 +75,7 @@ func ExtractBrandColors(orm *ent.Client) func(ctx context.Context, payload map[s
 	}
 }
 
-func extractColorsFromWebsite(ctx context.Context, url string) ([]string, error) {
+func extractColorsFromWebsite(ctx context.Context, url string, apiKey string) ([]string, error) {
 	allocCtx, cancel := chromedp.NewContext(ctx)
 	defer cancel()
 
@@ -93,19 +92,55 @@ func extractColorsFromWebsite(ctx context.Context, url string) ([]string, error)
 		return nil, fmt.Errorf("failed to capture screenshot: %w", err)
 	}
 
-	img, _, err := image.Decode(bytes.NewReader(buf))
+	base64Image := base64.StdEncoding.EncodeToString(buf)
+	imageURL := fmt.Sprintf("data:image/png;base64,%s", base64Image)
+
+	client := openai.NewClient(apiKey)
+
+	resp, err := client.CreateChatCompletion(
+		ctx,
+		openai.ChatCompletionRequest{
+			Model: "gpt-4o",
+			Messages: []openai.ChatCompletionMessage{
+				{
+					Role: openai.ChatMessageRoleUser,
+					MultiContent: []openai.ChatMessagePart{
+						{
+							Type: openai.ChatMessagePartTypeText,
+							Text: "Analyze this website screenshot and identify the brand colors. Return ONLY a JSON object with: primary (main brand color), secondary (supporting color), accent (highlight color). Use hex format like #RRGGBB.",
+						},
+						{
+							Type: openai.ChatMessagePartTypeImageURL,
+							ImageURL: &openai.ChatMessageImageURL{
+								URL: imageURL,
+							},
+						},
+					},
+				},
+			},
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode screenshot: %w", err)
+		return nil, fmt.Errorf("failed to call OpenAI API: %w", err)
 	}
 
-	colors := make([]string, 0, 3)
-	
-	primaryColor := dominantcolor.Hex(dominantcolor.Find(img))
-	colors = append(colors, primaryColor)
-
-	if len(colors) >= 3 {
-		return colors[:3], nil
+	var colorResponse struct {
+		Primary   string `json:"primary"`
+		Secondary string `json:"secondary"`
+		Accent    string `json:"accent"`
 	}
 
+	content := resp.Choices[0].Message.Content
+	content = strings.TrimPrefix(content, "```json\n")
+	content = strings.TrimPrefix(content, "```\n")
+	content = strings.TrimSuffix(content, "\n```")
+	content = strings.TrimSpace(content)
+
+	err = json.Unmarshal([]byte(content), &colorResponse)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse OpenAI response: %w", err)
+	}
+
+	colors := []string{colorResponse.Primary, colorResponse.Secondary, colorResponse.Accent}
 	return colors, nil
 }

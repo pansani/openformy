@@ -4,6 +4,7 @@ import { StatCard } from '@/components/Dashboard/StatCard';
 import { ResponsesChart } from '@/components/Dashboard/ResponsesChart';
 import { RecentActivity } from '@/components/Dashboard/RecentActivity';
 import { FormsTable } from '@/components/Dashboard/FormsTable';
+import { WebsiteUrlDialog } from '@/components/Dashboard/WebsiteUrlDialog';
 import { FileText, BarChart, CheckCircle, TrendingUp } from 'lucide-react';
 import { type BreadcrumbItem } from '@/types';
 
@@ -54,6 +55,8 @@ export default function Dashboard({ stats, recentResponses, formStats, chartData
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Dashboard" />
+
+      <WebsiteUrlDialog />
       
       <div className="space-y-8 p-8">
         <div>

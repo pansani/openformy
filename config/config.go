@@ -58,6 +58,7 @@ type (
 		Tasks    TasksConfig
 		Mail     MailConfig
 		Payment  PaymentConfig
+		OpenAI   OpenAIConfig
 	}
 
 	// HTTPConfig stores HTTP configuration.
@@ -144,6 +145,12 @@ type (
 		PublishableKey string
 		WebhookSecret  string
 		Currency       string
+	}
+
+	// OpenAIConfig stores the OpenAI configuration.
+	OpenAIConfig struct {
+		ApiKey string
+		Model  string
 	}
 )
 

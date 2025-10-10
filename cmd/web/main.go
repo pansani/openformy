@@ -12,7 +12,12 @@ import (
 	"github.com/occult/pagode/pkg/log"
 	"github.com/occult/pagode/pkg/services"
 	"github.com/occult/pagode/pkg/tasks"
+	"github.com/subosito/gotenv"
 )
+
+func init() {
+	_ = gotenv.Load()
+}
 
 func main() {
 	// Start a new container.
