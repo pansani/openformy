@@ -198,6 +198,19 @@ func (h *Forms) Edit(ctx echo.Context) error {
 				questions := []map[string]interface{}{}
 				if qs, err := formData.Edges.QuestionsOrErr(); err == nil {
 					for _, q := range qs {
+						var opts interface{}
+						isSelectionField := q.Type == "dropdown" || q.Type == "radio" ||
+							q.Type == "checkbox" || q.Type == "multi-select" ||
+							q.Type == "picture-choice"
+						
+						if q.Options != nil {
+							if items, ok := q.Options["items"]; ok {
+								opts = items
+							}
+						} else if isSelectionField {
+							opts = []string{"Option 1", "Option 2"}
+						}
+
 						questions = append(questions, map[string]interface{}{
 							"id":          q.ID,
 							"type":        q.Type,
@@ -206,7 +219,7 @@ func (h *Forms) Edit(ctx echo.Context) error {
 							"placeholder": q.Placeholder,
 							"required":    q.Required,
 							"order":       q.Order,
-							"options":     q.Options,
+							"options":     opts,
 							"created_at":  q.CreatedAt,
 							"updated_at":  q.UpdatedAt,
 						})

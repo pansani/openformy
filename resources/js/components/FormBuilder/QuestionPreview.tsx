@@ -35,13 +35,7 @@ interface QuestionPreviewProps {
 
 export function QuestionPreview({ question }: QuestionPreviewProps) {
   const getOptions = () => {
-    if (Array.isArray(question.options)) {
-      return question.options;
-    }
-    if (question.options && typeof question.options === 'object' && 'items' in question.options) {
-      return question.options.items || [];
-    }
-    return [];
+    return Array.isArray(question.options) ? question.options : [];
   };
   
   const renderInput = () => {
