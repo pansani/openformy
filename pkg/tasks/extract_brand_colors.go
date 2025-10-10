@@ -82,10 +82,21 @@ func ExtractBrandColors(orm *ent.Client, apiKey string) func(ctx context.Context
 }
 
 func extractColorsFromWebsite(ctx context.Context, url string, apiKey string) ([]string, error) {
-	allocCtx, cancel := chromedp.NewContext(ctx)
+	opts := append(chromedp.DefaultExecAllocatorOptions[:],
+		chromedp.ExecPath("chromium"),
+		chromedp.NoSandbox,
+		chromedp.DisableGPU,
+		chromedp.NoFirstRun,
+		chromedp.NoDefaultBrowserCheck,
+	)
+
+	allocCtx, allocCancel := chromedp.NewExecAllocator(ctx, opts...)
+	defer allocCancel()
+
+	ctxWithChrome, cancel := chromedp.NewContext(allocCtx)
 	defer cancel()
 
-	timeoutCtx, timeoutCancel := context.WithTimeout(allocCtx, 30*time.Second)
+	timeoutCtx, timeoutCancel := context.WithTimeout(ctxWithChrome, 30*time.Second)
 	defer timeoutCancel()
 
 	var buf []byte

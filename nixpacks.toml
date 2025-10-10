@@ -2,7 +2,7 @@
 builder = "nixpacks"
 
 [phases.setup]
-nixPkgs = ["nodejs", "go", "gcc"]
+nixPkgs = ["nodejs", "go", "gcc", "chromium"]
 
 [phases.install]
 cmds = ["npm ci"]
