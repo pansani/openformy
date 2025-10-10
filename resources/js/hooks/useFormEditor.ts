@@ -72,7 +72,7 @@ export function useFormEditor(form: Form) {
       placeholder: '',
       required: true,
       order: questions.length,
-      options: ['dropdown', 'radio', 'checkbox'].includes(type) ? ['Option 1', 'Option 2'] : undefined,
+      options: ['dropdown', 'radio', 'checkbox', 'multi-select'].includes(type) ? ['Option 1', 'Option 2'] : undefined,
     };
 
     setQuestions([...questions, newQuestion]);

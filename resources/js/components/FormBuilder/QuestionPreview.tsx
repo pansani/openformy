@@ -38,7 +38,10 @@ export function QuestionPreview({ question }: QuestionPreviewProps) {
     if (Array.isArray(question.options)) {
       return question.options;
     }
-    return question.options?.items;
+    if (question.options && typeof question.options === 'object' && 'items' in question.options) {
+      return question.options.items || [];
+    }
+    return [];
   };
   
   const renderInput = () => {

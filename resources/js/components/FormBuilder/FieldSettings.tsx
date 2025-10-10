@@ -151,20 +151,22 @@ export function FieldSettings({ question, onUpdate, onClose }: FieldSettingsProp
 
 function OptionsEditor({ options, onChange }: { options: string[]; onChange: (options: string[]) => void }) {
   const [draggedIndex, setDraggedIndex] = React.useState<number | null>(null);
+  
+  const safeOptions = Array.isArray(options) ? options : ['Option 1', 'Option 2'];
 
   const addOption = () => {
-    onChange([...options, `Option ${options.length + 1}`]);
+    onChange([...safeOptions, `Option ${safeOptions.length + 1}`]);
   };
 
   const updateOption = (index: number, value: string) => {
-    const newOptions = [...options];
+    const newOptions = [...safeOptions];
     newOptions[index] = value;
     onChange(newOptions);
   };
 
   const removeOption = (index: number) => {
-    if (options.length > 1) {
-      onChange(options.filter((_, i) => i !== index));
+    if (safeOptions.length > 1) {
+      onChange(safeOptions.filter((_, i) => i !== index));
     }
   };
 
@@ -176,7 +178,7 @@ function OptionsEditor({ options, onChange }: { options: string[]; onChange: (op
     e.preventDefault();
     if (draggedIndex === null || draggedIndex === index) return;
 
-    const newOptions = [...options];
+    const newOptions = [...safeOptions];
     const draggedOption = newOptions[draggedIndex];
     newOptions.splice(draggedIndex, 1);
     newOptions.splice(index, 0, draggedOption);
@@ -191,7 +193,7 @@ function OptionsEditor({ options, onChange }: { options: string[]; onChange: (op
 
   return (
     <div className="space-y-2">
-      {options.map((option, index) => (
+      {safeOptions.map((option, index) => (
         <div 
           key={index} 
           className="flex items-center gap-2"
@@ -210,7 +212,7 @@ function OptionsEditor({ options, onChange }: { options: string[]; onChange: (op
             className="flex-1"
             placeholder={`Option ${index + 1}`}
           />
-          {options.length > 1 && (
+          {safeOptions.length > 1 && (
             <Button
               variant="ghost"
               size="sm"

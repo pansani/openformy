@@ -10,9 +10,11 @@ interface MultiSelectFieldProps {
 }
 
 export function MultiSelectField({ options = ['Option 1', 'Option 2', 'Option 3'], value = [], onChange, disabled = true, questionId = 0 }: MultiSelectFieldProps) {
+  const safeOptions = Array.isArray(options) ? options : ['Option 1', 'Option 2', 'Option 3'];
+  
   return (
     <div className="space-y-2">
-      {options.map((option, idx) => {
+      {safeOptions.map((option, idx) => {
         const isChecked = value.includes(option);
         return (
           <div key={idx} className="flex items-center space-x-2">

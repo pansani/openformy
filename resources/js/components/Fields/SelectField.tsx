@@ -7,6 +7,8 @@ interface SelectFieldProps {
 }
 
 export function SelectField({ options = [], value = '', onChange, disabled = true, error }: SelectFieldProps) {
+  const safeOptions = Array.isArray(options) ? options : [];
+  
   return (
     <select
       value={value}
@@ -15,7 +17,7 @@ export function SelectField({ options = [], value = '', onChange, disabled = tru
       className={`w-full px-3 py-2 border border-input rounded-lg bg-background text-sm ${error ? 'border-red-500' : ''}`}
     >
       <option value="">Select an option...</option>
-      {options.map((option, idx) => (
+      {safeOptions.map((option, idx) => (
         <option key={idx} value={option}>
           {option}
         </option>
