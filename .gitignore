@@ -1,4 +1,6 @@
 .idea
+.vscode
+.github
 dbs
 uploads
 tmp
@@ -15,5 +17,25 @@ build/
 playwright-report/
 test-results/
 .db
-playwright-report/
 .env
+
+# Binaries
+web
+app
+cmd/web/web
+cmd/admin/admin
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+database.db
+
+# Test coverage
+*.out
+coverage.txt
