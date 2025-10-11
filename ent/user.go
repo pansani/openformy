@@ -32,8 +32,8 @@ type User struct {
 	Verified bool `json:"verified,omitempty"`
 	// Admin holds the value of the "admin" field.
 	Admin bool `json:"admin,omitempty"`
-	// WebsiteURL holds the value of the "website_url" field.
-	WebsiteURL string `json:"website_url,omitempty"`
+	// Website holds the value of the "website" field.
+	Website string `json:"website,omitempty"`
 	// Button/CTA color extracted from user's website
 	BrandButtonColor string `json:"brand_button_color,omitempty"`
 	// Main background/surface color extracted from user's website
@@ -42,6 +42,8 @@ type User struct {
 	BrandTextColor string `json:"brand_text_color,omitempty"`
 	// Status of brand color extraction job
 	BrandColorsStatus user.BrandColorsStatus `json:"brand_colors_status,omitempty"`
+	// Logo holds the value of the "logo" field.
+	Logo string `json:"logo,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -113,7 +115,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case user.FieldID:
 			values[i] = new(sql.NullInt64)
-		case user.FieldName, user.FieldEmail, user.FieldPassword, user.FieldUsername, user.FieldCompanyName, user.FieldWebsiteURL, user.FieldBrandButtonColor, user.FieldBrandBackgroundColor, user.FieldBrandTextColor, user.FieldBrandColorsStatus:
+		case user.FieldName, user.FieldEmail, user.FieldPassword, user.FieldUsername, user.FieldCompanyName, user.FieldWebsite, user.FieldBrandButtonColor, user.FieldBrandBackgroundColor, user.FieldBrandTextColor, user.FieldBrandColorsStatus, user.FieldLogo:
 			values[i] = new(sql.NullString)
 		case user.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -182,11 +184,11 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.Admin = value.Bool
 			}
-		case user.FieldWebsiteURL:
+		case user.FieldWebsite:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field website_url", values[i])
+				return fmt.Errorf("unexpected type %T for field website", values[i])
 			} else if value.Valid {
-				u.WebsiteURL = value.String
+				u.Website = value.String
 			}
 		case user.FieldBrandButtonColor:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -211,6 +213,12 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field brand_colors_status", values[i])
 			} else if value.Valid {
 				u.BrandColorsStatus = user.BrandColorsStatus(value.String)
+			}
+		case user.FieldLogo:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field logo", values[i])
+			} else if value.Valid {
+				u.Logo = value.String
 			}
 		case user.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -301,8 +309,8 @@ func (u *User) String() string {
 	builder.WriteString("admin=")
 	builder.WriteString(fmt.Sprintf("%v", u.Admin))
 	builder.WriteString(", ")
-	builder.WriteString("website_url=")
-	builder.WriteString(u.WebsiteURL)
+	builder.WriteString("website=")
+	builder.WriteString(u.Website)
 	builder.WriteString(", ")
 	builder.WriteString("brand_button_color=")
 	builder.WriteString(u.BrandButtonColor)
@@ -315,6 +323,9 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("brand_colors_status=")
 	builder.WriteString(fmt.Sprintf("%v", u.BrandColorsStatus))
+	builder.WriteString(", ")
+	builder.WriteString("logo=")
+	builder.WriteString(u.Logo)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(u.CreatedAt.Format(time.ANSIC))

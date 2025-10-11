@@ -90,9 +90,9 @@ func Admin(v bool) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldAdmin, v))
 }
 
-// WebsiteURL applies equality check predicate on the "website_url" field. It's identical to WebsiteURLEQ.
-func WebsiteURL(v string) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldWebsiteURL, v))
+// Website applies equality check predicate on the "website" field. It's identical to WebsiteEQ.
+func Website(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldWebsite, v))
 }
 
 // BrandButtonColor applies equality check predicate on the "brand_button_color" field. It's identical to BrandButtonColorEQ.
@@ -108,6 +108,11 @@ func BrandBackgroundColor(v string) predicate.User {
 // BrandTextColor applies equality check predicate on the "brand_text_color" field. It's identical to BrandTextColorEQ.
 func BrandTextColor(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldBrandTextColor, v))
+}
+
+// Logo applies equality check predicate on the "logo" field. It's identical to LogoEQ.
+func Logo(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLogo, v))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
@@ -480,79 +485,79 @@ func AdminNEQ(v bool) predicate.User {
 	return predicate.User(sql.FieldNEQ(FieldAdmin, v))
 }
 
-// WebsiteURLEQ applies the EQ predicate on the "website_url" field.
-func WebsiteURLEQ(v string) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldWebsiteURL, v))
+// WebsiteEQ applies the EQ predicate on the "website" field.
+func WebsiteEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldWebsite, v))
 }
 
-// WebsiteURLNEQ applies the NEQ predicate on the "website_url" field.
-func WebsiteURLNEQ(v string) predicate.User {
-	return predicate.User(sql.FieldNEQ(FieldWebsiteURL, v))
+// WebsiteNEQ applies the NEQ predicate on the "website" field.
+func WebsiteNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldWebsite, v))
 }
 
-// WebsiteURLIn applies the In predicate on the "website_url" field.
-func WebsiteURLIn(vs ...string) predicate.User {
-	return predicate.User(sql.FieldIn(FieldWebsiteURL, vs...))
+// WebsiteIn applies the In predicate on the "website" field.
+func WebsiteIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldWebsite, vs...))
 }
 
-// WebsiteURLNotIn applies the NotIn predicate on the "website_url" field.
-func WebsiteURLNotIn(vs ...string) predicate.User {
-	return predicate.User(sql.FieldNotIn(FieldWebsiteURL, vs...))
+// WebsiteNotIn applies the NotIn predicate on the "website" field.
+func WebsiteNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldWebsite, vs...))
 }
 
-// WebsiteURLGT applies the GT predicate on the "website_url" field.
-func WebsiteURLGT(v string) predicate.User {
-	return predicate.User(sql.FieldGT(FieldWebsiteURL, v))
+// WebsiteGT applies the GT predicate on the "website" field.
+func WebsiteGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldWebsite, v))
 }
 
-// WebsiteURLGTE applies the GTE predicate on the "website_url" field.
-func WebsiteURLGTE(v string) predicate.User {
-	return predicate.User(sql.FieldGTE(FieldWebsiteURL, v))
+// WebsiteGTE applies the GTE predicate on the "website" field.
+func WebsiteGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldWebsite, v))
 }
 
-// WebsiteURLLT applies the LT predicate on the "website_url" field.
-func WebsiteURLLT(v string) predicate.User {
-	return predicate.User(sql.FieldLT(FieldWebsiteURL, v))
+// WebsiteLT applies the LT predicate on the "website" field.
+func WebsiteLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldWebsite, v))
 }
 
-// WebsiteURLLTE applies the LTE predicate on the "website_url" field.
-func WebsiteURLLTE(v string) predicate.User {
-	return predicate.User(sql.FieldLTE(FieldWebsiteURL, v))
+// WebsiteLTE applies the LTE predicate on the "website" field.
+func WebsiteLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldWebsite, v))
 }
 
-// WebsiteURLContains applies the Contains predicate on the "website_url" field.
-func WebsiteURLContains(v string) predicate.User {
-	return predicate.User(sql.FieldContains(FieldWebsiteURL, v))
+// WebsiteContains applies the Contains predicate on the "website" field.
+func WebsiteContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldWebsite, v))
 }
 
-// WebsiteURLHasPrefix applies the HasPrefix predicate on the "website_url" field.
-func WebsiteURLHasPrefix(v string) predicate.User {
-	return predicate.User(sql.FieldHasPrefix(FieldWebsiteURL, v))
+// WebsiteHasPrefix applies the HasPrefix predicate on the "website" field.
+func WebsiteHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldWebsite, v))
 }
 
-// WebsiteURLHasSuffix applies the HasSuffix predicate on the "website_url" field.
-func WebsiteURLHasSuffix(v string) predicate.User {
-	return predicate.User(sql.FieldHasSuffix(FieldWebsiteURL, v))
+// WebsiteHasSuffix applies the HasSuffix predicate on the "website" field.
+func WebsiteHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldWebsite, v))
 }
 
-// WebsiteURLIsNil applies the IsNil predicate on the "website_url" field.
-func WebsiteURLIsNil() predicate.User {
-	return predicate.User(sql.FieldIsNull(FieldWebsiteURL))
+// WebsiteIsNil applies the IsNil predicate on the "website" field.
+func WebsiteIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldWebsite))
 }
 
-// WebsiteURLNotNil applies the NotNil predicate on the "website_url" field.
-func WebsiteURLNotNil() predicate.User {
-	return predicate.User(sql.FieldNotNull(FieldWebsiteURL))
+// WebsiteNotNil applies the NotNil predicate on the "website" field.
+func WebsiteNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldWebsite))
 }
 
-// WebsiteURLEqualFold applies the EqualFold predicate on the "website_url" field.
-func WebsiteURLEqualFold(v string) predicate.User {
-	return predicate.User(sql.FieldEqualFold(FieldWebsiteURL, v))
+// WebsiteEqualFold applies the EqualFold predicate on the "website" field.
+func WebsiteEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldWebsite, v))
 }
 
-// WebsiteURLContainsFold applies the ContainsFold predicate on the "website_url" field.
-func WebsiteURLContainsFold(v string) predicate.User {
-	return predicate.User(sql.FieldContainsFold(FieldWebsiteURL, v))
+// WebsiteContainsFold applies the ContainsFold predicate on the "website" field.
+func WebsiteContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldWebsite, v))
 }
 
 // BrandButtonColorEQ applies the EQ predicate on the "brand_button_color" field.
@@ -808,6 +813,81 @@ func BrandColorsStatusIsNil() predicate.User {
 // BrandColorsStatusNotNil applies the NotNil predicate on the "brand_colors_status" field.
 func BrandColorsStatusNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldBrandColorsStatus))
+}
+
+// LogoEQ applies the EQ predicate on the "logo" field.
+func LogoEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLogo, v))
+}
+
+// LogoNEQ applies the NEQ predicate on the "logo" field.
+func LogoNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldLogo, v))
+}
+
+// LogoIn applies the In predicate on the "logo" field.
+func LogoIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldLogo, vs...))
+}
+
+// LogoNotIn applies the NotIn predicate on the "logo" field.
+func LogoNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldLogo, vs...))
+}
+
+// LogoGT applies the GT predicate on the "logo" field.
+func LogoGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldLogo, v))
+}
+
+// LogoGTE applies the GTE predicate on the "logo" field.
+func LogoGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldLogo, v))
+}
+
+// LogoLT applies the LT predicate on the "logo" field.
+func LogoLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldLogo, v))
+}
+
+// LogoLTE applies the LTE predicate on the "logo" field.
+func LogoLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldLogo, v))
+}
+
+// LogoContains applies the Contains predicate on the "logo" field.
+func LogoContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldLogo, v))
+}
+
+// LogoHasPrefix applies the HasPrefix predicate on the "logo" field.
+func LogoHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldLogo, v))
+}
+
+// LogoHasSuffix applies the HasSuffix predicate on the "logo" field.
+func LogoHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldLogo, v))
+}
+
+// LogoIsNil applies the IsNil predicate on the "logo" field.
+func LogoIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldLogo))
+}
+
+// LogoNotNil applies the NotNil predicate on the "logo" field.
+func LogoNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldLogo))
+}
+
+// LogoEqualFold applies the EqualFold predicate on the "logo" field.
+func LogoEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldLogo, v))
+}
+
+// LogoContainsFold applies the ContainsFold predicate on the "logo" field.
+func LogoContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldLogo, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

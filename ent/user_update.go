@@ -141,23 +141,23 @@ func (uu *UserUpdate) SetNillableAdmin(b *bool) *UserUpdate {
 	return uu
 }
 
-// SetWebsiteURL sets the "website_url" field.
-func (uu *UserUpdate) SetWebsiteURL(s string) *UserUpdate {
-	uu.mutation.SetWebsiteURL(s)
+// SetWebsite sets the "website" field.
+func (uu *UserUpdate) SetWebsite(s string) *UserUpdate {
+	uu.mutation.SetWebsite(s)
 	return uu
 }
 
-// SetNillableWebsiteURL sets the "website_url" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableWebsiteURL(s *string) *UserUpdate {
+// SetNillableWebsite sets the "website" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableWebsite(s *string) *UserUpdate {
 	if s != nil {
-		uu.SetWebsiteURL(*s)
+		uu.SetWebsite(*s)
 	}
 	return uu
 }
 
-// ClearWebsiteURL clears the value of the "website_url" field.
-func (uu *UserUpdate) ClearWebsiteURL() *UserUpdate {
-	uu.mutation.ClearWebsiteURL()
+// ClearWebsite clears the value of the "website" field.
+func (uu *UserUpdate) ClearWebsite() *UserUpdate {
+	uu.mutation.ClearWebsite()
 	return uu
 }
 
@@ -238,6 +238,26 @@ func (uu *UserUpdate) SetNillableBrandColorsStatus(ucs *user.BrandColorsStatus) 
 // ClearBrandColorsStatus clears the value of the "brand_colors_status" field.
 func (uu *UserUpdate) ClearBrandColorsStatus() *UserUpdate {
 	uu.mutation.ClearBrandColorsStatus()
+	return uu
+}
+
+// SetLogo sets the "logo" field.
+func (uu *UserUpdate) SetLogo(s string) *UserUpdate {
+	uu.mutation.SetLogo(s)
+	return uu
+}
+
+// SetNillableLogo sets the "logo" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableLogo(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetLogo(*s)
+	}
+	return uu
+}
+
+// ClearLogo clears the value of the "logo" field.
+func (uu *UserUpdate) ClearLogo() *UserUpdate {
+	uu.mutation.ClearLogo()
 	return uu
 }
 
@@ -470,11 +490,11 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.Admin(); ok {
 		_spec.SetField(user.FieldAdmin, field.TypeBool, value)
 	}
-	if value, ok := uu.mutation.WebsiteURL(); ok {
-		_spec.SetField(user.FieldWebsiteURL, field.TypeString, value)
+	if value, ok := uu.mutation.Website(); ok {
+		_spec.SetField(user.FieldWebsite, field.TypeString, value)
 	}
-	if uu.mutation.WebsiteURLCleared() {
-		_spec.ClearField(user.FieldWebsiteURL, field.TypeString)
+	if uu.mutation.WebsiteCleared() {
+		_spec.ClearField(user.FieldWebsite, field.TypeString)
 	}
 	if value, ok := uu.mutation.BrandButtonColor(); ok {
 		_spec.SetField(user.FieldBrandButtonColor, field.TypeString, value)
@@ -499,6 +519,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.BrandColorsStatusCleared() {
 		_spec.ClearField(user.FieldBrandColorsStatus, field.TypeEnum)
+	}
+	if value, ok := uu.mutation.Logo(); ok {
+		_spec.SetField(user.FieldLogo, field.TypeString, value)
+	}
+	if uu.mutation.LogoCleared() {
+		_spec.ClearField(user.FieldLogo, field.TypeString)
 	}
 	if uu.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -794,23 +820,23 @@ func (uuo *UserUpdateOne) SetNillableAdmin(b *bool) *UserUpdateOne {
 	return uuo
 }
 
-// SetWebsiteURL sets the "website_url" field.
-func (uuo *UserUpdateOne) SetWebsiteURL(s string) *UserUpdateOne {
-	uuo.mutation.SetWebsiteURL(s)
+// SetWebsite sets the "website" field.
+func (uuo *UserUpdateOne) SetWebsite(s string) *UserUpdateOne {
+	uuo.mutation.SetWebsite(s)
 	return uuo
 }
 
-// SetNillableWebsiteURL sets the "website_url" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableWebsiteURL(s *string) *UserUpdateOne {
+// SetNillableWebsite sets the "website" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableWebsite(s *string) *UserUpdateOne {
 	if s != nil {
-		uuo.SetWebsiteURL(*s)
+		uuo.SetWebsite(*s)
 	}
 	return uuo
 }
 
-// ClearWebsiteURL clears the value of the "website_url" field.
-func (uuo *UserUpdateOne) ClearWebsiteURL() *UserUpdateOne {
-	uuo.mutation.ClearWebsiteURL()
+// ClearWebsite clears the value of the "website" field.
+func (uuo *UserUpdateOne) ClearWebsite() *UserUpdateOne {
+	uuo.mutation.ClearWebsite()
 	return uuo
 }
 
@@ -891,6 +917,26 @@ func (uuo *UserUpdateOne) SetNillableBrandColorsStatus(ucs *user.BrandColorsStat
 // ClearBrandColorsStatus clears the value of the "brand_colors_status" field.
 func (uuo *UserUpdateOne) ClearBrandColorsStatus() *UserUpdateOne {
 	uuo.mutation.ClearBrandColorsStatus()
+	return uuo
+}
+
+// SetLogo sets the "logo" field.
+func (uuo *UserUpdateOne) SetLogo(s string) *UserUpdateOne {
+	uuo.mutation.SetLogo(s)
+	return uuo
+}
+
+// SetNillableLogo sets the "logo" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableLogo(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetLogo(*s)
+	}
+	return uuo
+}
+
+// ClearLogo clears the value of the "logo" field.
+func (uuo *UserUpdateOne) ClearLogo() *UserUpdateOne {
+	uuo.mutation.ClearLogo()
 	return uuo
 }
 
@@ -1153,11 +1199,11 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if value, ok := uuo.mutation.Admin(); ok {
 		_spec.SetField(user.FieldAdmin, field.TypeBool, value)
 	}
-	if value, ok := uuo.mutation.WebsiteURL(); ok {
-		_spec.SetField(user.FieldWebsiteURL, field.TypeString, value)
+	if value, ok := uuo.mutation.Website(); ok {
+		_spec.SetField(user.FieldWebsite, field.TypeString, value)
 	}
-	if uuo.mutation.WebsiteURLCleared() {
-		_spec.ClearField(user.FieldWebsiteURL, field.TypeString)
+	if uuo.mutation.WebsiteCleared() {
+		_spec.ClearField(user.FieldWebsite, field.TypeString)
 	}
 	if value, ok := uuo.mutation.BrandButtonColor(); ok {
 		_spec.SetField(user.FieldBrandButtonColor, field.TypeString, value)
@@ -1182,6 +1228,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.BrandColorsStatusCleared() {
 		_spec.ClearField(user.FieldBrandColorsStatus, field.TypeEnum)
+	}
+	if value, ok := uuo.mutation.Logo(); ok {
+		_spec.SetField(user.FieldLogo, field.TypeString, value)
+	}
+	if uuo.mutation.LogoCleared() {
+		_spec.ClearField(user.FieldLogo, field.TypeString)
 	}
 	if uuo.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{

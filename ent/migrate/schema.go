@@ -315,11 +315,12 @@ var (
 		{Name: "company_name", Type: field.TypeString, Nullable: true},
 		{Name: "verified", Type: field.TypeBool, Default: false},
 		{Name: "admin", Type: field.TypeBool, Default: false},
-		{Name: "website_url", Type: field.TypeString, Nullable: true},
+		{Name: "website", Type: field.TypeString, Nullable: true},
 		{Name: "brand_button_color", Type: field.TypeString, Nullable: true},
 		{Name: "brand_background_color", Type: field.TypeString, Nullable: true},
 		{Name: "brand_text_color", Type: field.TypeString, Nullable: true},
 		{Name: "brand_colors_status", Type: field.TypeEnum, Nullable: true, Enums: []string{"pending", "processing", "completed", "failed"}},
+		{Name: "logo", Type: field.TypeString, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "payment_customer_user", Type: field.TypeInt, Unique: true, Nullable: true},
 	}
@@ -331,7 +332,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "users_payment_customers_user",
-				Columns:    []*schema.Column{UsersColumns[14]},
+				Columns:    []*schema.Column{UsersColumns[15]},
 				RefColumns: []*schema.Column{PaymentCustomersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

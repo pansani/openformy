@@ -1657,8 +1657,8 @@ func (h *Handler) UserCreate(ctx echo.Context) error {
 	}
 	op.SetVerified(payload.Verified)
 	op.SetAdmin(payload.Admin)
-	if payload.WebsiteURL != nil {
-		op.SetWebsiteURL(*payload.WebsiteURL)
+	if payload.Website != nil {
+		op.SetWebsite(*payload.Website)
 	}
 	if payload.BrandButtonColor != nil {
 		op.SetBrandButtonColor(*payload.BrandButtonColor)
@@ -1671,6 +1671,9 @@ func (h *Handler) UserCreate(ctx echo.Context) error {
 	}
 	if payload.BrandColorsStatus != nil {
 		op.SetBrandColorsStatus(*payload.BrandColorsStatus)
+	}
+	if payload.Logo != nil {
+		op.SetLogo(*payload.Logo)
 	}
 	if payload.CreatedAt != nil {
 		op.SetCreatedAt(*payload.CreatedAt)
@@ -1708,10 +1711,10 @@ func (h *Handler) UserUpdate(ctx echo.Context, id int) error {
 	}
 	op.SetVerified(payload.Verified)
 	op.SetAdmin(payload.Admin)
-	if payload.WebsiteURL == nil {
-		op.ClearWebsiteURL()
+	if payload.Website == nil {
+		op.ClearWebsite()
 	} else {
-		op.SetWebsiteURL(*payload.WebsiteURL)
+		op.SetWebsite(*payload.Website)
 	}
 	if payload.BrandButtonColor == nil {
 		op.ClearBrandButtonColor()
@@ -1732,6 +1735,11 @@ func (h *Handler) UserUpdate(ctx echo.Context, id int) error {
 		op.ClearBrandColorsStatus()
 	} else {
 		op.SetBrandColorsStatus(*payload.BrandColorsStatus)
+	}
+	if payload.Logo == nil {
+		op.ClearLogo()
+	} else {
+		op.SetLogo(*payload.Logo)
 	}
 	_, err = op.Save(ctx.Request().Context())
 	return err
@@ -1763,11 +1771,12 @@ func (h *Handler) UserList(ctx echo.Context) (*EntityList, error) {
 			"Company name",
 			"Verified",
 			"Admin",
-			"Website url",
+			"Website",
 			"Brand button color",
 			"Brand background color",
 			"Brand text color",
 			"Brand colors status",
+			"Logo",
 			"Created at",
 		},
 		Entities:    make([]EntityValues, 0, len(res)),
@@ -1785,11 +1794,12 @@ func (h *Handler) UserList(ctx echo.Context) (*EntityList, error) {
 				res[i].CompanyName,
 				fmt.Sprint(res[i].Verified),
 				fmt.Sprint(res[i].Admin),
-				res[i].WebsiteURL,
+				res[i].Website,
 				res[i].BrandButtonColor,
 				res[i].BrandBackgroundColor,
 				res[i].BrandTextColor,
 				fmt.Sprint(res[i].BrandColorsStatus),
+				res[i].Logo,
 				res[i].CreatedAt.Format(h.Config.TimeFormat),
 			},
 		})
@@ -1811,11 +1821,12 @@ func (h *Handler) UserGet(ctx echo.Context, id int) (url.Values, error) {
 	v.Set("company_name", entity.CompanyName)
 	v.Set("verified", fmt.Sprint(entity.Verified))
 	v.Set("admin", fmt.Sprint(entity.Admin))
-	v.Set("website_url", entity.WebsiteURL)
+	v.Set("website", entity.Website)
 	v.Set("brand_button_color", entity.BrandButtonColor)
 	v.Set("brand_background_color", entity.BrandBackgroundColor)
 	v.Set("brand_text_color", entity.BrandTextColor)
 	v.Set("brand_colors_status", fmt.Sprint(entity.BrandColorsStatus))
+	v.Set("logo", entity.Logo)
 	return v, err
 }
 

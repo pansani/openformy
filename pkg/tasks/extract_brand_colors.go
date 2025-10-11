@@ -39,7 +39,7 @@ func ExtractBrandColors(orm *ent.Client, apiKey string) func(ctx context.Context
 			return fmt.Errorf("failed to get user: %w", err)
 		}
 
-		if u.WebsiteURL == "" {
+		if u.Website == "" {
 			return fmt.Errorf("user has no website URL")
 		}
 
@@ -50,7 +50,7 @@ func ExtractBrandColors(orm *ent.Client, apiKey string) func(ctx context.Context
 			return fmt.Errorf("failed to update status: %w", err)
 		}
 
-		colors, err := extractColorsFromWebsite(ctx, u.WebsiteURL, apiKey)
+		colors, err := extractColorsFromWebsite(ctx, u.Website, apiKey)
 		if err != nil {
 			orm.User.UpdateOne(u).
 				SetBrandColorsStatus(user.BrandColorsStatusFailed).
