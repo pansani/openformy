@@ -1,7 +1,8 @@
 import { type BreadcrumbItem, type SharedData } from "@/types";
 import { Transition } from "@headlessui/react";
 import { Head, Link, useForm, usePage } from "@inertiajs/react";
-import { FormEventHandler } from "react";
+import { FormEventHandler, useRef, useState } from "react";
+import { Upload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 type ProfileForm = {
   name: string;
   email: string;
+  logo?: File;
 };
 
 export default function Profile({
@@ -34,10 +36,28 @@ export default function Profile({
   const { auth } = usePage<SharedData>().props;
 
   const { data, setData, post, errors, processing, recentlySuccessful } =
-    useForm<Required<ProfileForm>>({
+    useForm<ProfileForm>({
       name: auth.user.name,
       email: auth.user.email,
+      logo: undefined,
     });
+
+  const [logoPreview, setLogoPreview] = useState<string | null>(
+    auth.user.logo || null
+  );
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setData("logo", file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const submit: FormEventHandler = (e) => {
     e.preventDefault();
@@ -91,6 +111,33 @@ export default function Profile({
               />
 
               <InputError className="mt-2" message={errors.email} />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="logo">Logo</Label>
+              {logoPreview && (
+                <div className="w-full h-24 rounded-lg overflow-hidden border mb-2">
+                  <img src={logoPreview} alt="Logo" className="w-full h-full object-contain bg-muted" />
+                </div>
+              )}
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full"
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                {logoPreview ? "Change Logo" : "Upload Logo"}
+              </Button>
+              <input
+                ref={fileInputRef}
+                id="logo"
+                type="file"
+                accept="image/*"
+                onChange={handleLogoChange}
+                className="hidden"
+              />
+              <InputError className="mt-2" message={errors.logo} />
             </div>
 
             {mustVerifyEmail && auth.user.email_verified_at === null && (

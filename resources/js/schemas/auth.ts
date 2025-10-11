@@ -11,6 +11,7 @@ export const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   password_confirmation: z.string(),
+  logo: z.instanceof(File).optional(),
 }).refine((data) => data.password === data.password_confirmation, {
   message: "Passwords don't match",
   path: ['password_confirmation'],

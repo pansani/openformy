@@ -50,7 +50,7 @@ type Container struct {
 	Database *sql.DB
 
 	// Files stores the file system.
-	Files afero.Fs
+	Files FileStorage
 
 	// ORM stores a client to the ORM.
 	ORM *ent.Client
@@ -209,15 +209,26 @@ func (c *Container) initDatabase() {
 func (c *Container) initFiles() {
 	// Use in-memory storage for tests.
 	if c.Config.App.Environment == config.EnvTest {
-		c.Files = afero.NewMemMapFs()
+		c.Files = &LocalStorage{Fs: afero.NewMemMapFs()}
 		return
 	}
 
+	// Check if S3 is configured
+	if c.Config.Files.Driver == "s3" {
+		s3Storage, err := NewS3Storage(c.Config.Files.S3)
+		if err != nil {
+			panic(fmt.Sprintf("failed to initialize S3 storage: %v", err))
+		}
+		c.Files = s3Storage
+		return
+	}
+
+	// Default to local file system
 	fs := afero.NewOsFs()
 	if err := fs.MkdirAll(c.Config.Files.Directory, 0755); err != nil {
 		panic(err)
 	}
-	c.Files = afero.NewBasePathFs(fs, c.Config.Files.Directory)
+	c.Files = &LocalStorage{Fs: afero.NewBasePathFs(fs, c.Config.Files.Directory)}
 }
 
 // initORM initializes the ORM.

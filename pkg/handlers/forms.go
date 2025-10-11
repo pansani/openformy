@@ -412,18 +412,24 @@ func (h *Forms) View(ctx echo.Context) error {
 		})
 	}
 
+	props := inertia.Props{
+		"form": formData,
+		"brandColors": map[string]string{
+			"button":     foundUser.BrandButtonColor,
+			"background": foundUser.BrandBackgroundColor,
+			"text":       foundUser.BrandTextColor,
+		},
+	}
+
+	if foundUser.Logo != "" {
+		props["userLogo"] = foundUser.Logo
+	}
+
 	err = h.Inertia.Render(
 		ctx.Response().Writer,
 		ctx.Request(),
 		"Forms/View",
-		inertia.Props{
-			"form": formData,
-			"brandColors": map[string]string{
-				"button":     foundUser.BrandButtonColor,
-				"background": foundUser.BrandBackgroundColor,
-				"text":       foundUser.BrandTextColor,
-			},
-		},
+		props,
 	)
 	if err != nil {
 		handleServerErr(ctx.Response().Writer, err)

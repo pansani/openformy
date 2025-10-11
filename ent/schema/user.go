@@ -44,7 +44,7 @@ func (User) Fields() []ent.Field {
 			Default(false),
 		field.Bool("admin").
 			Default(false),
-		field.String("website_url").
+		field.String("website").
 			Optional(),
 		field.String("brand_button_color").
 			Optional().
@@ -59,6 +59,8 @@ func (User) Fields() []ent.Field {
 			Values("pending", "processing", "completed", "failed").
 			Optional().
 			Comment("Status of brand color extraction job"),
+		field.String("logo").
+			Optional(),
 		field.Time("created_at").
 			Default(time.Now).
 			Immutable(),

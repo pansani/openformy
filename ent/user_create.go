@@ -98,16 +98,16 @@ func (uc *UserCreate) SetNillableAdmin(b *bool) *UserCreate {
 	return uc
 }
 
-// SetWebsiteURL sets the "website_url" field.
-func (uc *UserCreate) SetWebsiteURL(s string) *UserCreate {
-	uc.mutation.SetWebsiteURL(s)
+// SetWebsite sets the "website" field.
+func (uc *UserCreate) SetWebsite(s string) *UserCreate {
+	uc.mutation.SetWebsite(s)
 	return uc
 }
 
-// SetNillableWebsiteURL sets the "website_url" field if the given value is not nil.
-func (uc *UserCreate) SetNillableWebsiteURL(s *string) *UserCreate {
+// SetNillableWebsite sets the "website" field if the given value is not nil.
+func (uc *UserCreate) SetNillableWebsite(s *string) *UserCreate {
 	if s != nil {
-		uc.SetWebsiteURL(*s)
+		uc.SetWebsite(*s)
 	}
 	return uc
 }
@@ -164,6 +164,20 @@ func (uc *UserCreate) SetBrandColorsStatus(ucs user.BrandColorsStatus) *UserCrea
 func (uc *UserCreate) SetNillableBrandColorsStatus(ucs *user.BrandColorsStatus) *UserCreate {
 	if ucs != nil {
 		uc.SetBrandColorsStatus(*ucs)
+	}
+	return uc
+}
+
+// SetLogo sets the "logo" field.
+func (uc *UserCreate) SetLogo(s string) *UserCreate {
+	uc.mutation.SetLogo(s)
+	return uc
+}
+
+// SetNillableLogo sets the "logo" field if the given value is not nil.
+func (uc *UserCreate) SetNillableLogo(s *string) *UserCreate {
+	if s != nil {
+		uc.SetLogo(*s)
 	}
 	return uc
 }
@@ -395,9 +409,9 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldAdmin, field.TypeBool, value)
 		_node.Admin = value
 	}
-	if value, ok := uc.mutation.WebsiteURL(); ok {
-		_spec.SetField(user.FieldWebsiteURL, field.TypeString, value)
-		_node.WebsiteURL = value
+	if value, ok := uc.mutation.Website(); ok {
+		_spec.SetField(user.FieldWebsite, field.TypeString, value)
+		_node.Website = value
 	}
 	if value, ok := uc.mutation.BrandButtonColor(); ok {
 		_spec.SetField(user.FieldBrandButtonColor, field.TypeString, value)
@@ -414,6 +428,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.BrandColorsStatus(); ok {
 		_spec.SetField(user.FieldBrandColorsStatus, field.TypeEnum, value)
 		_node.BrandColorsStatus = value
+	}
+	if value, ok := uc.mutation.Logo(); ok {
+		_spec.SetField(user.FieldLogo, field.TypeString, value)
+		_node.Logo = value
 	}
 	if value, ok := uc.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)

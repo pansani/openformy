@@ -131,11 +131,12 @@ type User struct {
 	CompanyName          *string                 `form:"company_name"`
 	Verified             bool                    `form:"verified"`
 	Admin                bool                    `form:"admin"`
-	WebsiteURL           *string                 `form:"website_url"`
+	Website              *string                 `form:"website"`
 	BrandButtonColor     *string                 `form:"brand_button_color"`
 	BrandBackgroundColor *string                 `form:"brand_background_color"`
 	BrandTextColor       *string                 `form:"brand_text_color"`
 	BrandColorsStatus    *user.BrandColorsStatus `form:"brand_colors_status"`
+	Logo                 *string                 `form:"logo"`
 	CreatedAt            *time.Time              `form:"created_at"`
 }
 

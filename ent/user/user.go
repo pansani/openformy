@@ -30,8 +30,8 @@ const (
 	FieldVerified = "verified"
 	// FieldAdmin holds the string denoting the admin field in the database.
 	FieldAdmin = "admin"
-	// FieldWebsiteURL holds the string denoting the website_url field in the database.
-	FieldWebsiteURL = "website_url"
+	// FieldWebsite holds the string denoting the website field in the database.
+	FieldWebsite = "website"
 	// FieldBrandButtonColor holds the string denoting the brand_button_color field in the database.
 	FieldBrandButtonColor = "brand_button_color"
 	// FieldBrandBackgroundColor holds the string denoting the brand_background_color field in the database.
@@ -40,6 +40,8 @@ const (
 	FieldBrandTextColor = "brand_text_color"
 	// FieldBrandColorsStatus holds the string denoting the brand_colors_status field in the database.
 	FieldBrandColorsStatus = "brand_colors_status"
+	// FieldLogo holds the string denoting the logo field in the database.
+	FieldLogo = "logo"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// EdgeOwner holds the string denoting the owner edge name in mutations.
@@ -92,11 +94,12 @@ var Columns = []string{
 	FieldCompanyName,
 	FieldVerified,
 	FieldAdmin,
-	FieldWebsiteURL,
+	FieldWebsite,
 	FieldBrandButtonColor,
 	FieldBrandBackgroundColor,
 	FieldBrandTextColor,
 	FieldBrandColorsStatus,
+	FieldLogo,
 	FieldCreatedAt,
 }
 
@@ -210,9 +213,9 @@ func ByAdmin(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAdmin, opts...).ToFunc()
 }
 
-// ByWebsiteURL orders the results by the website_url field.
-func ByWebsiteURL(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldWebsiteURL, opts...).ToFunc()
+// ByWebsite orders the results by the website field.
+func ByWebsite(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldWebsite, opts...).ToFunc()
 }
 
 // ByBrandButtonColor orders the results by the brand_button_color field.
@@ -233,6 +236,11 @@ func ByBrandTextColor(opts ...sql.OrderTermOption) OrderOption {
 // ByBrandColorsStatus orders the results by the brand_colors_status field.
 func ByBrandColorsStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBrandColorsStatus, opts...).ToFunc()
+}
+
+// ByLogo orders the results by the logo field.
+func ByLogo(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLogo, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

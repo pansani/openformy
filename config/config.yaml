@@ -42,6 +42,15 @@ database:
 
 files:
   directory: "uploads"
+  driver: "local"
+  s3:
+    bucket: ""
+    region: "us-east-1"
+    endpoint: ""
+    accessKeyId: ""
+    secretAccessKey: ""
+    usePathStyleEndpoint: false
+    publicUrl: ""
 
 tasks:
   goroutines: 1

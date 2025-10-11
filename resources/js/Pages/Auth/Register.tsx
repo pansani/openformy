@@ -1,6 +1,6 @@
 import { Head, useForm } from "@inertiajs/react";
-import { LoaderCircle } from "lucide-react";
-import { FormEventHandler } from "react";
+import { LoaderCircle, Upload } from "lucide-react";
+import { FormEventHandler, useRef, useState } from "react";
 import { RegisterFormData } from "@/schemas/auth";
 
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,23 @@ export default function Register() {
     email: "",
     password: "",
     password_confirmation: "",
+    logo: undefined,
   });
+
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setData("logo", file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const submit: FormEventHandler = (e) => {
     e.preventDefault();
@@ -91,6 +107,33 @@ export default function Register() {
               placeholder="Confirm your password"
             />
             <InputError message={errors["password_confirmation"]} />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="logo">Logo (optional)</Label>
+            {logoPreview && (
+              <div className="w-full h-24 rounded-lg overflow-hidden border mb-2">
+                <img src={logoPreview} alt="Logo preview" className="w-full h-full object-contain bg-muted" />
+              </div>
+            )}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              {logoPreview ? "Change Logo" : "Upload Logo"}
+            </Button>
+            <input
+              ref={fileInputRef}
+              id="logo"
+              type="file"
+              accept="image/*"
+              onChange={handleLogoChange}
+              className="hidden"
+            />
+            <InputError message={errors.logo} />
           </div>
 
           <Button type="submit" className="mt-4 w-full" disabled={processing}>
