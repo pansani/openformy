@@ -113,6 +113,19 @@ type (
 	// FilesConfig stores the file system configuration.
 	FilesConfig struct {
 		Directory string
+		Driver    string
+		S3        S3Config
+	}
+
+	// S3Config stores the S3 configuration.
+	S3Config struct {
+		Bucket               string
+		Region               string
+		Endpoint             string
+		AccessKeyID          string
+		SecretAccessKey      string
+		UsePathStyleEndpoint bool
+		PublicURL            string
 	}
 
 	// TasksConfig stores the tasks configuration.
