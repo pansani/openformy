@@ -64,6 +64,14 @@ export function useFormEditor(form: Form) {
   }, [hasUnsavedChanges]);
 
   const handleFieldSelect = (type: string) => {
+    let options: Question['options'] = undefined;
+    
+    if (['dropdown', 'radio', 'checkbox', 'multi-select'].includes(type)) {
+      options = { items: ['Option 1', 'Option 2'] };
+    } else if (type === 'multi-input') {
+      options = { subInputs: [] };
+    }
+
     const newQuestion: Question = {
       id: `temp-${Date.now()}`,
       type,
@@ -72,7 +80,7 @@ export function useFormEditor(form: Form) {
       placeholder: '',
       required: true,
       order: questions.length,
-      options: ['dropdown', 'radio', 'checkbox', 'multi-select'].includes(type) ? ['Option 1', 'Option 2'] : undefined,
+      options,
     };
 
     setQuestions([...questions, newQuestion]);

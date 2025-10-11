@@ -23,7 +23,8 @@ import {
   Clock,
   CalendarRange,
   ShieldCheck,
-  EyeOff
+  EyeOff,
+  Layers
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -46,6 +47,7 @@ const inputFields: FieldType[] = [
   { type: 'time', label: 'Time', icon: <Clock className="h-5 w-5" />, description: 'Pick a specific time.' },
   { type: 'file', label: 'File Upload', icon: <Upload className="h-5 w-5" />, description: 'Allow users to upload files or images.' },
   { type: 'signature', label: 'Signature', icon: <Pen className="h-5 w-5" />, description: 'Capture electronic signatures.' },
+  { type: 'multi-input', label: 'Multi-Input', icon: <Layers className="h-5 w-5" />, description: 'Multiple related inputs in one question.' },
 ];
 
 const selectionFields: FieldType[] = [
@@ -57,18 +59,18 @@ const selectionFields: FieldType[] = [
   { type: 'picture-choice', label: 'Picture Choice', icon: <Image className="h-5 w-5" />, description: 'Multiple choice with images.' },
 ];
 
-const feedbackFields: FieldType[] = [
-  { type: 'rating', label: 'Rating (Stars)', icon: <Star className="h-5 w-5" />, description: 'Star rating from 1 to 5.' },
-  { type: 'opinion-scale', label: 'Opinion Scale', icon: <Sliders className="h-5 w-5" />, description: 'Numeric scale from 1 to 10.' },
-  { type: 'ranking', label: 'Ranking', icon: <GripVertical className="h-5 w-5" />, description: 'Drag to rank options in order of preference.' },
-  { type: 'matrix', label: 'Matrix/Grid', icon: <Table className="h-5 w-5" />, description: 'Multiple questions with same answer options.' },
-];
+// const feedbackFields: FieldType[] = [
+//   { type: 'rating', label: 'Rating (Stars)', icon: <Star className="h-5 w-5" />, description: 'Star rating from 1 to 5.' },
+//   { type: 'opinion-scale', label: 'Opinion Scale', icon: <Sliders className="h-5 w-5" />, description: 'Numeric scale from 1 to 10.' },
+//   { type: 'ranking', label: 'Ranking', icon: <GripVertical className="h-5 w-5" />, description: 'Drag to rank options in order of preference.' },
+//   { type: 'matrix', label: 'Matrix/Grid', icon: <Table className="h-5 w-5" />, description: 'Multiple questions with same answer options.' },
+// ];
 
-const contentFields: FieldType[] = [
-  { type: 'statement', label: 'Statement', icon: <Info className="h-5 w-5" />, description: 'Display text without collecting input.' },
-  { type: 'legal', label: 'Legal Consent', icon: <ShieldCheck className="h-5 w-5" />, description: 'Checkbox for terms and conditions.' },
-  { type: 'hidden', label: 'Hidden Field', icon: <EyeOff className="h-5 w-5" />, description: 'Hidden field for tracking data.' },
-];
+// const contentFields: FieldType[] = [
+//   { type: 'statement', label: 'Statement', icon: <Info className="h-5 w-5" />, description: 'Display text without collecting input.' },
+//   { type: 'legal', label: 'Legal Consent', icon: <ShieldCheck className="h-5 w-5" />, description: 'Checkbox for terms and conditions.' },
+//   { type: 'hidden', label: 'Hidden Field', icon: <EyeOff className="h-5 w-5" />, description: 'Hidden field for tracking data.' },
+// ];
 
 interface FieldTypesSidebarProps {
   onFieldSelect: (type: string) => void;
@@ -77,7 +79,7 @@ interface FieldTypesSidebarProps {
 export function FieldTypesSidebar({ onFieldSelect }: FieldTypesSidebarProps) {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const allFields = [...inputFields, ...selectionFields, ...feedbackFields, ...contentFields];
+  const allFields = [...inputFields, ...selectionFields];
   const filteredFields = allFields.filter((field) =>
     field.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
     field.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -124,7 +126,7 @@ export function FieldTypesSidebar({ onFieldSelect }: FieldTypesSidebarProps) {
               </div>
             </div>
 
-            <div>
+            {/* <div>
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                 FEEDBACK
               </h3>
@@ -144,7 +146,7 @@ export function FieldTypesSidebar({ onFieldSelect }: FieldTypesSidebarProps) {
                   <FieldTypeCard key={field.type} field={field} onSelect={onFieldSelect} />
                 ))}
               </div>
-            </div>
+            </div> */}
           </>
         ) : (
           <div className="space-y-2">

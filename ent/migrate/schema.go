@@ -199,7 +199,7 @@ var (
 	// QuestionsColumns holds the columns for the "questions" table.
 	QuestionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "type", Type: field.TypeEnum, Enums: []string{"text", "short-text", "long-text", "email", "number", "phone", "url", "textarea", "date", "time", "date-range", "file", "signature", "dropdown", "radio", "checkbox", "multi-select", "picture-choice", "yesno", "rating", "opinion-scale", "ranking", "matrix", "statement", "legal", "hidden"}, Default: "text"},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"text", "short-text", "long-text", "email", "number", "phone", "url", "textarea", "date", "time", "date-range", "file", "signature", "dropdown", "radio", "checkbox", "multi-select", "picture-choice", "yesno", "rating", "opinion-scale", "ranking", "matrix", "statement", "legal", "hidden", "multi-input"}, Default: "text"},
 		{Name: "title", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString, Nullable: true, Size: 2147483647},
 		{Name: "placeholder", Type: field.TypeString, Nullable: true},

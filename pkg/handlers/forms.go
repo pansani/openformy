@@ -204,11 +204,9 @@ func (h *Forms) Edit(ctx echo.Context) error {
 							q.Type == "picture-choice"
 						
 						if q.Options != nil {
-							if items, ok := q.Options["items"]; ok {
-								opts = items
-							}
+							opts = q.Options
 						} else if isSelectionField {
-							opts = []string{"Option 1", "Option 2"}
+							opts = map[string]interface{}{"items": []string{"Option 1", "Option 2"}}
 						}
 
 						questions = append(questions, map[string]interface{}{
@@ -355,9 +353,7 @@ func (h *Forms) Update(ctx echo.Context) error {
 			create.SetPlaceholder(qPlaceholder)
 		}
 
-		if options, ok := q["options"].([]interface{}); ok && len(options) > 0 {
-			optionsMap := make(map[string]interface{})
-			optionsMap["items"] = options
+		if optionsMap, ok := q["options"].(map[string]interface{}); ok && len(optionsMap) > 0 {
 			create.SetOptions(optionsMap)
 		}
 

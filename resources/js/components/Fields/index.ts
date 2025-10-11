@@ -18,3 +18,4 @@ export { TimeField } from './TimeField';
 export { DateRangeField } from './DateRangeField';
 export { LegalField } from './LegalField';
 export { HiddenField } from './HiddenField';
+export { MultiInputField } from './MultiInputField';

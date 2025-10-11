@@ -1,3 +1,11 @@
+export interface SubInput {
+  id: string;
+  type: 'text' | 'email' | 'number' | 'phone' | 'url' | 'date' | 'time';
+  label: string;
+  placeholder?: string;
+  required: boolean;
+}
+
 export interface Question {
   id: string;
   type: string;
@@ -6,7 +14,10 @@ export interface Question {
   placeholder?: string;
   required: boolean;
   order: number;
-  options?: string[];
+  options?: {
+    items?: string[];
+    subInputs?: SubInput[];
+  };
 }
 
 export interface Form {

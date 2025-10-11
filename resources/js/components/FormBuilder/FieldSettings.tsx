@@ -3,8 +3,17 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X, Plus, GripVertical } from 'lucide-react';
 import React from 'react';
+
+interface SubInput {
+  id: string;
+  type: 'text' | 'email' | 'number' | 'phone' | 'url' | 'date' | 'time';
+  label: string;
+  placeholder?: string;
+  required: boolean;
+}
 
 interface Question {
   id: string;
@@ -14,7 +23,10 @@ interface Question {
   placeholder?: string;
   required: boolean;
   order: number;
-  options?: string[];
+  options?: string[] | {
+    items?: string[];
+    subInputs?: SubInput[];
+  };
 }
 
 interface FieldSettingsProps {
@@ -49,7 +61,8 @@ export function FieldSettings({ question, onUpdate, onClose }: FieldSettingsProp
 
   const isSelectionField = ['dropdown', 'radio', 'checkbox', 'multi-select', 'picture-choice'].includes(question.type);
   const isContentField = ['statement', 'legal', 'hidden'].includes(question.type);
-  const hasPlaceholder = !isSelectionField && !isContentField;
+  const isMultiInputField = question.type === 'multi-input';
+  const hasPlaceholder = !isSelectionField && !isContentField && !isMultiInputField;
 
   return (
     <div className="h-full flex flex-col bg-background border-l">
@@ -113,8 +126,20 @@ export function FieldSettings({ question, onUpdate, onClose }: FieldSettingsProp
               Options <span className="text-red-500">*</span>
             </Label>
             <OptionsEditor
-              options={question.options || ['Option 1', 'Option 2']}
-              onChange={(options) => onUpdate({ ...question, options })}
+              options={question.options?.items || ['Option 1', 'Option 2']}
+              onChange={(items) => onUpdate({ ...question, options: { items } })}
+            />
+          </div>
+        )}
+
+        {isMultiInputField && (
+          <div className="space-y-3">
+            <Label className="text-sm font-semibold">
+              Sub-Inputs <span className="text-red-500">*</span>
+            </Label>
+            <SubInputsEditor
+              subInputs={typeof question.options === 'object' && question.options?.subInputs ? question.options.subInputs : []}
+              onChange={(subInputs) => onUpdate({ ...question, options: { subInputs } })}
             />
           </div>
         )}
@@ -229,6 +254,158 @@ function OptionsEditor({ options, onChange }: { options: string[]; onChange: (op
       >
         <Plus className="h-4 w-4 mr-2" />
         Add Option
+      </Button>
+    </div>
+  );
+}
+
+function SubInputsEditor({ subInputs, onChange }: { subInputs: SubInput[]; onChange: (subInputs: SubInput[]) => void }) {
+  const [draggedIndex, setDraggedIndex] = React.useState<number | null>(null);
+
+  const addSubInput = () => {
+    onChange([...subInputs, {
+      id: `sub_${Date.now()}`,
+      type: 'text',
+      label: `Input ${subInputs.length + 1}`,
+      placeholder: '',
+      required: false,
+    }]);
+  };
+
+  const updateSubInput = (index: number, updates: Partial<SubInput>) => {
+    const newSubInputs = [...subInputs];
+    newSubInputs[index] = { ...newSubInputs[index], ...updates };
+    onChange(newSubInputs);
+  };
+
+  const removeSubInput = (index: number) => {
+    if (subInputs.length > 1) {
+      onChange(subInputs.filter((_, i) => i !== index));
+    }
+  };
+
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
+
+    const newSubInputs = [...subInputs];
+    const draggedSubInput = newSubInputs[draggedIndex];
+    newSubInputs.splice(draggedIndex, 1);
+    newSubInputs.splice(index, 0, draggedSubInput);
+
+    setDraggedIndex(index);
+    onChange(newSubInputs);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+  };
+
+  if (subInputs.length === 0) {
+    return (
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={addSubInput}
+        className="w-full"
+      >
+        <Plus className="h-4 w-4 mr-2" />
+        Add Sub-Input
+      </Button>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {subInputs.map((subInput, index) => (
+        <div 
+          key={subInput.id} 
+          className="p-3 border rounded-lg space-y-3"
+          draggable
+          onDragStart={() => handleDragStart(index)}
+          onDragOver={(e) => handleDragOver(e, index)}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="flex items-center gap-2">
+            <div className="cursor-grab active:cursor-grabbing">
+              <GripVertical className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <Input
+              type="text"
+              value={subInput.label}
+              onChange={(e) => updateSubInput(index, { label: e.target.value })}
+              placeholder="Label"
+              className="flex-1"
+            />
+            {subInputs.length > 1 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => removeSubInput(index)}
+                className="h-9 w-9 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Type</Label>
+              <Select
+                value={subInput.type}
+                onValueChange={(value) => updateSubInput(index, { type: value as SubInput['type'] })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="text">Text</SelectItem>
+                  <SelectItem value="email">Email</SelectItem>
+                  <SelectItem value="number">Number</SelectItem>
+                  <SelectItem value="phone">Phone</SelectItem>
+                  <SelectItem value="url">URL</SelectItem>
+                  <SelectItem value="date">Date</SelectItem>
+                  <SelectItem value="time">Time</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-1.5">
+              <Label className="text-xs">Required</Label>
+              <div className="flex items-center h-10">
+                <Switch
+                  checked={subInput.required}
+                  onCheckedChange={(checked) => updateSubInput(index, { required: checked })}
+                />
+              </div>
+            </div>
+          </div>
+          
+          <div className="space-y-1.5">
+            <Label className="text-xs">Placeholder</Label>
+            <Input
+              type="text"
+              value={subInput.placeholder || ''}
+              onChange={(e) => updateSubInput(index, { placeholder: e.target.value })}
+              placeholder="Enter placeholder text..."
+            />
+          </div>
+        </div>
+      ))}
+      
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={addSubInput}
+        className="w-full"
+      >
+        <Plus className="h-4 w-4 mr-2" />
+        Add Sub-Input
       </Button>
     </div>
   );

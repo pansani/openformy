@@ -17,7 +17,16 @@ import {
   LegalField,
   HiddenField,
   StatementField,
+  MultiInputField,
 } from "@/components/Fields";
+
+interface SubInput {
+  id: string;
+  type: 'text' | 'email' | 'number' | 'phone' | 'url' | 'date' | 'time';
+  label: string;
+  placeholder?: string;
+  required: boolean;
+}
 
 interface Question {
   id: number;
@@ -29,14 +38,15 @@ interface Question {
   order: number;
   options?: {
     items?: string[];
+    subInputs?: SubInput[];
   };
 }
 
 interface FormQuestionProps {
   question: Question;
-  value: string | string[];
+  value: string | string[] | Record<string, string>;
   error?: string;
-  onChange: (value: string | string[]) => void;
+  onChange: (value: string | string[] | Record<string, string>) => void;
 }
 
 export function FormQuestion({
@@ -282,6 +292,18 @@ export function FormQuestion({
           <StatementField
             title={question.title}
             description={question.description}
+          />
+        );
+
+      case "multi-input":
+        const subInputs = question.options?.subInputs || [];
+        const multiInputValue = typeof value === 'object' && !Array.isArray(value) ? value : {};
+        return (
+          <MultiInputField
+            subInputs={subInputs}
+            values={multiInputValue}
+            onChange={onChange}
+            disabled={false}
           />
         );
 
