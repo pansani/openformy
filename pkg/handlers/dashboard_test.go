@@ -272,7 +272,8 @@ func TestDashboard__getChartData_WithResponses(t *testing.T) {
 		Save(context.Background())
 	require.NoError(t, err)
 
-	today := time.Now()
+	now := time.Now()
+	today := time.Date(now.Year(), now.Month(), now.Day(), 12, 0, 0, 0, time.UTC)
 	yesterday := today.AddDate(0, 0, -1)
 
 	_, err = c.ORM.Response.Create().

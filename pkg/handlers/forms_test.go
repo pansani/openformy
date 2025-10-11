@@ -142,6 +142,60 @@ func TestGenerateSlug_Empty(t *testing.T) {
 	assert.Contains(t, result, "form-")
 }
 
+func TestForms__View_WithLogo(t *testing.T) {
+	user := createTestUser(t)
+	
+	logoPath := "/files/logos/test-logo.png"
+	user, err := c.ORM.User.UpdateOne(user).
+		SetLogo(logoPath).
+		Save(context.Background())
+	require.NoError(t, err)
+
+	formData := createTestForm(t, user, "Test Form", "Description")
+	formData, err = c.ORM.Form.UpdateOne(formData).
+		SetPublished(true).
+		Save(context.Background())
+	require.NoError(t, err)
+
+	identifier := getUserIdentifier(user)
+	
+	handler := &Forms{
+		config:  c.Config,
+		orm:     c.ORM,
+		Inertia: c.Inertia,
+	}
+
+	userFromDB, err := c.ORM.User.Query().
+		Where(entUser.ID(user.ID)).
+		Only(context.Background())
+	require.NoError(t, err)
+	
+	assert.Equal(t, logoPath, userFromDB.Logo)
+	assert.NotEmpty(t, identifier)
+	assert.NotNil(t, handler)
+}
+
+func TestForms__View_WithoutLogo(t *testing.T) {
+	user := createTestUser(t)
+	require.Empty(t, user.Logo)
+
+	formData := createTestForm(t, user, "Test Form No Logo", "Description")
+	formData, err := c.ORM.Form.UpdateOne(formData).
+		SetPublished(true).
+		Save(context.Background())
+	require.NoError(t, err)
+
+	identifier := getUserIdentifier(user)
+	
+	userFromDB, err := c.ORM.User.Query().
+		Where(entUser.ID(user.ID)).
+		Only(context.Background())
+	require.NoError(t, err)
+	
+	assert.Empty(t, userFromDB.Logo)
+	assert.NotEmpty(t, identifier)
+}
+
 func createTestUser(t *testing.T) *ent.User {
 	user, err := c.ORM.User.Create().
 		SetEmail(fmt.Sprintf("test%d@example.com", randomInt())).

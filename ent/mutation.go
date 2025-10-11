@@ -9202,11 +9202,12 @@ type UserMutation struct {
 	company_name            *string
 	verified                *bool
 	admin                   *bool
-	website_url             *string
+	website                 *string
 	brand_button_color      *string
 	brand_background_color  *string
 	brand_text_color        *string
 	brand_colors_status     *user.BrandColorsStatus
+	logo                    *string
 	created_at              *time.Time
 	clearedFields           map[string]struct{}
 	owner                   map[int]struct{}
@@ -9601,53 +9602,53 @@ func (m *UserMutation) ResetAdmin() {
 	m.admin = nil
 }
 
-// SetWebsiteURL sets the "website_url" field.
-func (m *UserMutation) SetWebsiteURL(s string) {
-	m.website_url = &s
+// SetWebsite sets the "website" field.
+func (m *UserMutation) SetWebsite(s string) {
+	m.website = &s
 }
 
-// WebsiteURL returns the value of the "website_url" field in the mutation.
-func (m *UserMutation) WebsiteURL() (r string, exists bool) {
-	v := m.website_url
+// Website returns the value of the "website" field in the mutation.
+func (m *UserMutation) Website() (r string, exists bool) {
+	v := m.website
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldWebsiteURL returns the old "website_url" field's value of the User entity.
+// OldWebsite returns the old "website" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldWebsiteURL(ctx context.Context) (v string, err error) {
+func (m *UserMutation) OldWebsite(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldWebsiteURL is only allowed on UpdateOne operations")
+		return v, errors.New("OldWebsite is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldWebsiteURL requires an ID field in the mutation")
+		return v, errors.New("OldWebsite requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldWebsiteURL: %w", err)
+		return v, fmt.Errorf("querying old value for OldWebsite: %w", err)
 	}
-	return oldValue.WebsiteURL, nil
+	return oldValue.Website, nil
 }
 
-// ClearWebsiteURL clears the value of the "website_url" field.
-func (m *UserMutation) ClearWebsiteURL() {
-	m.website_url = nil
-	m.clearedFields[user.FieldWebsiteURL] = struct{}{}
+// ClearWebsite clears the value of the "website" field.
+func (m *UserMutation) ClearWebsite() {
+	m.website = nil
+	m.clearedFields[user.FieldWebsite] = struct{}{}
 }
 
-// WebsiteURLCleared returns if the "website_url" field was cleared in this mutation.
-func (m *UserMutation) WebsiteURLCleared() bool {
-	_, ok := m.clearedFields[user.FieldWebsiteURL]
+// WebsiteCleared returns if the "website" field was cleared in this mutation.
+func (m *UserMutation) WebsiteCleared() bool {
+	_, ok := m.clearedFields[user.FieldWebsite]
 	return ok
 }
 
-// ResetWebsiteURL resets all changes to the "website_url" field.
-func (m *UserMutation) ResetWebsiteURL() {
-	m.website_url = nil
-	delete(m.clearedFields, user.FieldWebsiteURL)
+// ResetWebsite resets all changes to the "website" field.
+func (m *UserMutation) ResetWebsite() {
+	m.website = nil
+	delete(m.clearedFields, user.FieldWebsite)
 }
 
 // SetBrandButtonColor sets the "brand_button_color" field.
@@ -9844,6 +9845,55 @@ func (m *UserMutation) BrandColorsStatusCleared() bool {
 func (m *UserMutation) ResetBrandColorsStatus() {
 	m.brand_colors_status = nil
 	delete(m.clearedFields, user.FieldBrandColorsStatus)
+}
+
+// SetLogo sets the "logo" field.
+func (m *UserMutation) SetLogo(s string) {
+	m.logo = &s
+}
+
+// Logo returns the value of the "logo" field in the mutation.
+func (m *UserMutation) Logo() (r string, exists bool) {
+	v := m.logo
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLogo returns the old "logo" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldLogo(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLogo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLogo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLogo: %w", err)
+	}
+	return oldValue.Logo, nil
+}
+
+// ClearLogo clears the value of the "logo" field.
+func (m *UserMutation) ClearLogo() {
+	m.logo = nil
+	m.clearedFields[user.FieldLogo] = struct{}{}
+}
+
+// LogoCleared returns if the "logo" field was cleared in this mutation.
+func (m *UserMutation) LogoCleared() bool {
+	_, ok := m.clearedFields[user.FieldLogo]
+	return ok
+}
+
+// ResetLogo resets all changes to the "logo" field.
+func (m *UserMutation) ResetLogo() {
+	m.logo = nil
+	delete(m.clearedFields, user.FieldLogo)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -10117,7 +10167,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.name != nil {
 		fields = append(fields, user.FieldName)
 	}
@@ -10139,8 +10189,8 @@ func (m *UserMutation) Fields() []string {
 	if m.admin != nil {
 		fields = append(fields, user.FieldAdmin)
 	}
-	if m.website_url != nil {
-		fields = append(fields, user.FieldWebsiteURL)
+	if m.website != nil {
+		fields = append(fields, user.FieldWebsite)
 	}
 	if m.brand_button_color != nil {
 		fields = append(fields, user.FieldBrandButtonColor)
@@ -10153,6 +10203,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.brand_colors_status != nil {
 		fields = append(fields, user.FieldBrandColorsStatus)
+	}
+	if m.logo != nil {
+		fields = append(fields, user.FieldLogo)
 	}
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
@@ -10179,8 +10232,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Verified()
 	case user.FieldAdmin:
 		return m.Admin()
-	case user.FieldWebsiteURL:
-		return m.WebsiteURL()
+	case user.FieldWebsite:
+		return m.Website()
 	case user.FieldBrandButtonColor:
 		return m.BrandButtonColor()
 	case user.FieldBrandBackgroundColor:
@@ -10189,6 +10242,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.BrandTextColor()
 	case user.FieldBrandColorsStatus:
 		return m.BrandColorsStatus()
+	case user.FieldLogo:
+		return m.Logo()
 	case user.FieldCreatedAt:
 		return m.CreatedAt()
 	}
@@ -10214,8 +10269,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldVerified(ctx)
 	case user.FieldAdmin:
 		return m.OldAdmin(ctx)
-	case user.FieldWebsiteURL:
-		return m.OldWebsiteURL(ctx)
+	case user.FieldWebsite:
+		return m.OldWebsite(ctx)
 	case user.FieldBrandButtonColor:
 		return m.OldBrandButtonColor(ctx)
 	case user.FieldBrandBackgroundColor:
@@ -10224,6 +10279,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldBrandTextColor(ctx)
 	case user.FieldBrandColorsStatus:
 		return m.OldBrandColorsStatus(ctx)
+	case user.FieldLogo:
+		return m.OldLogo(ctx)
 	case user.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	}
@@ -10284,12 +10341,12 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAdmin(v)
 		return nil
-	case user.FieldWebsiteURL:
+	case user.FieldWebsite:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetWebsiteURL(v)
+		m.SetWebsite(v)
 		return nil
 	case user.FieldBrandButtonColor:
 		v, ok := value.(string)
@@ -10318,6 +10375,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBrandColorsStatus(v)
+		return nil
+	case user.FieldLogo:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLogo(v)
 		return nil
 	case user.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -10362,8 +10426,8 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldCompanyName) {
 		fields = append(fields, user.FieldCompanyName)
 	}
-	if m.FieldCleared(user.FieldWebsiteURL) {
-		fields = append(fields, user.FieldWebsiteURL)
+	if m.FieldCleared(user.FieldWebsite) {
+		fields = append(fields, user.FieldWebsite)
 	}
 	if m.FieldCleared(user.FieldBrandButtonColor) {
 		fields = append(fields, user.FieldBrandButtonColor)
@@ -10376,6 +10440,9 @@ func (m *UserMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(user.FieldBrandColorsStatus) {
 		fields = append(fields, user.FieldBrandColorsStatus)
+	}
+	if m.FieldCleared(user.FieldLogo) {
+		fields = append(fields, user.FieldLogo)
 	}
 	return fields
 }
@@ -10397,8 +10464,8 @@ func (m *UserMutation) ClearField(name string) error {
 	case user.FieldCompanyName:
 		m.ClearCompanyName()
 		return nil
-	case user.FieldWebsiteURL:
-		m.ClearWebsiteURL()
+	case user.FieldWebsite:
+		m.ClearWebsite()
 		return nil
 	case user.FieldBrandButtonColor:
 		m.ClearBrandButtonColor()
@@ -10411,6 +10478,9 @@ func (m *UserMutation) ClearField(name string) error {
 		return nil
 	case user.FieldBrandColorsStatus:
 		m.ClearBrandColorsStatus()
+		return nil
+	case user.FieldLogo:
+		m.ClearLogo()
 		return nil
 	}
 	return fmt.Errorf("unknown User nullable field %s", name)
@@ -10441,8 +10511,8 @@ func (m *UserMutation) ResetField(name string) error {
 	case user.FieldAdmin:
 		m.ResetAdmin()
 		return nil
-	case user.FieldWebsiteURL:
-		m.ResetWebsiteURL()
+	case user.FieldWebsite:
+		m.ResetWebsite()
 		return nil
 	case user.FieldBrandButtonColor:
 		m.ResetBrandButtonColor()
@@ -10455,6 +10525,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldBrandColorsStatus:
 		m.ResetBrandColorsStatus()
+		return nil
+	case user.FieldLogo:
+		m.ResetLogo()
 		return nil
 	case user.FieldCreatedAt:
 		m.ResetCreatedAt()

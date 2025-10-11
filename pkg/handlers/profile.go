@@ -1,7 +1,10 @@
 package handlers
 
 import (
+	"fmt"
+	"io"
 	"net/http"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -21,6 +24,7 @@ type Profile struct {
 	Inertia *inertia.Inertia
 	auth    *services.AuthClient
 	jobs    *services.JobWorker
+	cont    *services.Container
 }
 
 type UpdateBasicInfoForm struct {
@@ -50,6 +54,7 @@ func (h *Profile) Init(c *services.Container) error {
 	h.Inertia = c.Inertia
 	h.auth = c.Auth
 	h.jobs = c.Jobs
+	h.cont = c
 	return nil
 }
 
@@ -96,15 +101,62 @@ func (h *Profile) UpdateBasicInfo(ctx echo.Context) error {
 		return err
 	}
 
-	if input.Name == usr.Name && input.Email == usr.Email {
+	update := h.orm.User.UpdateOne(usr).
+		SetName(input.Name).
+		SetEmail(input.Email)
+
+	hasChanges := input.Name != usr.Name || input.Email != usr.Email
+
+	logoFile, logoErr := ctx.FormFile("logo")
+	if logoErr == nil && logoFile != nil {
+		src, err := logoFile.Open()
+		if err != nil {
+			log.Ctx(ctx).Error("failed to open logo file", "error", err)
+			msg.Danger(ctx, "Failed to upload logo")
+			h.Inertia.Back(ctx.Response().Writer, ctx.Request())
+			return nil
+		}
+		defer src.Close()
+
+		if err := h.cont.Files.MkdirAll("logos", 0755); err != nil {
+			log.Ctx(ctx).Error("failed to create logos directory", "error", err)
+			msg.Danger(ctx, "Failed to upload logo")
+			h.Inertia.Back(ctx.Response().Writer, ctx.Request())
+			return nil
+		}
+
+		logoPath := fmt.Sprintf("logos/%d_%s", time.Now().Unix(), logoFile.Filename)
+		dst, err := h.cont.Files.Create(logoPath)
+		if err != nil {
+			log.Ctx(ctx).Error("failed to create logo file", "error", err)
+			msg.Danger(ctx, "Failed to upload logo")
+			h.Inertia.Back(ctx.Response().Writer, ctx.Request())
+			return nil
+		}
+		defer dst.Close()
+
+		_, err = io.Copy(dst, src)
+		if err != nil {
+			log.Ctx(ctx).Error("failed to copy logo file", "error", err)
+			msg.Danger(ctx, "Failed to upload logo")
+			h.Inertia.Back(ctx.Response().Writer, ctx.Request())
+			return nil
+		}
+
+		dst.Close()
+		logoURL := h.cont.Files.GetPublicURL(logoPath)
+		update.SetLogo(logoURL)
+		hasChanges = true
+		log.Ctx(ctx).Info("logo uploaded successfully", "path", logoPath, "url", logoURL)
+	} else if logoErr != nil && logoErr != http.ErrMissingFile {
+		log.Ctx(ctx).Error("error getting logo file", "error", logoErr)
+	}
+
+	if !hasChanges {
 		msg.Info(ctx, "Nothing to update.")
 		h.Inertia.Back(ctx.Response().Writer, ctx.Request())
 		return nil
 	}
-
-	update := h.orm.User.UpdateOne(usr).
-		SetName(input.Name).
-		SetEmail(input.Email)
 
 	_, err = update.Save(ctx.Request().Context())
 	if err != nil {
@@ -231,7 +283,7 @@ func (h *Profile) ExtractBrandColors(ctx echo.Context) error {
 	}
 
 	_, err = h.orm.User.UpdateOne(usr).
-		SetWebsiteURL(input.WebsiteURL).
+		SetWebsite(input.WebsiteURL).
 		SetBrandColorsStatus("pending").
 		Save(ctx.Request().Context())
 	if err != nil {

@@ -40,6 +40,7 @@ interface BrandColors {
 interface Props {
   form: Form;
   brandColors?: BrandColors;
+  userLogo?: string;
 }
 
 type AnswerValue = string | string[];
@@ -54,7 +55,7 @@ function hexToRgb(hex: string): string {
   return `${r} ${g} ${b}`;
 }
 
-export default function View({ form, brandColors }: Props) {
+export default function View({ form, brandColors, userLogo }: Props) {
   const questions =
     form.edges.questions?.sort((a, b) => a.order - b.order) || [];
 
@@ -124,23 +125,39 @@ export default function View({ form, brandColors }: Props) {
       </Head>
 
       {isConversational ? (
-        <ConversationalForm
-          questions={questions}
-          answers={data.answers}
-          errors={Object.fromEntries(
-            Object.entries(formErrors).map(([key, value]) => [
-              key.replace("answers.", ""),
-              value,
-            ]),
+        <>
+          {userLogo && (
+            <div className="fixed top-16 left-1/2 -translate-x-1/2 z-40">
+              <div className="h-12 flex items-center">
+                <img src={userLogo} alt="Logo" className="h-full object-contain" />
+              </div>
+            </div>
           )}
-          onAnswerChange={handleAnswerChange}
-          onSubmit={() => handleSubmit()}
-          isSubmitting={processing}
-          brandColors={brandColors}
-        />
+          <ConversationalForm
+            questions={questions}
+            answers={data.answers}
+            errors={Object.fromEntries(
+              Object.entries(formErrors).map(([key, value]) => [
+                key.replace("answers.", ""),
+                value,
+              ]),
+            )}
+            onAnswerChange={handleAnswerChange}
+            onSubmit={() => handleSubmit()}
+            isSubmitting={processing}
+            brandColors={brandColors}
+          />
+        </>
       ) : (
         <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background py-12 px-4">
           <div className="max-w-3xl mx-auto">
+            {userLogo && (
+              <div className="mb-8 flex justify-center">
+                <div className="h-16 flex items-center">
+                  <img src={userLogo} alt="Logo" className="h-full object-contain" />
+                </div>
+              </div>
+            )}
             <div className="mb-8 text-center">
               <h1 className="text-4xl font-bold mb-3">{form.title}</h1>
               {form.description && (

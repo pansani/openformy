@@ -2,9 +2,11 @@ package handlers
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -30,6 +32,7 @@ type Auth struct {
 	mail    *services.MailClient
 	orm     *ent.Client
 	Inertia *inertia.Inertia
+	cont    *services.Container
 }
 
 type RegisterForm struct {
@@ -68,6 +71,7 @@ func (h *Auth) Init(c *services.Container) error {
 	h.auth = c.Auth
 	h.mail = c.Mail
 	h.Inertia = c.Inertia
+	h.cont = c
 	return nil
 }
 
@@ -226,12 +230,44 @@ func (h *Auth) RegisterSubmit(ctx echo.Context) error {
 	}
 
 	// Attempt to create the user
-	u, err := h.orm.User.
+	create := h.orm.User.
 		Create().
 		SetName(input.Name).
 		SetEmail(input.Email).
-		SetPassword(input.Password).
-		Save(r.Context())
+		SetPassword(input.Password)
+
+	logoFile, logoErr := ctx.FormFile("logo")
+	if logoErr == nil && logoFile != nil {
+		src, err := logoFile.Open()
+		if err != nil {
+			log.Ctx(ctx).Error("failed to open logo file", "error", err)
+		} else {
+			defer src.Close()
+
+			if err := h.cont.Files.MkdirAll("logos", 0755); err != nil {
+				log.Ctx(ctx).Error("failed to create logos directory", "error", err)
+			} else {
+				logoPath := fmt.Sprintf("logos/%d_%s", time.Now().Unix(), logoFile.Filename)
+				dst, err := h.cont.Files.Create(logoPath)
+				if err != nil {
+					log.Ctx(ctx).Error("failed to create logo file", "error", err)
+				} else {
+					defer dst.Close()
+					_, err := io.Copy(dst, src)
+					if err != nil {
+						log.Ctx(ctx).Error("failed to copy logo file", "error", err)
+					} else {
+						dst.Close()
+						logoURL := h.cont.Files.GetPublicURL(logoPath)
+						create.SetLogo(logoURL)
+						log.Ctx(ctx).Info("logo uploaded successfully", "path", logoPath, "url", logoURL)
+					}
+				}
+			}
+		}
+	}
+
+	u, err := create.Save(r.Context())
 
 	switch err.(type) {
 	case nil:
