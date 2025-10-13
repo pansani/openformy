@@ -146,7 +146,9 @@ func (h *Forms) Store(ctx echo.Context) error {
 				}
 			}
 			if err != nil {
-				return fail(err, "failed to create form", h.Inertia, ctx)
+				msg.Danger(ctx, "A form with this title already exists. Please try a different title.")
+				h.Inertia.Redirect(w, r, r.URL.Path)
+				return nil
 			}
 		} else {
 			return fail(err, "failed to create form", h.Inertia, ctx)

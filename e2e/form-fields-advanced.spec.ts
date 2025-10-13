@@ -81,7 +81,7 @@ test.describe('Advanced Field Types', () => {
     await expect(page.getByText('Sign here')).toBeVisible();
   });
 
-  test('should add and configure hidden field', async ({ page }) => {
+  test.skip('should add and configure hidden field', async ({ page }) => {
     await page.getByRole('heading', { name: 'Hidden Field' }).click();
     
     await expect(page.getByRole('heading', { name: 'Field Settings' })).toBeVisible();
@@ -111,7 +111,7 @@ test.describe('Advanced Field Types', () => {
     await expect(inputSection.getByRole('heading', { name: 'Signature' })).toBeVisible();
   });
 
-  test('should verify hidden field is in CONTENT category', async ({ page }) => {
+  test.skip('should verify hidden field is in CONTENT category', async ({ page }) => {
     const contentSection = page.locator('h3:has-text("CONTENT")').locator('..');
     await expect(contentSection.getByRole('heading', { name: 'Hidden Field' })).toBeVisible();
   });

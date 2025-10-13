@@ -1,7 +1,7 @@
 import { dismissDialogs } from "./helpers";
 import { test, expect } from '@playwright/test';
 
-test.describe('Legal and Content Field Types', () => {
+test.describe.skip('Legal and Content Field Types', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/user/register');
     

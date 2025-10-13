@@ -269,7 +269,137 @@ test.describe('Multi-Input Field - Persistence', () => {
   });
 });
 
-// TODO: Add Form Submission tests once multi-input rendering is implemented in the public form view
-// test.describe('Multi-Input Field - Form Submission', () => {
-//   Test cases for displaying and submitting multi-input fields in public forms
-// });
+test.describe.configure({ mode: 'serial' });
+
+test.describe('Multi-Input Field - Form Submission', () => {
+  let formSlug: string;
+  let userIdentifier: string;
+  let formUrl: string;
+
+  test.beforeAll(async ({ browser }) => {
+    const page = await browser.newPage();
+    await page.goto('/user/register');
+    
+    const timestamp = Date.now();
+    const email = `test${timestamp}@example.com`;
+    userIdentifier = `test${timestamp}`;
+    
+    await page.getByRole('textbox', { name: 'Name' }).fill('Test User');
+    await page.getByRole('textbox', { name: 'Email address' }).fill(email);
+    await page.getByRole('textbox', { name: 'Password' }).first().fill('password123');
+    await page.getByRole('textbox', { name: 'Confirm Password' }).fill('password123');
+    await page.getByRole('button', { name: 'Create Account' }).click();
+    
+    await page.waitForURL(url => url.pathname === '/dashboard' || url.pathname === '/user/login', { timeout: 10000 });
+    
+    if (page.url().includes('/user/login')) {
+      await page.getByRole('textbox', { name: 'Email address' }).fill(email);
+      await page.getByRole('textbox', { name: 'Password' }).fill('password123');
+      await page.getByRole('button', { name: 'Log in' }).click();
+      await page.waitForURL('/dashboard', { timeout: 10000 });
+    }
+    
+    await dismissDialogs(page);
+    
+    await page.goto('/forms/create');
+    const formTitle = `Submission Test ${timestamp}`;
+    await page.getByRole('textbox', { name: 'Form Title *' }).fill(formTitle);
+    await page.getByRole('button', { name: 'Create Form & Start Building' }).click();
+    formSlug = `submission-test-${timestamp}`;
+    
+    await page.waitForURL(/\/forms\/\d+\/edit/);
+    
+    await page.getByRole('heading', { name: 'Multi-Input', exact: true }).click();
+    await page.waitForTimeout(500);
+    
+    const questionCard = page.locator('.group.relative.transition-all').first();
+    await questionCard.click();
+    
+    await page.getByRole('textbox', { name: 'Question Title *' }).fill('Contact Information');
+    
+    await page.getByRole('button', { name: 'Add Sub-Input' }).click();
+    await page.waitForTimeout(300);
+    
+    const firstSubInput = page.locator('.p-3.border.rounded-lg').first();
+    await firstSubInput.getByPlaceholder('Label').fill('Full Name');
+    await firstSubInput.getByPlaceholder('Enter placeholder text...').fill('Enter your name');
+    await firstSubInput.getByRole('switch').click();
+    
+    await page.getByRole('button', { name: 'Add Sub-Input' }).click();
+    await page.waitForTimeout(300);
+    
+    const secondSubInput = page.locator('.p-3.border.rounded-lg').nth(1);
+    await secondSubInput.getByPlaceholder('Label').fill('Email Address');
+    await secondSubInput.getByRole('combobox').click();
+    await page.getByRole('option', { name: 'Email' }).click();
+    await secondSubInput.getByPlaceholder('Enter placeholder text...').fill('your@email.com');
+    await secondSubInput.getByRole('switch').click();
+    
+    await page.getByRole('button', { name: 'Save' }).click();
+    await page.waitForTimeout(1000);
+    
+    const publishSwitch = page.getByRole('switch').nth(1);
+    await publishSwitch.click();
+    await page.waitForTimeout(500);
+    
+    await page.getByRole('button', { name: 'Save' }).click();
+    await page.waitForTimeout(1000);
+    
+    formUrl = `/${userIdentifier}/${formSlug}`;
+    
+    await page.goto(formUrl);
+    await page.waitForLoadState('networkidle');
+    await expect(page.getByText('Contact Information')).toBeVisible({ timeout: 10000 });
+    
+    await page.close();
+  });
+
+  test('should display multi-input fields in published form', async ({ page }) => {
+    await page.goto(formUrl);
+    await page.waitForLoadState('networkidle');
+    
+    await expect(page.getByText('Contact Information')).toBeVisible();
+    await expect(page.getByText('Full Name')).toBeVisible();
+    await expect(page.getByText('Email Address')).toBeVisible();
+    
+    const nameInput = page.getByPlaceholder('Enter your name');
+    const emailInput = page.getByPlaceholder('your@email.com');
+    
+    await expect(nameInput).toBeVisible();
+    await expect(emailInput).toBeVisible();
+  });
+
+  test('should submit multi-input form with valid data', async ({ page }) => {
+    await page.goto(formUrl);
+    
+    await page.getByPlaceholder('Enter your name').fill('John Doe');
+    await page.getByPlaceholder('your@email.com').fill('john.doe@example.com');
+    
+    await page.getByRole('button', { name: /submit/i }).click();
+    
+    await page.waitForTimeout(2000);
+    
+    expect(page.url()).not.toContain('/edit');
+  });
+
+  test('should validate required multi-input fields', async ({ page }) => {
+    await page.goto(formUrl);
+    
+    const submitButton = page.getByRole('button', { name: /submit/i });
+    const isDisabled = await submitButton.isDisabled();
+    
+    expect(isDisabled).toBe(true);
+  });
+
+  test('should validate email format in multi-input field', async ({ page }) => {
+    await page.goto(formUrl);
+    
+    await page.getByPlaceholder('Enter your name').fill('John Doe');
+    await page.getByPlaceholder('your@email.com').fill('invalid-email');
+    
+    const submitButton = page.getByRole('button', { name: /submit/i });
+    const isDisabled = await submitButton.isDisabled();
+    
+    expect(isDisabled).toBe(true);
+  });
+});
