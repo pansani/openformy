@@ -6,6 +6,14 @@ import { ConversationalForm } from "@/components/Forms/ConversationalForm";
 import { validateAnswer } from "@/utils/validation";
 import { useMemo } from "react";
 
+interface SubInput {
+  id: string;
+  type: 'text' | 'email' | 'number' | 'phone' | 'url' | 'date' | 'time';
+  label: string;
+  placeholder?: string;
+  required: boolean;
+}
+
 interface Question {
   id: number;
   type: string;
@@ -16,6 +24,7 @@ interface Question {
   order: number;
   options?: {
     items?: string[];
+    subInputs?: SubInput[];
   };
 }
 
@@ -43,7 +52,7 @@ interface Props {
   userLogo?: string;
 }
 
-type AnswerValue = string | string[];
+type AnswerValue = string | string[] | Record<string, string>;
 
 function hexToRgb(hex: string): string {
   if (!hex || !hex.startsWith("#")) return "";
@@ -172,7 +181,7 @@ export default function View({ form, brandColors, userLogo }: Props) {
                 <FormQuestion
                   key={question.id}
                   question={question}
-                  value={data.answers[question.id] || ""}
+                  value={data.answers[question.id] || (question.type === 'multi-input' ? {} : "")}
                   error={formErrors[`answers.${question.id}` as keyof typeof formErrors]}
                   onChange={(value) => handleAnswerChange(question.id, value)}
                 />

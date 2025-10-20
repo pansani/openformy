@@ -19,13 +19,23 @@ import {
   DateRangeField,
   LegalField,
   HiddenField,
+  MultiInputField,
 } from '@/components/Fields';
+
+interface SubInput {
+  id: string;
+  type: 'text' | 'email' | 'number' | 'phone' | 'url' | 'date' | 'time';
+  label: string;
+  placeholder?: string;
+  required: boolean;
+}
 
 interface Question {
   type: string;
   placeholder?: string;
-  options?: string[] | {
+  options?: {
     items?: string[];
+    subInputs?: SubInput[];
   };
 }
 
@@ -35,7 +45,7 @@ interface QuestionPreviewProps {
 
 export function QuestionPreview({ question }: QuestionPreviewProps) {
   const getOptions = () => {
-    return Array.isArray(question.options) ? question.options : [];
+    return question.options?.items || [];
   };
   
   const renderInput = () => {
@@ -113,6 +123,12 @@ export function QuestionPreview({ question }: QuestionPreviewProps) {
       
       case 'hidden':
         return <HiddenField />;
+      
+      case 'multi-input':
+        const subInputs = typeof question.options === 'object' && question.options?.subInputs 
+          ? question.options.subInputs 
+          : [];
+        return <MultiInputField subInputs={subInputs} />;
       
       default:
         return <p className="text-sm text-muted-foreground">Preview not available</p>;

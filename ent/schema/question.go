@@ -26,6 +26,7 @@ func (Question) Fields() []ent.Field {
 				"dropdown", "radio", "checkbox", "multi-select", "picture-choice",
 				"yesno", "rating", "opinion-scale", "ranking", "matrix",
 				"statement", "legal", "hidden",
+				"multi-input",
 			).
 			Default("text"),
 		field.String("title").
