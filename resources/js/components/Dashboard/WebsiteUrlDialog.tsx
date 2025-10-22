@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { usePage, router } from '@inertiajs/react';
-import { SharedProps } from '@/types/global';
+import { useEffect, useState } from "react";
+import { usePage, router } from "@inertiajs/react";
+import { SharedProps } from "@/types/global";
 import {
   Dialog,
   DialogContent,
@@ -8,20 +8,20 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 export function WebsiteUrlDialog() {
   const { auth } = usePage<SharedProps>().props;
   const user = auth?.user;
   const [showDialog, setShowDialog] = useState(false);
-  const [websiteUrl, setWebsiteUrl] = useState('');
+  const [websiteUrl, setWebsiteUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (user && !user.website_url) {
+    if (user && !user.website) {
       setShowDialog(true);
     }
   }, [user]);
@@ -31,7 +31,7 @@ export function WebsiteUrlDialog() {
     setIsSubmitting(true);
 
     router.post(
-      '/profile/extract-brand-colors',
+      "/profile/extract-brand-colors",
       { website_url: websiteUrl },
       {
         forceFormData: true,
@@ -41,7 +41,7 @@ export function WebsiteUrlDialog() {
           setIsSubmitting(false);
           setShowDialog(false);
         },
-      }
+      },
     );
   };
 
@@ -51,7 +51,8 @@ export function WebsiteUrlDialog() {
         <DialogHeader>
           <DialogTitle>Welcome! Set up your brand colors</DialogTitle>
           <DialogDescription>
-            Enter your website URL to automatically extract your brand colors and customize your forms.
+            Enter your website URL to automatically extract your brand colors
+            and customize your forms.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -69,11 +70,15 @@ export function WebsiteUrlDialog() {
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setShowDialog(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowDialog(false)}
+            >
               Skip for now
             </Button>
             <Button type="submit" disabled={isSubmitting || !websiteUrl}>
-              {isSubmitting ? 'Extracting...' : 'Extract Colors'}
+              {isSubmitting ? "Extracting..." : "Extract Colors"}
             </Button>
           </DialogFooter>
         </form>
