@@ -137,6 +137,7 @@ type User struct {
 	BrandTextColor       *string                 `form:"brand_text_color"`
 	BrandColorsStatus    *user.BrandColorsStatus `form:"brand_colors_status"`
 	Logo                 *string                 `form:"logo"`
+	Language             *user.Language          `form:"language"`
 	CreatedAt            *time.Time              `form:"created_at"`
 }
 

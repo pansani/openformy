@@ -321,6 +321,7 @@ var (
 		{Name: "brand_text_color", Type: field.TypeString, Nullable: true},
 		{Name: "brand_colors_status", Type: field.TypeEnum, Nullable: true, Enums: []string{"pending", "processing", "completed", "failed"}},
 		{Name: "logo", Type: field.TypeString, Nullable: true},
+		{Name: "language", Type: field.TypeEnum, Enums: []string{"en", "pt", "es", "fr"}, Default: "en"},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "payment_customer_user", Type: field.TypeInt, Unique: true, Nullable: true},
 	}
@@ -332,7 +333,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "users_payment_customers_user",
-				Columns:    []*schema.Column{UsersColumns[15]},
+				Columns:    []*schema.Column{UsersColumns[16]},
 				RefColumns: []*schema.Column{PaymentCustomersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

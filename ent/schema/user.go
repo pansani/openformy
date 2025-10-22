@@ -61,6 +61,10 @@ func (User) Fields() []ent.Field {
 			Comment("Status of brand color extraction job"),
 		field.String("logo").
 			Optional(),
+		field.Enum("language").
+			Values("en", "pt", "es", "fr").
+			Default("en").
+			Comment("User's preferred language for UI and communications"),
 		field.Time("created_at").
 			Default(time.Now).
 			Immutable(),

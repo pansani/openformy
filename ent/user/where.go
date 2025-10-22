@@ -890,6 +890,26 @@ func LogoContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldLogo, v))
 }
 
+// LanguageEQ applies the EQ predicate on the "language" field.
+func LanguageEQ(v Language) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLanguage, v))
+}
+
+// LanguageNEQ applies the NEQ predicate on the "language" field.
+func LanguageNEQ(v Language) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldLanguage, v))
+}
+
+// LanguageIn applies the In predicate on the "language" field.
+func LanguageIn(vs ...Language) predicate.User {
+	return predicate.User(sql.FieldIn(FieldLanguage, vs...))
+}
+
+// LanguageNotIn applies the NotIn predicate on the "language" field.
+func LanguageNotIn(vs ...Language) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldLanguage, vs...))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldCreatedAt, v))

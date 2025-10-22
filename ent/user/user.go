@@ -42,6 +42,8 @@ const (
 	FieldBrandColorsStatus = "brand_colors_status"
 	// FieldLogo holds the string denoting the logo field in the database.
 	FieldLogo = "logo"
+	// FieldLanguage holds the string denoting the language field in the database.
+	FieldLanguage = "language"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// EdgeOwner holds the string denoting the owner edge name in mutations.
@@ -100,6 +102,7 @@ var Columns = []string{
 	FieldBrandTextColor,
 	FieldBrandColorsStatus,
 	FieldLogo,
+	FieldLanguage,
 	FieldCreatedAt,
 }
 
@@ -167,6 +170,34 @@ func BrandColorsStatusValidator(bcs BrandColorsStatus) error {
 		return nil
 	default:
 		return fmt.Errorf("user: invalid enum value for brand_colors_status field: %q", bcs)
+	}
+}
+
+// Language defines the type for the "language" enum field.
+type Language string
+
+// LanguageEn is the default value of the Language enum.
+const DefaultLanguage = LanguageEn
+
+// Language values.
+const (
+	LanguageEn Language = "en"
+	LanguagePt Language = "pt"
+	LanguageEs Language = "es"
+	LanguageFr Language = "fr"
+)
+
+func (l Language) String() string {
+	return string(l)
+}
+
+// LanguageValidator is a validator for the "language" field enum values. It is called by the builders before save.
+func LanguageValidator(l Language) error {
+	switch l {
+	case LanguageEn, LanguagePt, LanguageEs, LanguageFr:
+		return nil
+	default:
+		return fmt.Errorf("user: invalid enum value for language field: %q", l)
 	}
 }
 
@@ -241,6 +272,11 @@ func ByBrandColorsStatus(opts ...sql.OrderTermOption) OrderOption {
 // ByLogo orders the results by the logo field.
 func ByLogo(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLogo, opts...).ToFunc()
+}
+
+// ByLanguage orders the results by the language field.
+func ByLanguage(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLanguage, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

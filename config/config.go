@@ -59,6 +59,7 @@ type (
 		Mail     MailConfig
 		Payment  PaymentConfig
 		OpenAI   OpenAIConfig
+		I18n     I18nConfig
 	}
 
 	// HTTPConfig stores HTTP configuration.
@@ -164,6 +165,12 @@ type (
 	OpenAIConfig struct {
 		ApiKey string
 		Model  string
+	}
+
+	// I18nConfig stores the internationalization configuration.
+	I18nConfig struct {
+		DefaultLanguage    string
+		SupportedLanguages []string
 	}
 )
 

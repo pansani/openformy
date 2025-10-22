@@ -182,6 +182,20 @@ func (uc *UserCreate) SetNillableLogo(s *string) *UserCreate {
 	return uc
 }
 
+// SetLanguage sets the "language" field.
+func (uc *UserCreate) SetLanguage(u user.Language) *UserCreate {
+	uc.mutation.SetLanguage(u)
+	return uc
+}
+
+// SetNillableLanguage sets the "language" field if the given value is not nil.
+func (uc *UserCreate) SetNillableLanguage(u *user.Language) *UserCreate {
+	if u != nil {
+		uc.SetLanguage(*u)
+	}
+	return uc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (uc *UserCreate) SetCreatedAt(t time.Time) *UserCreate {
 	uc.mutation.SetCreatedAt(t)
@@ -305,6 +319,10 @@ func (uc *UserCreate) defaults() error {
 		v := user.DefaultAdmin
 		uc.mutation.SetAdmin(v)
 	}
+	if _, ok := uc.mutation.Language(); !ok {
+		v := user.DefaultLanguage
+		uc.mutation.SetLanguage(v)
+	}
 	if _, ok := uc.mutation.CreatedAt(); !ok {
 		if user.DefaultCreatedAt == nil {
 			return fmt.Errorf("ent: uninitialized user.DefaultCreatedAt (forgotten import ent/runtime?)")
@@ -350,6 +368,14 @@ func (uc *UserCreate) check() error {
 	if v, ok := uc.mutation.BrandColorsStatus(); ok {
 		if err := user.BrandColorsStatusValidator(v); err != nil {
 			return &ValidationError{Name: "brand_colors_status", err: fmt.Errorf(`ent: validator failed for field "User.brand_colors_status": %w`, err)}
+		}
+	}
+	if _, ok := uc.mutation.Language(); !ok {
+		return &ValidationError{Name: "language", err: errors.New(`ent: missing required field "User.language"`)}
+	}
+	if v, ok := uc.mutation.Language(); ok {
+		if err := user.LanguageValidator(v); err != nil {
+			return &ValidationError{Name: "language", err: fmt.Errorf(`ent: validator failed for field "User.language": %w`, err)}
 		}
 	}
 	if _, ok := uc.mutation.CreatedAt(); !ok {
@@ -432,6 +458,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Logo(); ok {
 		_spec.SetField(user.FieldLogo, field.TypeString, value)
 		_node.Logo = value
+	}
+	if value, ok := uc.mutation.Language(); ok {
+		_spec.SetField(user.FieldLanguage, field.TypeEnum, value)
+		_node.Language = value
 	}
 	if value, ok := uc.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)

@@ -44,6 +44,8 @@ type User struct {
 	BrandColorsStatus user.BrandColorsStatus `json:"brand_colors_status,omitempty"`
 	// Logo holds the value of the "logo" field.
 	Logo string `json:"logo,omitempty"`
+	// User's preferred language for UI and communications
+	Language user.Language `json:"language,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -115,7 +117,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case user.FieldID:
 			values[i] = new(sql.NullInt64)
-		case user.FieldName, user.FieldEmail, user.FieldPassword, user.FieldUsername, user.FieldCompanyName, user.FieldWebsite, user.FieldBrandButtonColor, user.FieldBrandBackgroundColor, user.FieldBrandTextColor, user.FieldBrandColorsStatus, user.FieldLogo:
+		case user.FieldName, user.FieldEmail, user.FieldPassword, user.FieldUsername, user.FieldCompanyName, user.FieldWebsite, user.FieldBrandButtonColor, user.FieldBrandBackgroundColor, user.FieldBrandTextColor, user.FieldBrandColorsStatus, user.FieldLogo, user.FieldLanguage:
 			values[i] = new(sql.NullString)
 		case user.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -219,6 +221,12 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field logo", values[i])
 			} else if value.Valid {
 				u.Logo = value.String
+			}
+		case user.FieldLanguage:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field language", values[i])
+			} else if value.Valid {
+				u.Language = user.Language(value.String)
 			}
 		case user.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -326,6 +334,9 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("logo=")
 	builder.WriteString(u.Logo)
+	builder.WriteString(", ")
+	builder.WriteString("language=")
+	builder.WriteString(fmt.Sprintf("%v", u.Language))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(u.CreatedAt.Format(time.ANSIC))

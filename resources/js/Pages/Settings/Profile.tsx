@@ -7,6 +7,7 @@ import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import DeleteUser from "@/components/DeleteUser";
 import SettingsLayout from "@/Layouts/Settings/Layout";
 import HeadingSmall from "@/components/HeadingSmall";
@@ -23,6 +24,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 type ProfileForm = {
   name: string;
   email: string;
+  language: string;
   logo?: File;
 };
 
@@ -39,6 +41,7 @@ export default function Profile({
     useForm<ProfileForm>({
       name: auth.user.name,
       email: auth.user.email,
+      language: auth.user.language || "en",
       logo: undefined,
     });
 
@@ -111,6 +114,22 @@ export default function Profile({
               />
 
               <InputError className="mt-2" message={errors.email} />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="language">Language</Label>
+              <Select value={data.language} onValueChange={(value) => setData("language", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a language" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="en">English</SelectItem>
+                  <SelectItem value="pt">Portuguese</SelectItem>
+                  <SelectItem value="es">Spanish</SelectItem>
+                  <SelectItem value="fr">French</SelectItem>
+                </SelectContent>
+              </Select>
+              <InputError className="mt-2" message={errors.language} />
             </div>
 
             <div className="grid gap-2">
