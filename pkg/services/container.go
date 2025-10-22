@@ -24,6 +24,7 @@ import (
 	"github.com/mikestefanello/backlite"
 	"github.com/occult/pagode/config"
 	"github.com/occult/pagode/ent"
+	"github.com/occult/pagode/pkg/i18n"
 	inertia "github.com/romsar/gonertia/v2"
 	"github.com/spf13/afero"
 
@@ -75,6 +76,9 @@ type Container struct {
 
 	// Inertia for React
 	Inertia *inertia.Inertia
+
+	// I18n stores the translation service.
+	I18n *i18n.Translator
 }
 
 // NewContainer creates and initializes a new Container.
@@ -92,6 +96,7 @@ func NewContainer() *Container {
 	c.initTasks()
 	c.initJobs()
 	c.initPayment()
+	c.initI18n()
 	c.initInertia()
 	return c
 }
@@ -384,6 +389,14 @@ func (c *Container) getInertia() *inertia.Inertia {
 	i.ShareTemplateFunc("viteReactRefresh", viteReactRefresh(url))
 
 	return i
+}
+
+func (c *Container) initI18n() {
+	var err error
+	c.I18n, err = i18n.NewTranslator(&c.Config.I18n)
+	if err != nil {
+		panic(fmt.Sprintf("failed to initialize i18n: %v", err))
+	}
 }
 
 func (c *Container) initInertia() {

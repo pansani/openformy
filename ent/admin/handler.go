@@ -1675,6 +1675,9 @@ func (h *Handler) UserCreate(ctx echo.Context) error {
 	if payload.Logo != nil {
 		op.SetLogo(*payload.Logo)
 	}
+	if payload.Language != nil {
+		op.SetLanguage(*payload.Language)
+	}
 	if payload.CreatedAt != nil {
 		op.SetCreatedAt(*payload.CreatedAt)
 	}
@@ -1741,6 +1744,12 @@ func (h *Handler) UserUpdate(ctx echo.Context, id int) error {
 	} else {
 		op.SetLogo(*payload.Logo)
 	}
+	if payload.Language == nil {
+		var empty user.Language
+		op.SetLanguage(empty)
+	} else {
+		op.SetLanguage(*payload.Language)
+	}
 	_, err = op.Save(ctx.Request().Context())
 	return err
 }
@@ -1777,6 +1786,7 @@ func (h *Handler) UserList(ctx echo.Context) (*EntityList, error) {
 			"Brand text color",
 			"Brand colors status",
 			"Logo",
+			"Language",
 			"Created at",
 		},
 		Entities:    make([]EntityValues, 0, len(res)),
@@ -1800,6 +1810,7 @@ func (h *Handler) UserList(ctx echo.Context) (*EntityList, error) {
 				res[i].BrandTextColor,
 				fmt.Sprint(res[i].BrandColorsStatus),
 				res[i].Logo,
+				fmt.Sprint(res[i].Language),
 				res[i].CreatedAt.Format(h.Config.TimeFormat),
 			},
 		})
@@ -1827,6 +1838,7 @@ func (h *Handler) UserGet(ctx echo.Context, id int) (url.Values, error) {
 	v.Set("brand_text_color", entity.BrandTextColor)
 	v.Set("brand_colors_status", fmt.Sprint(entity.BrandColorsStatus))
 	v.Set("logo", entity.Logo)
+	v.Set("language", fmt.Sprint(entity.Language))
 	return v, err
 }
 

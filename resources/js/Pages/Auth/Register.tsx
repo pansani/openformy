@@ -6,6 +6,7 @@ import { RegisterFormData } from "@/schemas/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import InputError from "@/components/InputError";
 import TextLink from "@/components/TextLink";
 import AuthLayout from "@/Layouts/AuthLayout";
@@ -17,6 +18,7 @@ export default function Register() {
     email: "",
     password: "",
     password_confirmation: "",
+    language: "en",
     logo: undefined,
   });
 
@@ -107,6 +109,22 @@ export default function Register() {
               placeholder="Confirm your password"
             />
             <InputError message={errors["password_confirmation"]} />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="language">Language</Label>
+            <Select value={data.language} onValueChange={(value) => setData("language", value as "en" | "pt" | "es" | "fr")}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a language" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="en">English</SelectItem>
+                <SelectItem value="pt">Portuguese</SelectItem>
+                <SelectItem value="es">Spanish</SelectItem>
+                <SelectItem value="fr">French</SelectItem>
+              </SelectContent>
+            </Select>
+            <InputError message={errors.language} />
           </div>
 
           <div className="grid gap-2">

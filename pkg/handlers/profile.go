@@ -9,6 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/occult/pagode/ent"
+	"github.com/occult/pagode/ent/user"
 	"github.com/occult/pagode/pkg/context"
 	"github.com/occult/pagode/pkg/form"
 	"github.com/occult/pagode/pkg/log"
@@ -28,8 +29,9 @@ type Profile struct {
 }
 
 type UpdateBasicInfoForm struct {
-	Name  string `form:"name" validate:"required"`
-	Email string `form:"email" validate:"required,email"`
+	Name     string `form:"name" validate:"required"`
+	Email    string `form:"email" validate:"required,email"`
+	Language string `form:"language" validate:"required,oneof=en pt es fr"`
 	form.Submission
 }
 
@@ -103,9 +105,14 @@ func (h *Profile) UpdateBasicInfo(ctx echo.Context) error {
 
 	update := h.orm.User.UpdateOne(usr).
 		SetName(input.Name).
-		SetEmail(input.Email)
+		SetEmail(input.Email).
+		SetLanguage(usr.Language)
+	
+	if input.Language != "" && input.Language != string(usr.Language) {
+		update.SetLanguage(user.Language(input.Language))
+	}
 
-	hasChanges := input.Name != usr.Name || input.Email != usr.Email
+	hasChanges := input.Name != usr.Name || input.Email != usr.Email || (input.Language != "" && input.Language != string(usr.Language))
 
 	logoFile, logoErr := ctx.FormFile("logo")
 	if logoErr == nil && logoFile != nil {

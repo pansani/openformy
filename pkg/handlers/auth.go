@@ -40,6 +40,7 @@ type RegisterForm struct {
 	Email           string `form:"email" validate:"required,email"`
 	Password        string `form:"password" validate:"required"`
 	ConfirmPassword string `form:"password_confirmation" validate:"required,eqfield=Password"`
+	Language        string `form:"language" validate:"required,oneof=en pt es fr"`
 	form.Submission
 }
 
@@ -234,7 +235,8 @@ func (h *Auth) RegisterSubmit(ctx echo.Context) error {
 		Create().
 		SetName(input.Name).
 		SetEmail(input.Email).
-		SetPassword(input.Password)
+		SetPassword(input.Password).
+		SetLanguage(user.Language(input.Language))
 
 	logoFile, logoErr := ctx.FormFile("logo")
 	if logoErr == nil && logoFile != nil {

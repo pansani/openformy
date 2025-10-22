@@ -261,6 +261,20 @@ func (uu *UserUpdate) ClearLogo() *UserUpdate {
 	return uu
 }
 
+// SetLanguage sets the "language" field.
+func (uu *UserUpdate) SetLanguage(u user.Language) *UserUpdate {
+	uu.mutation.SetLanguage(u)
+	return uu
+}
+
+// SetNillableLanguage sets the "language" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableLanguage(u *user.Language) *UserUpdate {
+	if u != nil {
+		uu.SetLanguage(*u)
+	}
+	return uu
+}
+
 // AddOwnerIDs adds the "owner" edge to the PasswordToken entity by IDs.
 func (uu *UserUpdate) AddOwnerIDs(ids ...int) *UserUpdate {
 	uu.mutation.AddOwnerIDs(ids...)
@@ -448,6 +462,11 @@ func (uu *UserUpdate) check() error {
 			return &ValidationError{Name: "brand_colors_status", err: fmt.Errorf(`ent: validator failed for field "User.brand_colors_status": %w`, err)}
 		}
 	}
+	if v, ok := uu.mutation.Language(); ok {
+		if err := user.LanguageValidator(v); err != nil {
+			return &ValidationError{Name: "language", err: fmt.Errorf(`ent: validator failed for field "User.language": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -525,6 +544,9 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.LogoCleared() {
 		_spec.ClearField(user.FieldLogo, field.TypeString)
+	}
+	if value, ok := uu.mutation.Language(); ok {
+		_spec.SetField(user.FieldLanguage, field.TypeEnum, value)
 	}
 	if uu.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -940,6 +962,20 @@ func (uuo *UserUpdateOne) ClearLogo() *UserUpdateOne {
 	return uuo
 }
 
+// SetLanguage sets the "language" field.
+func (uuo *UserUpdateOne) SetLanguage(u user.Language) *UserUpdateOne {
+	uuo.mutation.SetLanguage(u)
+	return uuo
+}
+
+// SetNillableLanguage sets the "language" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableLanguage(u *user.Language) *UserUpdateOne {
+	if u != nil {
+		uuo.SetLanguage(*u)
+	}
+	return uuo
+}
+
 // AddOwnerIDs adds the "owner" edge to the PasswordToken entity by IDs.
 func (uuo *UserUpdateOne) AddOwnerIDs(ids ...int) *UserUpdateOne {
 	uuo.mutation.AddOwnerIDs(ids...)
@@ -1140,6 +1176,11 @@ func (uuo *UserUpdateOne) check() error {
 			return &ValidationError{Name: "brand_colors_status", err: fmt.Errorf(`ent: validator failed for field "User.brand_colors_status": %w`, err)}
 		}
 	}
+	if v, ok := uuo.mutation.Language(); ok {
+		if err := user.LanguageValidator(v); err != nil {
+			return &ValidationError{Name: "language", err: fmt.Errorf(`ent: validator failed for field "User.language": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -1234,6 +1275,9 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.LogoCleared() {
 		_spec.ClearField(user.FieldLogo, field.TypeString)
+	}
+	if value, ok := uuo.mutation.Language(); ok {
+		_spec.SetField(user.FieldLanguage, field.TypeEnum, value)
 	}
 	if uuo.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{

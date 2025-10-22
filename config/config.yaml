@@ -77,3 +77,11 @@ payment:
 openai:
   apiKey: ""
   model: "gpt-4o"
+
+i18n:
+  defaultLanguage: "en"
+  supportedLanguages:
+    - "en"
+    - "pt"
+    - "es"
+    - "fr"

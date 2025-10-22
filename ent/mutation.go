@@ -9208,6 +9208,7 @@ type UserMutation struct {
 	brand_text_color        *string
 	brand_colors_status     *user.BrandColorsStatus
 	logo                    *string
+	language                *user.Language
 	created_at              *time.Time
 	clearedFields           map[string]struct{}
 	owner                   map[int]struct{}
@@ -9896,6 +9897,42 @@ func (m *UserMutation) ResetLogo() {
 	delete(m.clearedFields, user.FieldLogo)
 }
 
+// SetLanguage sets the "language" field.
+func (m *UserMutation) SetLanguage(u user.Language) {
+	m.language = &u
+}
+
+// Language returns the value of the "language" field in the mutation.
+func (m *UserMutation) Language() (r user.Language, exists bool) {
+	v := m.language
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLanguage returns the old "language" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldLanguage(ctx context.Context) (v user.Language, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLanguage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLanguage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLanguage: %w", err)
+	}
+	return oldValue.Language, nil
+}
+
+// ResetLanguage resets all changes to the "language" field.
+func (m *UserMutation) ResetLanguage() {
+	m.language = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *UserMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -10167,7 +10204,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 15)
 	if m.name != nil {
 		fields = append(fields, user.FieldName)
 	}
@@ -10207,6 +10244,9 @@ func (m *UserMutation) Fields() []string {
 	if m.logo != nil {
 		fields = append(fields, user.FieldLogo)
 	}
+	if m.language != nil {
+		fields = append(fields, user.FieldLanguage)
+	}
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
 	}
@@ -10244,6 +10284,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.BrandColorsStatus()
 	case user.FieldLogo:
 		return m.Logo()
+	case user.FieldLanguage:
+		return m.Language()
 	case user.FieldCreatedAt:
 		return m.CreatedAt()
 	}
@@ -10281,6 +10323,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldBrandColorsStatus(ctx)
 	case user.FieldLogo:
 		return m.OldLogo(ctx)
+	case user.FieldLanguage:
+		return m.OldLanguage(ctx)
 	case user.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	}
@@ -10382,6 +10426,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLogo(v)
+		return nil
+	case user.FieldLanguage:
+		v, ok := value.(user.Language)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLanguage(v)
 		return nil
 	case user.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -10528,6 +10579,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldLogo:
 		m.ResetLogo()
+		return nil
+	case user.FieldLanguage:
+		m.ResetLanguage()
 		return nil
 	case user.FieldCreatedAt:
 		m.ResetCreatedAt()
